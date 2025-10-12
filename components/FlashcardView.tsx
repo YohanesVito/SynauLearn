@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 
 interface FlashcardViewProps {
   courseTitle: string;
-  onStartQuiz: () => void;
+  onStartQuiz: (cardIndex: number) => void;
   onBack: () => void;
 }
 
@@ -79,9 +79,9 @@ export default function FlashcardView({ courseTitle, onStartQuiz, onBack }: Flas
       }
     }
 
-    // Vertical swipe down for quiz
-    if (isVerticalSwipe && distanceY < -minSwipeDistance) {
-      onStartQuiz();
+    // Vertical swipe UP for quiz
+    if (isVerticalSwipe && distanceY > minSwipeDistance) {
+      onStartQuiz(currentCard);
     }
   };
 
@@ -173,13 +173,13 @@ export default function FlashcardView({ courseTitle, onStartQuiz, onBack }: Flas
             <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
             </svg>
-            <p className="text-gray-400 text-xs">Swipe right for next card</p>
+            <p className="text-gray-400 text-xs">Swipe for next card</p>
           </div>
           <div className="flex flex-col items-center gap-2">
             <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
             </svg>
-            <p className="text-gray-400 text-xs">Scroll down for quiz</p>
+            <p className="text-gray-400 text-xs">Swipe up for quiz</p>
           </div>
         </div>
       </div>
