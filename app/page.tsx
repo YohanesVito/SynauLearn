@@ -26,7 +26,7 @@ export default function Home() {
       // Create a unique storage key
       // If user has FID (Farcaster), use that. Otherwise use a generic key for browser testing
       const userId = context?.user?.fid || 'browser_user';
-      const storageKey = `chainlearn_welcome_${userId}`;
+      const storageKey = `synaulearn_welcome_${userId}`;
       const hasSeenWelcome = localStorage.getItem(storageKey);
       
       if (!hasSeenWelcome) {
@@ -44,7 +44,7 @@ export default function Home() {
   const handleWelcomeComplete = () => {
     // Save that user has seen the welcome
     const userId = context?.user?.fid || 'browser_user';
-    const storageKey = `chainlearn_welcome_${userId}`;
+    const storageKey = `synaulearn_welcome_${userId}`;
     localStorage.setItem(storageKey, 'true');
     
     setShowWelcome(false);

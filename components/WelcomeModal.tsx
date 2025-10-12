@@ -26,7 +26,7 @@ export default function WelcomeModal({ onComplete }: WelcomeModalProps) {
 
           {/* Title */}
           <h2 className="text-3xl font-bold text-white mb-3">
-            Welcome to ChainLearn! 👋
+            Welcome to SynauLearn! 👋
           </h2>
           
           <p className="text-gray-300 mb-8 text-sm leading-relaxed">
