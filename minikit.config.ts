@@ -21,7 +21,7 @@ export const minikitConfig = {
     version: "1",
     name: "SynauLearn",
     subtitle: "",
-    description: "",
+    description: "Learn Anything, Anytime, Anywhere",
     screenshotUrls: [],
     iconUrl: `${ROOT_URL}/icon.png`,
     splashImageUrl: `${ROOT_URL}/splash.png`,
