@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 interface FlashcardViewProps {
   courseTitle: string;
   onStartQuiz: (cardIndex: number) => void;
   onBack: () => void;
+  initialCard?: number;
 }
 
 const flashcards = [
@@ -36,14 +37,19 @@ const flashcards = [
   },
 ];
 
-export default function FlashcardView({ courseTitle, onStartQuiz, onBack }: FlashcardViewProps) {
-  const [currentCard, setCurrentCard] = useState(0);
+export default function FlashcardView({ courseTitle, onStartQuiz, onBack, initialCard = 0 }: FlashcardViewProps) {
+  const [currentCard, setCurrentCard] = useState(initialCard);
   const [isFlipped, setIsFlipped] = useState(false);
   const [touchStart, setTouchStart] = useState({ x: 0, y: 0 });
   const [touchEnd, setTouchEnd] = useState({ x: 0, y: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
 
   const minSwipeDistance = 50;
+
+  // Update current card when initialCard changes
+  useEffect(() => {
+    setCurrentCard(initialCard);
+  }, [initialCard]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     setTouchEnd({ x: 0, y: 0 });
@@ -68,18 +74,14 @@ export default function FlashcardView({ courseTitle, onStartQuiz, onBack }: Flas
     const isHorizontalSwipe = Math.abs(distanceX) > Math.abs(distanceY);
     const isVerticalSwipe = Math.abs(distanceY) > Math.abs(distanceX);
 
-    // Horizontal swipe (left/right) for cards
     if (isHorizontalSwipe && Math.abs(distanceX) > minSwipeDistance) {
       if (distanceX > 0) {
-        // Swiped left - next card
         handleNextCard();
       } else {
-        // Swiped right - previous card
         handlePrevCard();
       }
     }
 
-    // Vertical swipe UP for quiz
     if (isVerticalSwipe && distanceY > minSwipeDistance) {
       onStartQuiz(currentCard);
     }
@@ -103,7 +105,6 @@ export default function FlashcardView({ courseTitle, onStartQuiz, onBack }: Flas
 
   return (
     <div className="fixed inset-0 bg-[#1a1d2e] z-50 flex flex-col">
-      {/* Header */}
       <div className="px-6 py-6">
         <div className="flex items-center justify-between mb-4">
           <button onClick={onBack} className="text-gray-400 hover:text-white transition-colors">
@@ -115,7 +116,6 @@ export default function FlashcardView({ courseTitle, onStartQuiz, onBack }: Flas
           <div className="w-6" />
         </div>
 
-        {/* Progress Indicator */}
         <div className="flex items-center justify-center gap-2 mb-2">
           {flashcards.map((_, index) => (
             <div
@@ -135,7 +135,6 @@ export default function FlashcardView({ courseTitle, onStartQuiz, onBack }: Flas
         </p>
       </div>
 
-      {/* Content */}
       <div
         ref={containerRef}
         className="flex-1 flex flex-col items-center justify-center px-6 pb-32"
@@ -143,7 +142,6 @@ export default function FlashcardView({ courseTitle, onStartQuiz, onBack }: Flas
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {/* Flashcard */}
         <div
           onClick={() => setIsFlipped(!isFlipped)}
           className="w-full max-w-md bg-[#252841] rounded-3xl p-8 min-h-[400px] flex items-center justify-center cursor-pointer hover:bg-[#2a2d46] transition-all mb-8 border border-[#2a2d42]"
@@ -167,7 +165,6 @@ export default function FlashcardView({ courseTitle, onStartQuiz, onBack }: Flas
           </div>
         </div>
 
-        {/* Navigation Hints */}
         <div className="flex items-center justify-center gap-8 mb-8">
           <div className="flex flex-col items-center gap-2">
             <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">

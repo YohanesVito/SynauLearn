@@ -35,19 +35,26 @@ const courses = [
 export default function Courses() {
   const [selectedCourse, setSelectedCourse] = useState<number | null>(null);
   const [view, setView] = useState<"list" | "flashcard" | "quiz">("list");
+  const [currentQuizCard, setCurrentQuizCard] = useState<number>(0);
 
   const handleCourseClick = (courseId: number) => {
     setSelectedCourse(courseId);
     setView("flashcard");
   };
 
-  const handleStartQuiz = () => {
+  const handleStartQuiz = (cardIndex: number) => {
+    setCurrentQuizCard(cardIndex);
     setView("quiz");
+  };
+
+  const handleBackToFlashcard = () => {
+    setView("flashcard");
   };
 
   const handleBack = () => {
     setView("list");
     setSelectedCourse(null);
+    setCurrentQuizCard(0);
   };
 
   if (view === "flashcard" && selectedCourse) {
@@ -62,7 +69,13 @@ export default function Courses() {
   }
 
   if (view === "quiz" && selectedCourse) {
-    return <QuizView onBack={handleBack} />;
+    return (
+      <QuizView 
+        cardIndex={currentQuizCard}
+        onBack={handleBack}
+        onBackToFlashcard={handleBackToFlashcard}
+      />
+    );
   }
 
   return (

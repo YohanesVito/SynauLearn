@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 interface QuizViewProps {
+  cardIndex: number;
   onBack: () => void;
+  onBackToFlashcard: () => void;
 }
 
 const quizData = [
@@ -64,62 +66,124 @@ const quizData = [
   },
 ];
 
-export default function QuizView({ onBack }: QuizViewProps) {
-  const [currentQuestion, setCurrentQuestion] = useState(0);
+export default function QuizView({ cardIndex, onBack, onBackToFlashcard }: QuizViewProps) {
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
+  const [isCorrect, setIsCorrect] = useState(false);
+  const [touchStart, setTouchStart] = useState({ x: 0, y: 0 });
+  const [touchEnd, setTouchEnd] = useState({ x: 0, y: 0 });
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const progress = ((currentQuestion + 1) / quizData.length) * 100;
-  const question = quizData[currentQuestion];
+  const minSwipeDistance = 50;
 
-  const handleAnswerSelect = (optionId: number) => {
-    setSelectedAnswer(optionId);
+  const question = quizData[cardIndex] || quizData[0];
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd({ x: 0, y: 0 });
+    setTouchStart({
+      x: e.targetTouches[0].clientX,
+      y: e.targetTouches[0].clientY,
+    });
   };
 
-  const handleNext = () => {
-    if (currentQuestion < quizData.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
-      setSelectedAnswer(null);
-    } else {
-      setShowResult(true);
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd({
+      x: e.targetTouches[0].clientX,
+      y: e.targetTouches[0].clientY,
+    });
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart.y || !touchEnd.y) return;
+
+    const distanceY = touchStart.y - touchEnd.y;
+    const isVerticalSwipe = Math.abs(distanceY) > minSwipeDistance;
+
+    // Swipe down to go back to flashcard
+    if (isVerticalSwipe && distanceY < 0) {
+      onBackToFlashcard();
     }
+  };
+
+  if (!question) {
+    return (
+      <div className="fixed inset-0 bg-[#1a1d2e] z-50 flex flex-col items-center justify-center px-6">
+        <p className="text-gray-400">Quiz not found</p>
+        <button
+          onClick={onBack}
+          className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-2xl transition-all"
+        >
+          Back to Courses
+        </button>
+      </div>
+    );
+  }
+
+
+  const handleAnswerSelect = (optionId: number) => {
+    const selected = question.options.find(opt => opt.id === optionId);
+    setSelectedAnswer(optionId);
+    setIsCorrect(selected?.correct || false);
+    setShowResult(true);
+  };
+
+  const handleContinue = () => {
+    onBackToFlashcard();
   };
 
   if (showResult) {
     return (
       <div className="fixed inset-0 bg-[#1a1d2e] z-50 flex flex-col items-center justify-center px-6">
-        <div className="text-center">
-          <div className="text-6xl mb-6">🎉</div>
-          <h2 className="text-3xl font-bold mb-4">Quiz Completed!</h2>
-          <p className="text-gray-400 mb-8">Great job on completing the quiz</p>
-          <button
-            onClick={onBack}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-2xl transition-all"
-          >
-            Back to Courses
-          </button>
+        <div className="text-center max-w-md">
+          <div className="text-6xl mb-6">{isCorrect ? "🎉" : "😔"}</div>
+          <h2 className="text-3xl font-bold mb-4">
+            {isCorrect ? "Correct!" : "Incorrect"}
+          </h2>
+          <p className="text-gray-400 mb-8">
+            {isCorrect 
+              ? "Great job! You got it right." 
+              : "Don't worry, review the flashcard and try again."}
+          </p>
+          <div className="space-y-3">
+            <button
+              onClick={handleContinue}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-2xl transition-all"
+            >
+              Back to Flashcard
+            </button>
+            <button
+              onClick={onBack}
+              className="w-full bg-[#2a2d42] hover:bg-[#333649] text-white font-bold py-4 px-8 rounded-2xl transition-all"
+            >
+              Back to Courses
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="fixed inset-0 bg-[#1a1d2e] z-50 flex flex-col">
+    <div 
+      ref={containerRef}
+      className="fixed inset-0 bg-[#1a1d2e] z-50 flex flex-col"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
       <div className="px-6 py-6">
         <div className="flex items-center justify-between mb-4">
+          <button onClick={onBackToFlashcard} className="text-gray-400 hover:text-white transition-colors">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+          </button>
+          <span className="text-lg font-medium">Card {cardIndex + 1} Quiz</span>
           <button onClick={onBack} className="text-gray-400 hover:text-white transition-colors">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
-          <span className="text-lg font-medium">{currentQuestion + 1}/{quizData.length}</span>
-        </div>
-        
-        <div className="w-full bg-[#2a2d42] rounded-full h-2 overflow-hidden">
-          <div
-            className="bg-blue-600 h-full rounded-full transition-all duration-300"
-            style={{ width: `${progress}%` }}
-          />
         </div>
       </div>
 
@@ -143,14 +207,12 @@ export default function QuizView({ onBack }: QuizViewProps) {
           ))}
         </div>
 
-        {selectedAnswer && (
-          <button
-            onClick={handleNext}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-2xl transition-all"
-          >
-            {currentQuestion < quizData.length - 1 ? "Next Question" : "Finish Quiz"}
-          </button>
-        )}
+        <div className="flex items-center justify-center gap-2 text-gray-400 text-sm">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+          </svg>
+          <span>Swipe down to return to flashcard</span>
+        </div>
       </div>
     </div>
   );
