@@ -10,9 +10,9 @@ const ROOT_URL =
  */
 export const minikitConfig = {
   accountAssociation: {
-    header: "",
-    payload: "",
-    signature: "",
+    header: "eyJmaWQiOjEzNTYxNDYsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHg2RTcxYkQzZDBhRTEwN2RDZjVmMzIxOTA4OTI1MTE3RmNEMjc1NjBiIn0",
+    payload: "eyJkb21haW4iOiJzeW5hdS1sZWFybi1iYXNlLnZlcmNlbC5hcHAifQ",
+    signature: "MHg3MDBhZTU4ZWJhOGY2NDhiZjliZDhmNDI2YTQ3MTIwNDY5YTc3ODViYTliYzkxNTc1ZmRhMWQ2MTA5YThmNTQwNDlkZjNkODYwMjM5MjAyYTY0ZTM2MDdhNGVkN2UyNDFjYjRjYjg3YmFhNzBjZjhlNTZkMjZlYzI3NWE3NDg0YzFj"
   },
   baseBuilder: {
     allowedAddresses: [],
@@ -28,10 +28,10 @@ export const minikitConfig = {
     splashBackgroundColor: "#000000",
     homeUrl: ROOT_URL,
     webhookUrl: `${ROOT_URL}/api/webhook`,
-    primaryCategory: "utility",
-    tags: ["example"],
+    primaryCategory: "social",
+    tags: ["example", "miniapp", "baseapp"],
     heroImageUrl: `${ROOT_URL}/hero.png`,
-    tagline: "",
+    tagline: "Learn Anything, Anytime, Anywhere",
     ogTitle: "",
     ogDescription: "",
     ogImageUrl: `${ROOT_URL}/hero.png`,

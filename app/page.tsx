@@ -1,110 +1,78 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useMiniKit } from "@coinbase/onchainkit/minikit";
-// import { useQuickAuth } from "@coinbase/onchainkit/minikit";
-// import Navigation from "@/components/Navigation";
 import Header from "@/components/Header";
 import Categories from "@/components/Categories";
 import Courses from "@/components/Courses";
 import BottomNav from "@/components/BottomNav";
+import WelcomeModal from "@/components/WelcomeModal";
 
 export default function Home() {
-  // If you need to verify the user's identity, you can use the useQuickAuth hook.
-  // This hook will verify the user's signature and return the user's FID. You can update
-  // this to meet your needs. See the /app/api/auth/route.ts file for more details.
-  // Note: If you don't need to verify the user's identity, you can get their FID and other user data
-  // via `useMiniKit().context?.user`.
-  // const { data, isLoading, error } = useQuickAuth<{
-  //   userFid: string;
-  // }>("/api/auth");
+  const { setMiniAppReady, isMiniAppReady, context } = useMiniKit();
+  const [showWelcome, setShowWelcome] = useState(false);
+  const [isChecking, setIsChecking] = useState(true);
+  const [currentView, setCurrentView] = useState<"home" | "courses" | "profile">("home");
 
-  const { setMiniAppReady, isMiniAppReady } = useMiniKit();
-
+  // Initialize MiniKit
   useEffect(() => {
     if (!isMiniAppReady) {
       setMiniAppReady();
     }
   }, [setMiniAppReady, isMiniAppReady]);
 
-//   return (
-//     <div className={styles.container}>
-//       <header className={styles.headerWrapper}>
-//         <Wallet />
-//       </header>
+  // Check if user is first-time visitor (works for both browser and Farcaster)
+  useEffect(() => {
+    const checkFirstTimeUser = () => {
+      // Create a unique storage key
+      // If user has FID (Farcaster), use that. Otherwise use a generic key for browser testing
+      const userId = context?.user?.fid || 'browser_user';
+      const storageKey = `chainlearn_welcome_${userId}`;
+      const hasSeenWelcome = localStorage.getItem(storageKey);
+      
+      if (!hasSeenWelcome) {
+        setShowWelcome(true);
+      }
+      
+      setIsChecking(false);
+    };
 
-//       <div className={styles.content}>
-//         <Image
-//           priority
-//           src="/sphere.svg"
-//           alt="Sphere"
-//           width={200}
-//           height={200}
-//         />
-//         <h1 className={styles.title}>MiniKit</h1>
+    // Small delay to ensure smooth loading
+    const timer = setTimeout(checkFirstTimeUser, 300);
+    return () => clearTimeout(timer);
+  }, [context]);
 
-//         <p>
-//           Get started by editing <code>app/page.tsx</code>
-//         </p>
+  const handleWelcomeComplete = () => {
+    // Save that user has seen the welcome
+    const userId = context?.user?.fid || 'browser_user';
+    const storageKey = `chainlearn_welcome_${userId}`;
+    localStorage.setItem(storageKey, 'true');
+    
+    setShowWelcome(false);
+  };
 
-//         <h2 className={styles.componentsTitle}>Explore Components</h2>
-
-//         <ul className={styles.components}>
-//           {[
-//             {
-//               name: "Transaction",
-//               url: "https://docs.base.org/onchainkit/transaction/transaction",
-//             },
-//             {
-//               name: "Swap",
-//               url: "https://docs.base.org/onchainkit/swap/swap",
-//             },
-//             {
-//               name: "Checkout",
-//               url: "https://docs.base.org/onchainkit/checkout/checkout",
-//             },
-//             {
-//               name: "Wallet",
-//               url: "https://docs.base.org/onchainkit/wallet/wallet",
-//             },
-//             {
-//               name: "Identity",
-//               url: "https://docs.base.org/onchainkit/identity/identity",
-//             },
-//           ].map((component) => (
-//             <li key={component.name}>
-//               <a target="_blank" rel="noreferrer" href={component.url}>
-//                 {component.name}
-//               </a>
-//             </li>
-//           ))}
-//         </ul>
-//       </div>
-//     </div>
-//   );
-
-const [currentView, setCurrentView] = useState<"home" | "courses" | "profile">("home");
+  // Loading state while checking first-time user
+  if (isChecking) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-900">
+        <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
-    <main className="min-h-screen pb-24">
-      <Header />
-      <div className="px-6 py-6">
-        <Categories />
-        <Courses />
-      </div>
-      <BottomNav currentView={currentView} onNavigate={setCurrentView} />
-    </main>
+    <>
+      {/* Welcome Modal for first-time users */}
+      {showWelcome && <WelcomeModal onComplete={handleWelcomeComplete} />}
+      
+      {/* Main App */}
+      <main className="min-h-screen pb-24">
+        <Header />
+        <div className="px-6 py-6">
+          <Categories />
+          <Courses />
+        </div>
+        <BottomNav currentView={currentView} onNavigate={setCurrentView} />
+      </main>
+    </>
   );
 }
-
-// export default function Home() {
-//   return (
-//     <main className="min-h-screen pb-24">
-//       <Header />
-//       <div className="px-6 py-6">
-//         <Categories />
-//         <Courses />
-//       </div>
-//       <BottomNav />
-//     </main>
-//   );
-// }
