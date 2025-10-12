@@ -1,10 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import Image from "next/image";
-import { Wallet } from "@coinbase/onchainkit/wallet";
 import { useMiniKit } from "@coinbase/onchainkit/minikit";
 // import { useQuickAuth } from "@coinbase/onchainkit/minikit";
-import styles from "./page.module.css";
 // import Navigation from "@/components/Navigation";
 import Header from "@/components/Header";
 import Categories from "@/components/Categories";
