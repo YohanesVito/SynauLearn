@@ -15,7 +15,7 @@ export const minikitConfig = {
     signature: "MHg3MDBhZTU4ZWJhOGY2NDhiZjliZDhmNDI2YTQ3MTIwNDY5YTc3ODViYTliYzkxNTc1ZmRhMWQ2MTA5YThmNTQwNDlkZjNkODYwMjM5MjAyYTY0ZTM2MDdhNGVkN2UyNDFjYjRjYjg3YmFhNzBjZjhlNTZkMjZlYzI3NWE3NDg0YzFj"
   },
   baseBuilder: {
-    allowedAddresses: [],
+    allowedAddresses: ["0x21A48a64B0D859Ad1e63CeCe21B5B9dab6539284"],
   },
   miniapp: {
     version: "1",
@@ -31,7 +31,7 @@ export const minikitConfig = {
     primaryCategory: "social",
     tags: ["example", "miniapp", "baseapp"],
     heroImageUrl: `${ROOT_URL}/hero.png`,
-    tagline: "Learn Anything, Anytime, Anywhere",
+    tagline: "Learn First, Earn Later",
     ogTitle: "",
     ogDescription: "",
     ogImageUrl: `${ROOT_URL}/hero.png`,
