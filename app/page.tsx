@@ -24,6 +24,11 @@ export default function Home() {
     if (!isMiniAppReady) {
       setMiniAppReady();
     }
+    if (typeof window !== 'undefined' && 
+        process.env.NODE_ENV === 'development' && 
+        !window.location.hostname.includes('localhost')) {
+      import('eruda').then((eruda) => eruda.default.init());
+    }
   }, [setMiniAppReady, isMiniAppReady]);
 
   // Check if user is first-time visitor (works for both browser and Farcaster)

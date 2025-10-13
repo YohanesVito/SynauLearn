@@ -166,83 +166,121 @@
 //   );
 // }
 
-
 "use client";
+
+import { useState, useCallback } from "react";
 import { sdk } from "@farcaster/miniapp-sdk";
-import { useEffect, useState } from "react";
-import { ArrowLeft} from "lucide-react";
+import { Button } from "./ui/Button";
+import { Label } from "./ui/label";
+import { Input } from "./ui/input";
 
-interface ProfileProps {
-  onBack: () => void;
-}
+export default function Profile() {
+  const [fid, setFid] = useState<string>('3');
 
-export default function Profile({ onBack }: ProfileProps) {
-  const [user, setUser] = useState(null);
-  const [isInMiniApp, setIsInMiniApp] = useState(false); 
+  const handleViewProfile = useCallback((): void => {
+    sdk.actions.viewProfile({ fid: parseInt(fid) });
+  }, [fid]);
 
-  useEffect(() => {
-    const loadUserData = async () => {
-      try {
-        // Check if we're in a Mini App
-        const miniAppStatus = await sdk.isInMiniApp();
-        setIsInMiniApp(miniAppStatus);
-
-        if (miniAppStatus) {
-          // Get context and extract user info
-          const context = await sdk.context;
-          setUser(context.user);
-        }
-      } catch (error) {
-        console.error("Error loading user data:", error);
-      }
-    };
-
-    loadUserData();
-  }, []);
-
-  // Show message if not in Mini App
-  if (!isInMiniApp) {
-    return (
-      <div>
-        <p>Please open this app in a Farcaster or Base client to see your profile.</p>
+  return (
+    <div className="mb-4">
+      <div className="p-2 bg-gray-100 dark:bg-gray-800 rounded-lg my-2">
+        <pre className="font-mono text-xs text-emerald-500 dark:text-emerald-400">sdk.actions.viewProfile</pre>
       </div>
-    );
-  }
+      <div>
+        <Label className="text-xs font-semibold text-gray-500 mb-1" htmlFor="view-profile-fid">Fid</Label>
+        <Input
+          id="view-profile-fid"
+          type="number"
+          value={fid}
+          className="mb-2 text-emerald-500 dark:text-emerald-400"
+          onChange={(e) => setFid(e.target.value)}
+          step="1"
+          min="1"
+        />
+      </div>
+      <Button onClick={handleViewProfile}>
+        View Profile
+      </Button>
+    </div>
+  );
+} 
 
-  // Show user information
-  if (user) {
-    return (
+// "use client";
+// import { sdk } from "@farcaster/miniapp-sdk";
+// import { useEffect, useState } from "react";
+// import { ArrowLeft} from "lucide-react";
+
+// interface ProfileProps {
+//   onBack: () => void;
+// }
+
+// export default function Profile({ onBack }: ProfileProps) {
+//   const [user, setUser] = useState(null);
+//   const [isInMiniApp, setIsInMiniApp] = useState(false); 
+
+//   useEffect(() => {
+//     const loadUserData = async () => {
+//       try {
+//         // Check if we're in a Mini App
+//         const miniAppStatus = await sdk.isInMiniApp();
+//         setIsInMiniApp(miniAppStatus);
+
+//         if (miniAppStatus) {
+//           // Get context and extract user info
+//           const context = await sdk.context;
+//           setUser(context.user);
+//         }
+//       } catch (error) {
+//         console.error("Error loading user data:", error);
+//       }
+//     };
+
+//     loadUserData();
+//   }, []);
+
+//   // Show message if not in Mini App
+//   if (!isInMiniApp) {
+//     return (
+//       <div>
+//         <p>Please open this app in a Farcaster or Base client to see your profile.</p>
+//       </div>
+//     );
+//   }
+
+//   // Show user information
+//   if (user) {
+//     return (
       
-      <div>
+//       <div>
 
-       <div className="bg-slate-900 border-b border-slate-800">
-         <div className="px-6 py-4">
-           <div className="flex items-center gap-4">
-             <button
-              onClick={onBack}
-              className="p-2 hover:bg-slate-800 rounded-lg transition-colors"
-            >
-              <ArrowLeft className="w-6 h-6" />
-            </button>
-            <h1 className="text-2xl font-bold">Profile</h1>
-          </div>
-        </div>
-      </div>
-        <h2>Welcome, {user.displayName || user.username}!</h2>
-        <p>FID: {user.fid}</p>
-        <p>Username: @{user.username}</p>
-        {user.pfpUrl && (
-          <img 
-            src={user.pfpUrl} 
-            alt="Profile" 
-            width={64} 
-            height={64} 
-            style={{ borderRadius: '50%' }}
-          />
-        )}
-      </div>
-    );
-  }
+//        <div className="bg-slate-900 border-b border-slate-800">
+//          <div className="px-6 py-4">
+//            <div className="flex items-center gap-4">
+//              <button
+//               onClick={onBack}
+//               className="p-2 hover:bg-slate-800 rounded-lg transition-colors"
+//             >
+//               <ArrowLeft className="w-6 h-6" />
+//             </button>
+//             <h1 className="text-2xl font-bold">Profile</h1>
+//           </div>
+//         </div>
+//       </div>
+//         <h2>Welcome, {user.displayName || user.username}!</h2>
+//         <p>FID: {user.fid}</p>
+//         <p>Username: @{user.username}</p>
+//         {user.pfpUrl && (
+//           <img 
+//             src={user.pfpUrl} 
+//             alt="Profile" 
+//             width={64} 
+//             height={64} 
+//             style={{ borderRadius: '50%' }}
+//           />
+//         )}
+//       </div>
+//     );
+//   }
 
-  return <div>Loading user profile...</div>;
-}
+//   return <div>Loading user profile...</div>;
+// }
