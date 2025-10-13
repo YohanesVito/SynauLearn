@@ -15,12 +15,12 @@ interface Badge {
   unlocked: boolean;
 }
 
-interface UserProfile {
-  fid: number;
-  username: string;
-  displayName?: string;
-  pfpUrl?: string;
-}
+// interface UserProfile {
+//   fid: number;
+//   username: string;
+//   displayName?: string;
+//   pfpUrl?: string;
+// }
 
 const badges: Badge[] = [
   { id: "1", name: "DeFi Beginner", icon: "💼", unlocked: true },
