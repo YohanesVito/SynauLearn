@@ -6,12 +6,18 @@ import Categories from "@/components/Categories";
 import Courses from "@/components/Courses";
 import BottomNav from "@/components/BottomNav";
 import WelcomeModal from "@/components/WelcomeModal";
+import Drawer from "@/components/Drawer";
+import Leaderboard from "@/components/Leaderboard";
+import Profile from "@/components/Profile";
+import MintBadge from "@/components/MintBadge";
 
 export default function Home() {
   const { setMiniAppReady, isMiniAppReady, context } = useMiniKit();
   const [showWelcome, setShowWelcome] = useState(false);
   const [isChecking, setIsChecking] = useState(true);
-  const [currentView, setCurrentView] = useState<"home" | "courses" | "profile">("home");
+  const [currentView, setCurrentView] = useState<"home" | "courses" | "profile" | "leaderboard">("home");
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [showMintBadge, setShowMintBadge] = useState(false);
 
   // Initialize MiniKit
   useEffect(() => {
@@ -50,6 +56,14 @@ export default function Home() {
     setShowWelcome(false);
   };
 
+  const handleNavigate = (view: string) => {
+    setCurrentView(view as "home" | "courses" | "profile" | "leaderboard");
+  };
+
+  const handleBackToHome = () => {
+    setCurrentView("home");
+  };
+
   // Loading state while checking first-time user
   if (isChecking) {
     return (
@@ -59,19 +73,58 @@ export default function Home() {
     );
   }
 
+  // Render different views based on currentView
+  const renderView = () => {
+    switch (currentView) {
+      case 'leaderboard':
+        return <Leaderboard onBack={handleBackToHome} />;
+      case 'profile':
+        return <Profile onBack={handleBackToHome} />;
+      case 'courses':
+        return (
+          <>
+            <Header onMenuClick={() => setIsDrawerOpen(true)} />
+            <div className="px-6 py-6">
+              <h1 className="text-2xl font-bold text-white mb-4">Courses</h1>
+              <p className="text-gray-400">Courses view coming soon...</p>
+            </div>
+          </>
+        );
+      case 'home':
+      default:
+        return (
+          <>
+            <Header onMenuClick={() => setIsDrawerOpen(true)} />
+            <div className="px-6 py-6">
+              <Categories />
+              <Courses />
+            </div>
+          </>
+        );
+    }
+  };
+
   return (
     <>
       {/* Welcome Modal for first-time users */}
       {showWelcome && <WelcomeModal onComplete={handleWelcomeComplete} />}
       
+      {/* Mint Badge Modal */}
+      {showMintBadge && <MintBadge onClose={() => setShowMintBadge(false)} />}
+      
+      {/* Drawer Navigation */}
+      <Drawer 
+        isOpen={isDrawerOpen} 
+        onClose={() => setIsDrawerOpen(false)}
+        currentView={currentView}
+        onNavigate={handleNavigate}
+        onMintBadgeClick={() => setShowMintBadge(true)}
+      />
+      
       {/* Main App */}
-      <main className="min-h-screen pb-24">
-        <Header />
-        <div className="px-6 py-6">
-          <Categories />
-          <Courses />
-        </div>
-        <BottomNav currentView={currentView} onNavigate={setCurrentView} />
+      <main className="min-h-screen pb-24 bg-slate-950">
+        {renderView()}
+        <BottomNav currentView={currentView} onNavigate={handleNavigate} />
       </main>
     </>
   );
