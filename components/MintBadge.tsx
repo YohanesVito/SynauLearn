@@ -53,7 +53,7 @@ const coursesData: Course[] = [
 ];
 
 export default function MintBadge({ onClose }: MintBadgeProps) {
-  const [courses, setCourses] = useState<Course[]>(coursesData);
+  const [courses] = useState<Course[]>(coursesData);
   const [selectedCourse, setSelectedCourse] = useState<string | null>(null);
 
   const handleSelectCourse = (courseId: string, completed: boolean) => {

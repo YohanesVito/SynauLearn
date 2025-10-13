@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Home, GraduationCap, User, BarChart3, Award, Moon, Sun, Settings, HelpCircle, X } from 'lucide-react';
+import { Home, GraduationCap, User, BarChart3, Award, Moon, Settings, HelpCircle, X } from 'lucide-react';
 
 interface DrawerProps {
   isOpen: boolean;
