@@ -32,7 +32,7 @@ const badges: Badge[] = [
 ];
 
 export default function Profile({ onBack }: ProfileProps) {
-  const [user, setUser] = useState<UserProfile | null>(null);
+  const [user, setUser] = useState(null);
   const [isInMiniApp, setIsInMiniApp] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -57,7 +57,7 @@ export default function Profile({ onBack }: ProfileProps) {
   }, []);
 
   // 1️⃣ Not inside Mini App
-  if (!isInMiniApp && !loading) {
+  if (!isInMiniApp) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-950 text-white">
         <p className="text-gray-400 text-center max-w-md px-6">
