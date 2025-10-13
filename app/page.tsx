@@ -10,12 +10,13 @@ import Drawer from "@/components/Drawer";
 import Leaderboard from "@/components/Leaderboard";
 import Profile from "@/components/Profile";
 import MintBadge from "@/components/MintBadge";
+import SignIn from "@/components/SignIn";
 
 export default function Home() {
   const { setMiniAppReady, isMiniAppReady, context } = useMiniKit();
   const [showWelcome, setShowWelcome] = useState(false);
   const [isChecking, setIsChecking] = useState(true);
-  const [currentView, setCurrentView] = useState<"home" | "courses" | "profile" | "leaderboard">("home");
+  const [currentView, setCurrentView] = useState<"home" | "courses" | "profile" | "leaderboard" | "signin">("home");
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [showMintBadge, setShowMintBadge] = useState(false);
 
@@ -24,11 +25,12 @@ export default function Home() {
     if (!isMiniAppReady) {
       setMiniAppReady();
     }
-    if (typeof window !== 'undefined' && 
-        process.env.NODE_ENV === 'development' && 
-        !window.location.hostname.includes('localhost')) {
-      import('eruda').then((eruda) => eruda.default.init());
-    }
+    // if (typeof window !== 'undefined' &&
+    //   process.env.NODE_ENV === 'development' &&
+    //   !window.location.hostname.includes('localhost')) {
+    //   import('eruda').then((eruda) => eruda.default.init());
+    // }
+    import('eruda').then((eruda) => eruda.default.init());
   }, [setMiniAppReady, isMiniAppReady]);
 
   // Check if user is first-time visitor (works for both browser and Farcaster)
@@ -39,11 +41,11 @@ export default function Home() {
       const userId = context?.user?.fid || 'browser_user';
       const storageKey = `synaulearn_welcome_${userId}`;
       const hasSeenWelcome = localStorage.getItem(storageKey);
-      
+
       if (!hasSeenWelcome) {
         setShowWelcome(true);
       }
-      
+
       setIsChecking(false);
     };
 
@@ -57,12 +59,12 @@ export default function Home() {
     const userId = context?.user?.fid || 'browser_user';
     const storageKey = `synaulearn_welcome_${userId}`;
     localStorage.setItem(storageKey, 'true');
-    
+
     setShowWelcome(false);
   };
 
   const handleNavigate = (view: string) => {
-    setCurrentView(view as "home" | "courses" | "profile" | "leaderboard");
+    setCurrentView(view as "home" | "courses" | "profile" | "leaderboard" | "signin");
   };
 
   const handleBackToHome = () => {
@@ -106,6 +108,8 @@ export default function Home() {
             </div>
           </>
         );
+      case 'signin':
+        return <SignIn onBack={handleBackToHome}/>;
     }
   };
 
@@ -113,19 +117,19 @@ export default function Home() {
     <>
       {/* Welcome Modal for first-time users */}
       {showWelcome && <WelcomeModal onComplete={handleWelcomeComplete} />}
-      
+
       {/* Mint Badge Modal */}
       {showMintBadge && <MintBadge onClose={() => setShowMintBadge(false)} />}
-      
+
       {/* Drawer Navigation */}
-      <Drawer 
-        isOpen={isDrawerOpen} 
+      <Drawer
+        isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
         currentView={currentView}
         onNavigate={handleNavigate}
         onMintBadgeClick={() => setShowMintBadge(true)}
       />
-      
+
       {/* Main App */}
       <main className="min-h-screen pb-24 bg-slate-950">
         {renderView()}
