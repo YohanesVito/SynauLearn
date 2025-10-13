@@ -174,7 +174,11 @@ import { Button } from "./ui/Button";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 
-export default function Profile() {
+interface ProfileProps {
+  onBack: () => void;
+}
+
+export default function Profile({ onBack }: ProfileProps) {
   const [fid, setFid] = useState<string>('3');
 
   const handleViewProfile = useCallback((): void => {
@@ -185,6 +189,11 @@ export default function Profile() {
     <div className="mb-4">
       <div className="p-2 bg-gray-100 dark:bg-gray-800 rounded-lg my-2">
         <pre className="font-mono text-xs text-emerald-500 dark:text-emerald-400">sdk.actions.viewProfile</pre>
+             <button
+               onClick={onBack}
+               className="p-2 hover:bg-slate-800 rounded-lg transition-colors"
+             >
+             </button>
       </div>
       <div>
         <Label className="text-xs font-semibold text-gray-500 mb-1" htmlFor="view-profile-fid">Fid</Label>
