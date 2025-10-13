@@ -1,8 +1,10 @@
 "use client";
 
+type View = "home" | "courses" | "profile" | "leaderboard";
+
 interface BottomNavProps {
-  currentView: "home" | "courses" | "profile";
-  onNavigate: (view: "home" | "courses" | "profile") => void;
+  currentView: View;
+  onNavigate: (view: View) => void;
 }
 
 const navItems = [
@@ -33,6 +35,12 @@ const navItems = [
       </svg>
     )
   },
+  // Optional Leaderboard button:
+  // {
+  //   id: "leaderboard" as const,
+  //   label: "Leaderboard",
+  //   icon: <TrophyIcon className="w-6 h-6" />
+  // },
 ];
 
 export default function BottomNav({ currentView, onNavigate }: BottomNavProps) {
