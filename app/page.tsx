@@ -11,14 +11,25 @@ import Leaderboard from "@/components/Leaderboard";
 import Profile from "@/components/Profile";
 import MintBadge from "@/components/MintBadge";
 import SignIn from "@/components/SignIn";
+import AuthButton from "@/components/ui/AuthButton";
 
 export default function Home() {
-  const { setMiniAppReady, isMiniAppReady, context } = useMiniKit();
+  const { setMiniAppReady, isMiniAppReady, isFrameReady, setFrameReady } = useMiniKit();
   const [showWelcome, setShowWelcome] = useState(false);
   const [isChecking, setIsChecking] = useState(true);
   const [currentView, setCurrentView] = useState<"home" | "courses" | "profile" | "leaderboard" | "signin">("home");
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [showMintBadge, setShowMintBadge] = useState(false);
+  const { context } = useMiniKit();
+  
+  const isBaseApp = context?.client?.clientFid?.toString() === '309857';
+  const isFarcaster = context?.client?.clientFid?.toString() === '1';
+
+  useEffect(() => {
+    if (!isFrameReady) {
+      setFrameReady();
+    }
+  }, [setFrameReady, isFrameReady]);
 
   // Initialize MiniKit
   useEffect(() => {
@@ -102,14 +113,22 @@ export default function Home() {
         return (
           <>
             <Header onMenuClick={() => setIsDrawerOpen(true)} />
-            <div className="px-6 py-6">
+            <div className="px-6 py-6 text-white">
+              <AuthButton />
+              <div>
+                <h1>Welcome, User {context?.user?.fid}!</h1>
+                <p>Launched from: {context?.location ? JSON.stringify(context.location) : "Unknown"}</p>
+                {context?.client?.added && (
+                  <p>✅ You've saved this app!</p>
+                )}
+              </div>
               <Categories />
               <Courses />
             </div>
           </>
         );
       case 'signin':
-        return <SignIn onBack={handleBackToHome}/>;
+        return <SignIn onBack={handleBackToHome} />;
     }
   };
 

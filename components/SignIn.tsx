@@ -17,7 +17,7 @@ export default function SignIn({ onBack }: ProfileProps) {
     const [signInFailure, setSignInFailure] = useState<string | undefined>(undefined);
     const [verifyResponse, setVerifyResponse] = useState<unknown>(undefined);
     const [verifyParams, setVerifyParams] = useState<unknown>(undefined);
-
+    
 
     const getNonce = useCallback(async (): Promise<string> => {
         // const nonce = await getCsrfToken();
