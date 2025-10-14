@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, Lock, Check } from 'lucide-react';
-import { ConnectWallet, Wallet } from '@coinbase/onchainkit/wallet';
+import { Wallet } from '@coinbase/onchainkit/wallet';
 
 interface MintBadgeProps {
   onClose: () => void;
