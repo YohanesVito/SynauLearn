@@ -22,8 +22,8 @@ export default function Home() {
   const [showMintBadge, setShowMintBadge] = useState(false);
   const { context } = useMiniKit();
 
-  const isBaseApp = context?.client?.clientFid?.toString() === '309857';
-  const isFarcaster = context?.client?.clientFid?.toString() === '1';
+  const isBaseApp = context?.client?.clientFid?.toString() === "309857";
+  const isFarcaster = context?.client?.clientFid?.toString() === "1";
 
   useEffect(() => {
     if (!isFrameReady) {
@@ -119,7 +119,7 @@ export default function Home() {
                 <h1>Welcome, User {context?.user?.fid}!</h1>
                 <p>Launched from: {context?.location ? JSON.stringify(context.location) : "Unknown"}</p>
                 {context?.client?.added && (
-                  <p>✅ You've saved this app!</p>
+                  <p>✅ Youve saved this app!</p>
                 )}
               </div>
 
