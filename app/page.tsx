@@ -2,8 +2,6 @@
 import { useEffect, useState } from "react";
 import { useMiniKit } from "@coinbase/onchainkit/minikit";
 import Header from "@/components/Header";
-import Categories from "@/components/Categories";
-import Courses from "@/components/Courses";
 import BottomNav from "@/components/BottomNav";
 import WelcomeModal from "@/components/WelcomeModal";
 import Drawer from "@/components/Drawer";
