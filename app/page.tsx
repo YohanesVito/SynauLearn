@@ -11,7 +11,7 @@ import Leaderboard from "@/components/Leaderboard";
 import Profile from "@/components/Profile";
 import MintBadge from "@/components/MintBadge";
 import SignIn from "@/components/SignIn";
-import AuthButton from "@/components/ui/AuthButton";
+// import AuthButton from "@/components/ui/AuthButton";
 
 export default function Home() {
   const { setMiniAppReady, isMiniAppReady, isFrameReady, setFrameReady } = useMiniKit();
@@ -114,7 +114,7 @@ export default function Home() {
           <>
             <Header onMenuClick={() => setIsDrawerOpen(true)} />
             <div className="px-6 py-6 text-white">
-              <AuthButton />
+              {/* <AuthButton /> */}
               <div>
                 <h1>Welcome, User {context?.user?.fid}!</h1>
                 <p>Launched from: {context?.location ? JSON.stringify(context.location) : "Unknown"}</p>
