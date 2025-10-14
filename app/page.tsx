@@ -21,7 +21,7 @@ export default function Home() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [showMintBadge, setShowMintBadge] = useState(false);
   const { context } = useMiniKit();
-  
+
   const isBaseApp = context?.client?.clientFid?.toString() === '309857';
   const isFarcaster = context?.client?.clientFid?.toString() === '1';
 
@@ -120,6 +120,15 @@ export default function Home() {
                 <p>Launched from: {context?.location ? JSON.stringify(context.location) : "Unknown"}</p>
                 {context?.client?.added && (
                   <p>✅ You've saved this app!</p>
+                )}
+              </div>
+
+              <div>
+                {isBaseApp && (
+                  <div>Base App specific features</div>
+                )}
+                {isFarcaster && (
+                  <div>Farcaster specific features</div>
                 )}
               </div>
               <Categories />
