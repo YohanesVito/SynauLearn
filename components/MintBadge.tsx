@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Lock, Check } from 'lucide-react';
+import { ConnectWallet, Wallet } from '@coinbase/onchainkit/wallet';
 
 interface MintBadgeProps {
   onClose: () => void;
@@ -65,8 +66,8 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
   const handleMintBadge = () => {
     if (selectedCourse) {
       // Here you would implement the actual minting logic
-      alert(`Minting badge for course: ${courses.find(c => c.id === selectedCourse)?.title}`);
-      onClose();
+      // alert(`Minting badge for course: ${courses.find(c => c.id === selectedCourse)?.title}`);
+      <Wallet />
     }
   };
 
