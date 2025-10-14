@@ -22,8 +22,8 @@ export default function Home() {
   const [showMintBadge, setShowMintBadge] = useState(false);
   const { context } = useMiniKit();
 
-  const isBaseApp = context?.client?.clientFid?.toString() === "309857";
-  const isFarcaster = context?.client?.clientFid?.toString() === "1";
+  // const isBaseApp = context?.client?.clientFid?.toString() === "309857";
+  // const isFarcaster = context?.client?.clientFid?.toString() === "1";
 
   useEffect(() => {
     if (!isFrameReady) {
@@ -115,22 +115,6 @@ export default function Home() {
             <Header onMenuClick={() => setIsDrawerOpen(true)} />
             <div className="px-6 py-6 text-white">
               {/* <AuthButton /> */}
-              <div>
-                <h1>Welcome, User {context?.user?.fid}!</h1>
-                <p>Launched from: {context?.location ? JSON.stringify(context.location) : "Unknown"}</p>
-                {context?.client?.added && (
-                  <p>✅ Youve saved this app!</p>
-                )}
-              </div>
-
-              <div>
-                {isBaseApp && (
-                  <div>Base App specific features</div>
-                )}
-                {isFarcaster && (
-                  <div>Farcaster specific features</div>
-                )}
-              </div>
               <Categories />
               <Courses />
             </div>
