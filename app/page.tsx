@@ -11,6 +11,8 @@ import Leaderboard from "@/components/Leaderboard";
 import Profile from "@/components/Profile";
 import MintBadge from "@/components/MintBadge";
 import SignIn from "@/components/SignIn";
+import CoursesView from "@/components/CoursesView";
+import HomeView from "@/components/HomeView";
 // import AuthButton from "@/components/ui/AuthButton";
 
 export default function Home() {
@@ -96,28 +98,19 @@ export default function Home() {
     switch (currentView) {
       case 'leaderboard':
         return <Leaderboard onBack={handleBackToHome} />;
+      
       case 'profile':
         return <Profile onBack={handleBackToHome} />;
+      
       case 'courses':
-        return (
-          <>
-            <Header onMenuClick={() => setIsDrawerOpen(true)} />
-            <div className="px-6 py-6">
-              <h1 className="text-2xl font-bold text-white mb-4">Courses</h1>
-              <p className="text-gray-400">Courses view coming soon...</p>
-            </div>
-          </>
-        );
+        return <CoursesView onBack={handleBackToHome} />;
+      
       case 'home':
       default:
         return (
           <>
             <Header onMenuClick={() => setIsDrawerOpen(true)} />
-            <div className="px-6 py-6 text-white">
-              {/* <AuthButton /> */}
-              <Categories />
-              <Courses />
-            </div>
+            <HomeView userName={context?.user?.displayName || context?.user?.username || "User"} />
           </>
         );
       case 'signin':

@@ -34,7 +34,7 @@ export default function Drawer({ isOpen, onClose, currentView, onNavigate, onMin
     onClose();
   };
 
-    useEffect(() => {
+  useEffect(() => {
     if (!isFrameReady) {
       setFrameReady();
     }
@@ -59,13 +59,13 @@ export default function Drawer({ isOpen, onClose, currentView, onNavigate, onMin
           <div className="p-6 border-b border-slate-800">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className="w-14 h-14 bg-blue-600 flex items-center justify-center overflow-hidden text-white text-xl font-bold">
+                <div className="w-15 h-15 rounded-full bg-gradient-to-br from-orange-200 to-orange-300 flex items-center justify-center overflow-hidden">
                   {context?.user.pfpUrl ? (
                     <img
                       src={context?.user?.pfpUrl}
                       alt={context?.user.username || "User Profile Picture"}
-                      className="rounded-full object-cover w-14 h-14" // Tailwind classes for styling
-                      style={{ objectFit: "cover", width: "160px", height: "160px" }} // Inline styles for fallback
+                      className="rounded-full object-cover w-15 h-15" // Tailwind classes for styling
+                      style={{ objectFit: "cover", width: "100px", height: "100px" }} // Inline styles for fallback
                     />
                   ) : (
                     <div className="text-8xl">👩‍🦰</div>
@@ -97,8 +97,8 @@ export default function Drawer({ isOpen, onClose, currentView, onNavigate, onMin
                   key={item.id}
                   onClick={() => handleNavigate(item.id)}
                   className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl transition-all ${isActive
-                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
-                      : 'text-gray-300 hover:bg-slate-800'
+                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
+                    : 'text-gray-300 hover:bg-slate-800'
                     }`}
                 >
                   <Icon className="w-6 h-6" />
