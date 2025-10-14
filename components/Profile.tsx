@@ -100,12 +100,12 @@ export default function Profile({ onBack }: ProfileProps) {
         <div className="flex flex-col items-center text-center mb-8">
           <div className="relative mb-4">
             <div className="w-40 h-40 rounded-full bg-gradient-to-br from-orange-200 to-orange-300 flex items-center justify-center overflow-hidden">
-              {context?.user.fid}
               {context?.user.pfpUrl ? (
                 <img
                   src={context?.user?.pfpUrl}
-                  alt={context?.user.username}
-                  className="w-full h-full object-cover"
+                  alt={context?.user.username || "User Profile Picture"}
+                  className="rounded-full object-cover w-40 h-40" // Tailwind classes for styling
+                  style={{ objectFit: "cover", width: "160px", height: "160px" }} // Inline styles for fallback
                 />
               ) : (
                 <div className="text-8xl">👩‍🦰</div>

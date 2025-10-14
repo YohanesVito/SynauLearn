@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+"use client";
+
+import React, { useEffect, useState } from "react";
 import { Home, GraduationCap, User, BarChart3, Award, Moon, Settings, HelpCircle, X } from 'lucide-react';
+import { useMiniKit } from "@coinbase/onchainkit/minikit";
 
 interface DrawerProps {
   isOpen: boolean;
@@ -11,6 +14,8 @@ interface DrawerProps {
 
 export default function Drawer({ isOpen, onClose, currentView, onNavigate, onMintBadgeClick }: DrawerProps) {
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const { isFrameReady, setFrameReady } = useMiniKit();
+  const { context } = useMiniKit();
 
   const menuItems = [
     { id: 'home', icon: Home, label: 'Home' },
@@ -29,21 +34,25 @@ export default function Drawer({ isOpen, onClose, currentView, onNavigate, onMin
     onClose();
   };
 
+    useEffect(() => {
+    if (!isFrameReady) {
+      setFrameReady();
+    }
+  }, [setFrameReady, isFrameReady]);
   return (
     <>
       {/* Backdrop */}
       {isOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 z-40 transition-opacity"
           onClick={onClose}
         />
       )}
 
       {/* Drawer */}
-      <div 
-        className={`fixed top-0 left-0 h-full w-80 bg-slate-900 z-50 transform transition-transform duration-300 ease-in-out ${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+      <div
+        className={`fixed top-0 left-0 h-full w-80 bg-slate-900 z-50 transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
       >
         <div className="flex flex-col h-full">
           {/* Header */}
@@ -51,16 +60,24 @@ export default function Drawer({ isOpen, onClose, currentView, onNavigate, onMin
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center text-white text-xl font-bold">
-                  SC
+                  {context?.user.pfpUrl ? (
+                    <img
+                      src={context?.user?.pfpUrl}
+                      alt={context?.user.username || "User Profile Picture"}
+                      className="rounded-full object-cover w-40 h-40" // Tailwind classes for styling
+                      style={{ objectFit: "cover", width: "160px", height: "160px" }} // Inline styles for fallback
+                    />
+                  ) : (
+                    <div className="text-8xl">👩‍🦰</div>
+                  )}
                 </div>
                 <div>
-                  <h3 className="text-white font-semibold text-lg">Sophia Chen</h3>
-                  <button className="text-gray-400 text-sm hover:text-white transition-colors">
-                    View Profile
-                  </button>
+                  <h3 className="text-white font-semibold text-lg">
+                    {context?.user?.displayName || context?.user?.username || "Unnamed User"}
+                  </h3>
                 </div>
               </div>
-              <button 
+              <button
                 onClick={onClose}
                 className="p-2 hover:bg-slate-800 rounded-lg transition-colors lg:hidden"
               >
@@ -74,16 +91,15 @@ export default function Drawer({ isOpen, onClose, currentView, onNavigate, onMin
             {menuItems.map((item) => {
               const Icon = item.icon;
               const isActive = currentView === item.id;
-              
+
               return (
                 <button
                   key={item.id}
                   onClick={() => handleNavigate(item.id)}
-                  className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl transition-all ${
-                    isActive 
-                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30' 
+                  className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl transition-all ${isActive
+                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
                       : 'text-gray-300 hover:bg-slate-800'
-                  }`}
+                    }`}
                 >
                   <Icon className="w-6 h-6" />
                   <span className="text-lg font-medium">{item.label}</span>
@@ -111,14 +127,12 @@ export default function Drawer({ isOpen, onClose, currentView, onNavigate, onMin
               </div>
               <button
                 onClick={() => setIsDarkMode(!isDarkMode)}
-                className={`relative w-12 h-7 rounded-full transition-colors ${
-                  isDarkMode ? 'bg-blue-600' : 'bg-gray-600'
-                }`}
+                className={`relative w-12 h-7 rounded-full transition-colors ${isDarkMode ? 'bg-blue-600' : 'bg-gray-600'
+                  }`}
               >
                 <div
-                  className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform ${
-                    isDarkMode ? 'translate-x-5' : 'translate-x-0'
-                  }`}
+                  className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform ${isDarkMode ? 'translate-x-5' : 'translate-x-0'
+                    }`}
                 />
               </button>
             </div>
