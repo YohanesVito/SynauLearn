@@ -59,12 +59,12 @@ export default function Drawer({ isOpen, onClose, currentView, onNavigate, onMin
           <div className="p-6 border-b border-slate-800">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className="w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center text-white text-xl font-bold">
+                <div className="w-14 h-14 bg-blue-600 flex items-center justify-center overflow-hidden text-white text-xl font-bold">
                   {context?.user.pfpUrl ? (
                     <img
                       src={context?.user?.pfpUrl}
                       alt={context?.user.username || "User Profile Picture"}
-                      className="rounded-full object-cover w-40 h-40" // Tailwind classes for styling
+                      className="rounded-full object-cover w-14 h-14" // Tailwind classes for styling
                       style={{ objectFit: "cover", width: "160px", height: "160px" }} // Inline styles for fallback
                     />
                   ) : (

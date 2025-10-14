@@ -20,7 +20,7 @@ export const minikitConfig = {
   miniapp: {
     version: "1",
     name: "SynauLearn",
-    subtitle: "",
+    subtitle: "Learn Anything, Anytime, Anywhere",
     description: "Learn Anything, Anytime, Anywhere",
     screenshotUrls: [],
     iconUrl: `${ROOT_URL}/icon.png`,
@@ -29,7 +29,7 @@ export const minikitConfig = {
     homeUrl: ROOT_URL,
     webhookUrl: `${ROOT_URL}/api/webhook`,
     primaryCategory: "social",
-    tags: ["example", "miniapp", "baseapp"],
+    tags: ["education", "miniapp", "baseapp"],
     heroImageUrl: `${ROOT_URL}/hero.png`,
     tagline: "Learn First, Earn Later",
     ogTitle: "",
