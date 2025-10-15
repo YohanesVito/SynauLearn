@@ -78,7 +78,7 @@ export default function LessonComplete({
           <div className="flex-1">
             <h3 className="text-white font-bold mb-1">Lesson Master</h3>
             <p className="text-gray-400 text-sm">
-              You've completed this lesson with {accuracy}% accuracy!
+              Youve completed this lesson with {accuracy}% accuracy!
             </p>
           </div>
         </div>

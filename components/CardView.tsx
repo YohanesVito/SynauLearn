@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowLeft, X } from "lucide-react";
+import { ArrowLeft} from "lucide-react";
 import LessonComplete from "./LessonComplete";
 
 interface Card {
