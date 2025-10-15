@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import CourseCard from "./CourseCard";
-import FlashcardView from "./FlashcardView";
-import QuizView from "./QuizView";
+import CardView from "./CardView";
 
 const courses = [
   {
@@ -34,57 +33,51 @@ const courses = [
 
 export default function Courses() {
   const [selectedCourse, setSelectedCourse] = useState<number | null>(null);
-  const [view, setView] = useState<"list" | "flashcard" | "quiz">("list");
-  const [currentQuizCard, setCurrentQuizCard] = useState<number>(0);
 
   const handleCourseClick = (courseId: number) => {
     setSelectedCourse(courseId);
-    setView("flashcard");
-  };
-
-  const handleStartQuiz = (cardIndex: number) => {
-    setCurrentQuizCard(cardIndex);
-    setView("quiz");
-  };
-
-  const handleBackToFlashcard = () => {
-    setView("flashcard");
   };
 
   const handleBack = () => {
-    setView("list");
     setSelectedCourse(null);
-    setCurrentQuizCard(0);
   };
 
-  if (view === "flashcard" && selectedCourse) {
-    const course = courses.find(c => c.id === selectedCourse);
+  const handleLessonComplete = () => {
+    // TODO: Save progress to backend
+    alert("Lesson completed! +100 XP total");
+    setSelectedCourse(null);
+  };
+
+  // Show CardView when course is selected
+  if (selectedCourse) {
+    const course = courses.find((c) => c.id === selectedCourse);
     return (
-      <FlashcardView 
-        courseTitle={course?.title || ""} 
-        onStartQuiz={handleStartQuiz}
+      <CardView
+        courseTitle={course?.title || "Course"}
         onBack={handleBack}
+        onComplete={handleLessonComplete}
       />
     );
   }
 
-  if (view === "quiz" && selectedCourse) {
-    return (
-      <QuizView 
-        cardIndex={currentQuizCard}
-        onBack={handleBack}
-        onBackToFlashcard={handleBackToFlashcard}
-      />
-    );
-  }
-
+  // Show course list
   return (
     <div>
       <h2 className="text-3xl font-bold mb-6">Courses</h2>
-      
+
       <div className="relative mb-6">
-        <svg className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        <svg
+          className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
         </svg>
         <input
           type="text"
@@ -95,7 +88,11 @@ export default function Courses() {
 
       <div className="space-y-4">
         {courses.map((course) => (
-          <CourseCard key={course.id} {...course} onClick={handleCourseClick} />
+          <CourseCard
+            key={course.id}
+            {...course}
+            onClick={handleCourseClick}
+          />
         ))}
       </div>
     </div>
