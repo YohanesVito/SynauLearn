@@ -5,7 +5,7 @@ import { baseSepolia } from "wagmi/chains";
 import { OnchainKitProvider } from "@coinbase/onchainkit";
 // import { coinbaseWallet } from "wagmi/connectors";
 import "@coinbase/onchainkit/styles.css";
-import { AuthKitProvider } from '@farcaster/auth-kit';
+// import { AuthKitProvider } from '@farcaster/auth-client';
 
 // const wagmiConfig = createConfig({
 //   chains: [baseSepolia],
@@ -20,11 +20,11 @@ import { AuthKitProvider } from '@farcaster/auth-kit';
 //   },
 // });
 
-const config = {
-  rpcUrl: 'https://mainnet.optimism.io',
-  domain:  process.env.DOMAIN || 'localhost:3000',
-  siweUri: 'https://example.com/login',
-};
+// const config = {
+//   rpcUrl: 'https://mainnet.optimism.io',
+//   domain:  process.env.DOMAIN || 'localhost:3000',
+//   siweUri: 'https://example.com/login',
+// };
 
 export function RootProvider({ children }: { children: ReactNode }) {
   return (
@@ -46,8 +46,9 @@ export function RootProvider({ children }: { children: ReactNode }) {
         autoConnect: true,
         notificationProxyUrl: undefined,
       }}
-    ><AuthKitProvider config={config}>{children}</AuthKitProvider>
-      
+    >
+      {/* <AuthKitProvider config={config}>{children}</AuthKitProvider> */}
+      {children}
     </OnchainKitProvider>
   );
 }

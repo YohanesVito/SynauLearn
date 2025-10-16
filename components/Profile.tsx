@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Edit, Lock, Trophy } from 'lucide-react';
 import { API } from '@/lib/api';
 import { useMiniKit } from '@coinbase/onchainkit/minikit';
-import { SignInButton } from '@farcaster/auth-kit';
+// import { SignInButton } from '@farcaster/auth-kit';
 
 interface ProfileProps {
   onBack: () => void;
@@ -109,12 +109,12 @@ export default function Profile({ onBack }: ProfileProps) {
       <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
         <div className="text-center">
           <p className="text-gray-400 mb-4">Please sign in to view profile</p>
-          <SignInButton
+          {/* <SignInButton
             onSuccess={({ fid, username }) =>
               console.log(`Hello, ${username}! Your fid is ${fid}.`)
             }
           />
-          <p>or</p>
+          <p>or</p> */}
           <button
             onClick={onBack}
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl"
