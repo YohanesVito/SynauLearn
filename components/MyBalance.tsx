@@ -18,7 +18,6 @@ export default function MyBalance({ onBack }: ProfileProps) {
   const { data: balanceData, isLoading, error, refetch } = useBalance({
     address: address as `0x${string}` | undefined,
     chainId: baseSepolia.id, // 84532
-    watch: true, // auto update balance
   });
 
   // optional: refetch on connect
