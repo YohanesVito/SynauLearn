@@ -8,10 +8,10 @@ import { baseSepolia } from "viem/chains";
 import { SafeArea } from "@coinbase/onchainkit/minikit";
 
 interface ProfileProps {
-    onBack: () => void;
+  onBack: () => void;
 }
 
-export default function MyBalance({onBack}: ProfileProps) {
+export default function MyBalance({ onBack }: ProfileProps) {
   const { address, isConnected } = useAccount();
 
   // fetch native balance (ETH) for connected wallet on Base Sepolia
@@ -58,6 +58,12 @@ export default function MyBalance({onBack}: ProfileProps) {
             )}
           </div>
         )}
+
+        <button
+          onClick={onBack}
+          className="p-2 hover:bg-slate-800 rounded-lg transition-colors"
+        >
+        </button>
       </main>
     </SafeArea>
   );
