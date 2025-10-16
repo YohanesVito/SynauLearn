@@ -11,13 +11,14 @@ import MintBadge from "@/components/MintBadge";
 import SignIn from "@/components/SignIn";
 import CoursesView from "@/components/CoursesView";
 import HomeView from "@/components/HomeView";
+import MyBalance from "@/components/MyBalance";
 // import AuthButton from "@/components/ui/AuthButton";
 
 export default function Home() {
   const { setMiniAppReady, isMiniAppReady, isFrameReady, setFrameReady } = useMiniKit();
   const [showWelcome, setShowWelcome] = useState(false);
   const [isChecking, setIsChecking] = useState(true);
-  const [currentView, setCurrentView] = useState<"home" | "courses" | "profile" | "leaderboard" | "signin">("home");
+  const [currentView, setCurrentView] = useState<"home" | "courses" | "profile" | "leaderboard" | "signin" | "balance">("home");
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [showMintBadge, setShowMintBadge] = useState(false);
   const { context } = useMiniKit();
@@ -75,7 +76,7 @@ export default function Home() {
   };
 
   const handleNavigate = (view: string) => {
-    setCurrentView(view as "home" | "courses" | "profile" | "leaderboard" | "signin");
+    setCurrentView(view as "home" | "courses" | "profile" | "leaderboard" | "signin" | "balance");
   };
 
   const handleBackToHome = () => {
@@ -113,6 +114,8 @@ export default function Home() {
         );
       case 'signin':
         return <SignIn onBack={handleBackToHome} />;
+      case 'balance':
+        return <MyBalance />;
     }
   };
 

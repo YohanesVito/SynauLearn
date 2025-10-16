@@ -44,7 +44,8 @@ export default function CardView({
         if (context?.user?.fid) {
           const user = await API.getUserOrCreate(
             context.user.fid,
-            context.user.username
+            context.user.username,
+            context.user.displayName
           );
           setUserId(user.id);
         }

@@ -4,23 +4,61 @@ import { useState, useEffect } from "react";
 import CourseCard from "./CourseCard";
 import CardView from "./CardView";
 import { API, Course } from "@/lib/api";
+import { useMiniKit } from "@coinbase/onchainkit/minikit";
+
+interface CourseWithProgress extends Course {
+  progress: number;
+}
 
 export default function Courses() {
-  const [courses, setCourses] = useState<Course[]>([]);
+  const { context } = useMiniKit();
+  const [courses, setCourses] = useState<CourseWithProgress[]>([]);
   const [loading, setLoading] = useState(true);
+  const [userId, setUserId] = useState<string | null>(null);
   const [selectedCourse, setSelectedCourse] = useState<{
     courseId: string;
     lessonId: string;
     courseTitle: string;
   } | null>(null);
 
-  // Load courses from Supabase
+  // Load courses and progress from Supabase
   useEffect(() => {
-    async function loadCourses() {
+    async function loadCoursesWithProgress() {
       try {
         setLoading(true);
+
+        // Get or create user
+        let currentUserId = null;
+        if (context?.user?.fid) {
+          const user = await API.getUserOrCreate(
+            context.user.fid,
+            context.user.username,
+            context.user.displayName
+          );
+          currentUserId = user.id;
+          setUserId(user.id);
+        }
+
+        // Fetch courses
         const fetchedCourses = await API.getCourses();
-        setCourses(fetchedCourses);
+        
+        // Get progress for each course
+        const coursesWithProgress = await Promise.all(
+          fetchedCourses.map(async (course) => {
+            let progress = 0;
+            
+            if (currentUserId) {
+              progress = await API.getCourseProgressPercentage(currentUserId, course.id);
+            }
+            
+            return {
+              ...course,
+              progress,
+            };
+          })
+        );
+
+        setCourses(coursesWithProgress);
       } catch (error) {
         console.error("Error loading courses:", error);
       } finally {
@@ -28,8 +66,8 @@ export default function Courses() {
       }
     }
 
-    loadCourses();
-  }, []);
+    loadCoursesWithProgress();
+  }, [context]);
 
   const handleCourseClick = async (courseId: string) => {
     try {
@@ -52,14 +90,36 @@ export default function Courses() {
     }
   };
 
-  const handleBack = () => {
+  const handleBack = async () => {
     setSelectedCourse(null);
+    
+    // Reload courses to update progress
+    if (userId) {
+      try {
+        const fetchedCourses = await API.getCourses();
+        
+        const coursesWithProgress = await Promise.all(
+          fetchedCourses.map(async (course) => {
+            const progress = await API.getCourseProgressPercentage(userId, course.id);
+            return {
+              ...course,
+              progress,
+            };
+          })
+        );
+
+        setCourses(coursesWithProgress);
+      } catch (error) {
+        console.error("Error reloading courses:", error);
+      }
+    }
   };
 
   const handleLessonComplete = async () => {
-    // TODO: Update course progress
     alert("Lesson completed! +100 XP total");
-    setSelectedCourse(null);
+    
+    // Reload courses to update progress
+    await handleBack();
   };
 
   // Show CardView when course is selected
@@ -125,7 +185,7 @@ export default function Courses() {
               id={index + 1}
               title={course.title}
               description={course.description}
-              progress={0} // TODO: Calculate real progress
+              progress={course.progress}
               image={course.emoji}
               bgColor={gradients[index % gradients.length]}
               onClick={() => handleCourseClick(course.id)}

@@ -22,6 +22,8 @@ export default function Drawer({ isOpen, onClose, currentView, onNavigate, onMin
     { id: 'courses', icon: GraduationCap, label: 'Courses' },
     { id: 'profile', icon: User, label: 'Profile' },
     { id: 'leaderboard', icon: BarChart3, label: 'Leaderboard' },
+    { id: 'balance', icon: BarChart3, label: 'balance' },
+    
   ];
 
   const handleNavigate = (id: string) => {

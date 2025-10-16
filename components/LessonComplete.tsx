@@ -1,5 +1,6 @@
 "use client";
 
+import { SafeArea } from "@coinbase/onchainkit/minikit";
 import { Trophy, Star, ArrowRight, Home } from "lucide-react";
 
 interface LessonCompleteProps {
@@ -24,6 +25,7 @@ export default function LessonComplete({
   const accuracy = Math.round((correctAnswers / cardsCompleted) * 100);
 
   return (
+    <SafeArea>
     <div className="fixed inset-0 bg-[#1a1d2e] z-50 flex flex-col items-center justify-center px-6">
       {/* Celebration Animation */}
       <div className="text-center mb-8">
@@ -110,5 +112,6 @@ export default function LessonComplete({
         Keep learning to unlock more badges and climb the leaderboard! 🚀
       </p>
     </div>
+    </SafeArea>
   );
 }
