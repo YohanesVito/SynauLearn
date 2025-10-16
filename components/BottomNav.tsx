@@ -1,6 +1,6 @@
 "use client";
 
-type View = "home" | "courses" | "profile" | "leaderboard" | "balance";
+type View = "home" | "courses" | "profile" | "leaderboard" | "signin" |"balance";
 
 interface BottomNavProps {
   currentView: View;

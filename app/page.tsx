@@ -115,7 +115,7 @@ export default function Home() {
       case 'signin':
         return <SignIn onBack={handleBackToHome} />;
       case 'balance':
-        return <MyBalance />;
+        return <MyBalance onBack={handleBackToHome} />;
     }
   };
 

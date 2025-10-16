@@ -7,7 +7,11 @@ import { formatEther } from "viem";
 import { baseSepolia } from "viem/chains";
 import { SafeArea } from "@coinbase/onchainkit/minikit";
 
-export default function MyBalance() {
+interface ProfileProps {
+    onBack: () => void;
+}
+
+export default function MyBalance({onBack}: ProfileProps) {
   const { address, isConnected } = useAccount();
 
   // fetch native balance (ETH) for connected wallet on Base Sepolia
