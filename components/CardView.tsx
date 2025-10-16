@@ -1,116 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { ArrowLeft} from "lucide-react";
+import { useState, useEffect } from "react";
+import { ArrowLeft } from "lucide-react";
 import LessonComplete from "./LessonComplete";
-
-interface Card {
-  id: number;
-  flashcard: {
-    question: string;
-    answer: string;
-  };
-  quiz: {
-    question: string;
-    description: string;
-    options: Array<{
-      id: number;
-      text: string;
-      correct: boolean;
-    }>;
-  };
-}
-
-// Mock data - each card has flashcard + quiz paired together
-const mockCards: Card[] = [
-  {
-    id: 1,
-    flashcard: {
-      question: "What is a blockchain?",
-      answer: "A blockchain is a distributed, decentralized, public ledger that records transactions across many computers. It is the underlying technology behind cryptocurrencies like Bitcoin.",
-    },
-    quiz: {
-      question: "What is a blockchain?",
-      description: "Test your understanding of blockchain technology.",
-      options: [
-        { id: 1, text: "A centralized database", correct: false },
-        { id: 2, text: "A distributed ledger", correct: true },
-        { id: 3, text: "A single computer", correct: false },
-        { id: 4, text: "A private network", correct: false },
-      ],
-    },
-  },
-  {
-    id: 2,
-    flashcard: {
-      question: "What is cryptocurrency?",
-      answer: "Cryptocurrency is a digital or virtual currency that uses cryptography for security. It operates independently of a central bank.",
-    },
-    quiz: {
-      question: "What is cryptocurrency?",
-      description: "Verify your knowledge about cryptocurrency.",
-      options: [
-        { id: 1, text: "Physical money", correct: false },
-        { id: 2, text: "Digital currency", correct: true },
-        { id: 3, text: "Bank notes", correct: false },
-        { id: 4, text: "Credit cards", correct: false },
-      ],
-    },
-  },
-  {
-    id: 3,
-    flashcard: {
-      question: "What does NFT stand for?",
-      answer: "NFT stands for Non-Fungible Token. It's a unique digital asset that represents ownership of a specific item or piece of content.",
-    },
-    quiz: {
-      question: "What does NFT stand for?",
-      description: "Check your understanding of NFTs.",
-      options: [
-        { id: 1, text: "New Financial Token", correct: false },
-        { id: 2, text: "Non-Fungible Token", correct: true },
-        { id: 3, text: "Network File Transfer", correct: false },
-        { id: 4, text: "Next Future Technology", correct: false },
-      ],
-    },
-  },
-  {
-    id: 4,
-    flashcard: {
-      question: "What is Ethereum?",
-      answer: "Ethereum is a decentralized, open-source blockchain platform that enables smart contracts and decentralized applications (dApps) to be built and run.",
-    },
-    quiz: {
-      question: "What is Ethereum?",
-      description: "Test your knowledge of Ethereum blockchain.",
-      options: [
-        { id: 1, text: "A social media platform", correct: false },
-        { id: 2, text: "A blockchain platform", correct: true },
-        { id: 3, text: "A video game", correct: false },
-        { id: 4, text: "A mobile app", correct: false },
-      ],
-    },
-  },
-  {
-    id: 5,
-    flashcard: {
-      question: "What is a smart contract?",
-      answer: "A smart contract is a self-executing contract with the terms directly written into code. It automatically executes when predetermined conditions are met.",
-    },
-    quiz: {
-      question: "What is a smart contract?",
-      description: "Verify your understanding of smart contracts.",
-      options: [
-        { id: 1, text: "A paper contract", correct: false },
-        { id: 2, text: "A self-executing contract", correct: true },
-        { id: 3, text: "A lawyer agreement", correct: false },
-        { id: 4, text: "A bank document", correct: false },
-      ],
-    },
-  },
-];
+import { API, Card as CardType } from "@/lib/api";
+import { useMiniKit } from "@coinbase/onchainkit/minikit";
 
 interface CardViewProps {
+  lessonId: string;
   courseTitle: string;
   onBack: () => void;
   onComplete?: () => void;
@@ -118,41 +15,123 @@ interface CardViewProps {
 
 type Step = "flashcard" | "quiz" | "result";
 
-export default function CardView({ courseTitle, onBack, onComplete }: CardViewProps) {
+export default function CardView({ 
+  lessonId, 
+  courseTitle, 
+  onBack, 
+  onComplete 
+}: CardViewProps) {
+  const { context } = useMiniKit();
+  const [cards, setCards] = useState<CardType[]>([]);
+  const [loading, setLoading] = useState(true);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [step, setStep] = useState<Step>("flashcard");
   const [isFlipped, setIsFlipped] = useState(false);
-  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [isCorrect, setIsCorrect] = useState(false);
   const [xpEarned, setXpEarned] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
   const [showCompletion, setShowCompletion] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
 
-  const currentCard = mockCards[currentCardIndex];
-  const totalCards = mockCards.length;
+  // Load cards from Supabase
+  useEffect(() => {
+    async function loadCards() {
+      try {
+        setLoading(true);
+        
+        // Get or create user
+        if (context?.user?.fid) {
+          const user = await API.getUserOrCreate(
+            context.user.fid,
+            context.user.username
+          );
+          setUserId(user.id);
+        }
+
+        // Fetch cards
+        const fetchedCards = await API.getCardsForLesson(lessonId);
+        setCards(fetchedCards);
+      } catch (error) {
+        console.error("Error loading cards:", error);
+        alert("Failed to load lesson. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadCards();
+  }, [lessonId, context]);
+
+  if (loading) {
+    return (
+      <div className="fixed inset-0 bg-[#1a1d2e] z-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading lesson...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!cards.length) {
+    return (
+      <div className="fixed inset-0 bg-[#1a1d2e] z-50 flex items-center justify-center px-6">
+        <div className="text-center">
+          <p className="text-gray-400 mb-4">No cards found for this lesson</p>
+          <button
+            onClick={onBack}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl"
+          >
+            Back to Courses
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const currentCard = cards[currentCardIndex];
+  const totalCards = cards.length;
   const isLastCard = currentCardIndex === totalCards - 1;
 
-  // Step 1: User views flashcard and flips it
+  // Convert quiz options to array format
+  const quizOptions = [
+    { id: 'A', text: currentCard.quiz_option_a, correct: currentCard.quiz_correct_answer === 'A' },
+    { id: 'B', text: currentCard.quiz_option_b, correct: currentCard.quiz_correct_answer === 'B' },
+    { id: 'C', text: currentCard.quiz_option_c, correct: currentCard.quiz_correct_answer === 'C' },
+    { id: 'D', text: currentCard.quiz_option_d, correct: currentCard.quiz_correct_answer === 'D' },
+  ];
+
+  // Step 1: User views flashcard
   const handleFlashcardContinue = () => {
     setXpEarned(xpEarned + 5); // +5 XP for viewing flashcard
     setStep("quiz");
   };
 
-  // Step 2: User selects answer
-  const handleAnswerSelect = (optionId: number) => {
-    const selected = currentCard.quiz.options.find((opt) => opt.id === optionId);
-    setSelectedAnswer(optionId);
-    setIsCorrect(selected?.correct || false);
+  // Step 2: User answers quiz
+  const handleAnswerSelect = async (answerId: string) => {
+    const correct = answerId === currentCard.quiz_correct_answer;
+    setSelectedAnswer(answerId);
+    setIsCorrect(correct);
     
-    if (selected?.correct) {
+    if (correct) {
       setXpEarned(xpEarned + 10); // +10 XP for correct answer
       setCorrectCount(correctCount + 1);
+    }
+    
+    // Save progress to database
+    if (userId) {
+      try {
+        await API.saveCardProgress(userId, currentCard.id, correct);
+      } catch (error) {
+        console.error("Error saving progress:", error);
+      }
     }
     
     setStep("result");
   };
 
-  // Step 3: Move to next card or complete lesson
+  // Step 3: Move to next card or complete
   const handleNext = () => {
     if (isLastCard) {
       // Lesson complete - add bonus XP
@@ -206,7 +185,7 @@ export default function CardView({ courseTitle, onBack, onComplete }: CardViewPr
 
         {/* Progress Indicator */}
         <div className="flex items-center justify-center gap-2 mb-2">
-          {mockCards.map((_, index) => (
+          {cards.map((_, index) => (
             <div
               key={index}
               className={`h-1.5 rounded-full transition-all duration-300 ${
@@ -250,7 +229,7 @@ export default function CardView({ courseTitle, onBack, onComplete }: CardViewPr
                   <div className="text-center">
                     <div className="text-6xl mb-6">📇</div>
                     <h2 className="text-2xl font-bold mb-6">
-                      {currentCard.flashcard.question}
+                      {currentCard.flashcard_question}
                     </h2>
                     <p className="text-gray-400 text-sm">Tap to flip</p>
                   </div>
@@ -258,7 +237,7 @@ export default function CardView({ courseTitle, onBack, onComplete }: CardViewPr
                   <div className="text-center">
                     <p className="text-gray-400 text-sm mb-2">Answer:</p>
                     <p className="text-lg leading-relaxed mb-6">
-                      {currentCard.flashcard.answer}
+                      {currentCard.flashcard_answer}
                     </p>
                   </div>
                 )}
@@ -284,17 +263,14 @@ export default function CardView({ courseTitle, onBack, onComplete }: CardViewPr
               <h3 className="text-lg font-semibold text-white mb-2">
                 Test Your Knowledge
               </h3>
-              <p className="text-gray-400 text-sm">
-                {currentCard.quiz.description}
-              </p>
             </div>
 
             <h2 className="text-xl font-bold mb-6">
-              {currentCard.quiz.question}
+              {currentCard.quiz_question}
             </h2>
 
             <div className="space-y-3">
-              {currentCard.quiz.options.map((option) => (
+              {quizOptions.map((option) => (
                 <button
                   key={option.id}
                   onClick={() => handleAnswerSelect(option.id)}
@@ -304,6 +280,7 @@ export default function CardView({ courseTitle, onBack, onComplete }: CardViewPr
                       : "bg-[#2a2d42] text-white hover:bg-[#333649] border-2 border-transparent"
                   }`}
                 >
+                  <span className="font-bold mr-2">{option.id}.</span>
                   {option.text}
                 </button>
               ))}
@@ -324,7 +301,8 @@ export default function CardView({ courseTitle, onBack, onComplete }: CardViewPr
               <p className="text-gray-400 mb-4">
                 The correct answer is:{" "}
                 <strong className="text-white">
-                  {currentCard.quiz.options.find((o) => o.correct)?.text}
+                  {currentCard.quiz_correct_answer}.{" "}
+                  {quizOptions.find((o) => o.correct)?.text}
                 </strong>
               </p>
             )}

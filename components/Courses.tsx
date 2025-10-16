@@ -1,62 +1,86 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CourseCard from "./CourseCard";
 import CardView from "./CardView";
-
-const courses = [
-  {
-    id: 1,
-    title: "Blockchain Basics",
-    description: "Understand the core concepts of blockchain technology.",
-    progress: 75,
-    image: "🔗",
-    bgColor: "from-orange-500 to-yellow-600",
-  },
-  {
-    id: 2,
-    title: "Cryptocurrency Fundamentals",
-    description: "Learn about Bitcoin, Ethereum, and other cryptocurrencies.",
-    progress: 50,
-    image: "₿",
-    bgColor: "from-yellow-500 to-orange-600",
-  },
-  {
-    id: 3,
-    title: "Introduction to NFTs",
-    description: "Discover non-fungible tokens and their use cases.",
-    progress: 10,
-    image: "🌱",
-    bgColor: "from-gray-300 to-gray-100",
-  },
-];
+import { API, Course } from "@/lib/api";
 
 export default function Courses() {
-  const [selectedCourse, setSelectedCourse] = useState<number | null>(null);
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedCourse, setSelectedCourse] = useState<{
+    courseId: string;
+    lessonId: string;
+    courseTitle: string;
+  } | null>(null);
 
-  const handleCourseClick = (courseId: number) => {
-    setSelectedCourse(courseId);
+  // Load courses from Supabase
+  useEffect(() => {
+    async function loadCourses() {
+      try {
+        setLoading(true);
+        const fetchedCourses = await API.getCourses();
+        setCourses(fetchedCourses);
+      } catch (error) {
+        console.error("Error loading courses:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadCourses();
+  }, []);
+
+  const handleCourseClick = async (courseId: string) => {
+    try {
+      // Get first lesson for this course
+      const lessons = await API.getLessonsForCourse(courseId);
+      
+      if (lessons.length > 0) {
+        const course = courses.find(c => c.id === courseId);
+        setSelectedCourse({
+          courseId,
+          lessonId: lessons[0].id,
+          courseTitle: course?.title || "Course",
+        });
+      } else {
+        alert("No lessons available for this course yet.");
+      }
+    } catch (error) {
+      console.error("Error loading lessons:", error);
+      alert("Failed to load lesson. Please try again.");
+    }
   };
 
   const handleBack = () => {
     setSelectedCourse(null);
   };
 
-  const handleLessonComplete = () => {
-    // TODO: Save progress to backend
+  const handleLessonComplete = async () => {
+    // TODO: Update course progress
     alert("Lesson completed! +100 XP total");
     setSelectedCourse(null);
   };
 
   // Show CardView when course is selected
   if (selectedCourse) {
-    const course = courses.find((c) => c.id === selectedCourse);
     return (
       <CardView
-        courseTitle={course?.title || "Course"}
+        lessonId={selectedCourse.lessonId}
+        courseTitle={selectedCourse.courseTitle}
         onBack={handleBack}
         onComplete={handleLessonComplete}
       />
+    );
+  }
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="text-center py-12">
+        <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+        <p className="text-gray-400">Loading courses...</p>
+      </div>
     );
   }
 
@@ -87,13 +111,27 @@ export default function Courses() {
       </div>
 
       <div className="space-y-4">
-        {courses.map((course) => (
-          <CourseCard
-            key={course.id}
-            {...course}
-            onClick={handleCourseClick}
-          />
-        ))}
+        {courses.map((course, index) => {
+          // Color gradients for courses
+          const gradients = [
+            "from-orange-500 to-yellow-600",
+            "from-yellow-500 to-orange-600",
+            "from-green-400 to-blue-500",
+          ];
+
+          return (
+            <CourseCard
+              key={course.id}
+              id={index + 1}
+              title={course.title}
+              description={course.description}
+              progress={0} // TODO: Calculate real progress
+              image={course.emoji}
+              bgColor={gradients[index % gradients.length]}
+              onClick={() => handleCourseClick(course.id)}
+            />
+          );
+        })}
       </div>
     </div>
   );
