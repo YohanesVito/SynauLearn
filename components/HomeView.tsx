@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Target, TrendingUp, Award } from 'lucide-react';
 import { API } from '@/lib/api';
-import { useMiniKit } from '@coinbase/onchainkit/minikit';
+import { SafeArea, useMiniKit } from '@coinbase/onchainkit/minikit';
 
 interface HomeProps {
   userName?: string;
@@ -117,9 +117,11 @@ export default function HomeView({ userName = "User" }: HomeProps) {
                 <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
                 <div className="relative h-full p-4 flex flex-col justify-end">
                   <div className="text-3xl mb-2">{course.emoji}</div>
-                  <h3 className="text-white font-semibold text-sm mb-2 line-clamp-2">
-                    {course.title}
-                  </h3>
+                  <SafeArea>
+                    <h3 className="text-white font-semibold text-sm mb-2 line-clamp-2">
+                      {course.title}
+                    </h3>
+                  </SafeArea>
                   <div className="flex items-center gap-2">
                     <div className="flex-1 h-1.5 bg-white/30 rounded-full overflow-hidden">
                       <div
@@ -153,7 +155,7 @@ export default function HomeView({ userName = "User" }: HomeProps) {
             Start →
           </button>
         </div>
-        
+
         {/* Challenge Image/Illustration */}
         <div className="relative h-32 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 rounded-xl flex items-center justify-center border border-cyan-500/20">
           <div className="w-20 h-20 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center">
