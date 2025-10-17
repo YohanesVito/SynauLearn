@@ -125,7 +125,7 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
 
       if (result.success && result.txHash) {
         setTxHash(result.txHash);
-        
+
         // Get the token ID from the contract
         const tokenId = await BadgeContract.getUserBadge(
           address as `0x${string}`,
@@ -153,7 +153,7 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
           console.error('Error saving to database:', dbError);
           // Don't fail the whole process if DB save fails
         }
-        
+
         // Update the UI
         setCourses(prevCourses =>
           prevCourses.map(c =>
@@ -162,15 +162,20 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
         );
 
         alert(`✅ Badge minted successfully!\n\nTransaction: ${result.txHash.slice(0, 10)}...${result.txHash.slice(-8)}\nToken ID: #${tokenId.toString()}`);
-        
+
         // Reload courses to get updated data
         await loadCourses();
       } else {
         alert(`❌ Minting failed: ${result.error || 'Unknown error'}`);
       }
-    } catch (error: any) {
-      console.error('Minting error:', error);
-      alert(`Failed to mint badge: ${error?.message || 'Unknown error'}`);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('Minting error:', error.message);
+        alert(`Failed to mint badge: ${error.message}`);
+      } else {
+        console.error('Minting error:', error);
+        alert('Failed to mint badge: Unknown error');
+      }
     } finally {
       setMintingCourseId(null);
     }
@@ -249,26 +254,24 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
               return (
                 <div
                   key={course.id}
-                  className={`relative rounded-2xl border-2 p-5 transition-all ${
-                    !course.completed
+                  className={`relative rounded-2xl border-2 p-5 transition-all ${!course.completed
                       ? 'border-slate-800 bg-slate-900/30 opacity-60 cursor-not-allowed'
                       : course.minted
-                      ? 'border-green-500/50 bg-green-500/10'
-                      : isMinting
-                      ? 'border-blue-500 bg-slate-800/70 cursor-wait'
-                      : 'border-slate-700 bg-slate-800/50 hover:border-slate-600 cursor-pointer'
-                  } ${mintingCourseId && !isMinting ? 'pointer-events-none opacity-50' : ''}`}
+                        ? 'border-green-500/50 bg-green-500/10'
+                        : isMinting
+                          ? 'border-blue-500 bg-slate-800/70 cursor-wait'
+                          : 'border-slate-700 bg-slate-800/50 hover:border-slate-600 cursor-pointer'
+                    } ${mintingCourseId && !isMinting ? 'pointer-events-none opacity-50' : ''}`}
                 >
                   <div className="flex gap-4">
                     {/* Badge Icon */}
                     <div
-                      className={`w-20 h-20 rounded-2xl flex items-center justify-center text-4xl flex-shrink-0 ${
-                        course.minted
+                      className={`w-20 h-20 rounded-2xl flex items-center justify-center text-4xl flex-shrink-0 ${course.minted
                           ? 'bg-gradient-to-br from-green-400 to-green-600'
                           : course.completed
-                          ? 'bg-gradient-to-br from-orange-400 to-orange-600'
-                          : 'bg-slate-800 border-2 border-slate-700'
-                      }`}
+                            ? 'bg-gradient-to-br from-orange-400 to-orange-600'
+                            : 'bg-slate-800 border-2 border-slate-700'
+                        }`}
                     >
                       {isMinting ? (
                         <div className="w-10 h-10 border-4 border-white border-t-transparent rounded-full animate-spin" />

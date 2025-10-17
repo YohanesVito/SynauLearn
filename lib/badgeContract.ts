@@ -220,12 +220,22 @@ export const BadgeContract = {
       await publicClient.waitForTransactionReceipt({ hash: txHash });
 
       return { success: true, txHash };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error minting badge:', error);
-      return { 
-        success: false, 
-        error: error?.message || 'Failed to mint badge. Please try again.' 
+
+      let errorMessage = 'Failed to mint badge. Please try again.';
+
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+
+      return {
+        success: false,
+        error: errorMessage,
       };
     }
+
   }
 };
