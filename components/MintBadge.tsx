@@ -4,7 +4,7 @@ import { useAccount } from 'wagmi';
 import { API } from '@/lib/api';
 import { useMiniKit } from '@coinbase/onchainkit/minikit';
 import { BadgeContract } from '@/lib/badgeContract';
-import { WalletComponents } from './WalletComponents';
+// import { WalletComponents } from './WalletComponents';
 
 interface MintBadgeProps {
   onClose: () => void;

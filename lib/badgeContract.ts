@@ -2,7 +2,6 @@ import { wagmiConfig } from '@/app/rootProvider';
 import { writeContract } from '@wagmi/core';
 import { createPublicClient, createWalletClient, custom, http } from 'viem';
 import { baseSepolia } from 'viem/chains';
-import { useAccount } from 'wagmi';
 
 export const BADGE_CONTRACT_ADDRESS = '0x086ac79f0354B4102d6156bdf2BC1D49a2f893aD' as const;
 
@@ -186,9 +185,17 @@ export const BadgeContract = {
 
             console.log('Transaction successful with hash:', hash);
             return { success: true, txHash: hash };
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Failed to mint:', error);
-            return { success: false, error: error.message };
+            let errorMessage = 'Unknown error';
+
+            if (error instanceof Error) {
+                errorMessage = error.message;
+            } else if (typeof error === 'string') {
+                errorMessage = error;
+            }
+
+            return { success: false, error: errorMessage };
         }
     },
 
