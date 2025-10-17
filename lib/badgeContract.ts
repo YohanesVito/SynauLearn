@@ -1,5 +1,5 @@
 import { wagmiConfig } from '@/app/rootProvider';
-import { writeContract } from '@wagmi/core';
+import { switchChain, writeContract } from '@wagmi/core';
 import { createPublicClient, createWalletClient, custom, http } from 'viem';
 import { baseSepolia } from 'viem/chains';
 
@@ -176,6 +176,13 @@ export const BadgeContract = {
         const tokenURI = `data:application/json;base64,test`; // include your metadata
 
         try {
+            try {
+                await switchChain(wagmiConfig, { chainId: baseSepolia.id });
+                console.log("Switched to Base Sepolia ✅");
+            } catch (err) {
+                console.error("User rejected or failed to switch chain:", err);
+                return { success: false, error: "Please switch to Base Sepolia network." };
+            }
 
             const hash = await writeContract(wagmiConfig, {
                 chainId: baseSepolia.id,
