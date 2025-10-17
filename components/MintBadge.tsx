@@ -4,6 +4,7 @@ import { useAccount } from 'wagmi';
 import { API } from '@/lib/api';
 import { BadgeContract } from '@/lib/badgeContract';
 import { useMiniKit } from '@coinbase/onchainkit/minikit';
+import { WalletIsland } from '@coinbase/onchainkit/wallet';
 
 interface MintBadgeProps {
   onClose: () => void;
@@ -26,7 +27,7 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
   const [mintingCourseId, setMintingCourseId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [txHash, setTxHash] = useState<string | null>(null);
-
+  const {isFrameReady, setFrameReady } = useMiniKit();
 
   const loadCourses = useCallback(async () => {
     try {
@@ -102,6 +103,12 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
   useEffect(() => {
     loadCourses();
   }, [loadCourses]);
+
+  useEffect(() => {
+    if (!isFrameReady) {
+      setFrameReady();
+    }
+  }, [setFrameReady, isFrameReady]);
 
   const handleMintBadge = async (course: Course) => {
     if (!course.completed || course.minted || mintingCourseId) return;
@@ -193,6 +200,7 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
   }
 
   return (
+
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center">
       <div className="bg-slate-900 w-full sm:max-w-2xl sm:rounded-2xl rounded-t-3xl max-h-[90vh] flex flex-col">
         {/* Header */}
@@ -223,6 +231,7 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
             <div className="mb-6 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-xl">
               <p className="text-yellow-400 text-sm">
                 ⚠️ Please connect your wallet to mint badges
+                
               </p>
             </div>
           )}
@@ -242,7 +251,7 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
               </a>
             </div>
           )}
-
+          <WalletIsland />
           <h3 className="text-lg font-semibold text-white mb-4">
             Select a completed course to mint a badge
           </h3>
