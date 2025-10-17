@@ -1,24 +1,24 @@
 "use client";
 import { ReactNode } from "react";
 import { baseSepolia } from "wagmi/chains";
-// import { createConfig, http } from "wagmi";
+import { WagmiProvider, createConfig, http } from "wagmi";
 import { OnchainKitProvider } from "@coinbase/onchainkit";
-// import { coinbaseWallet } from "wagmi/connectors";
+import { coinbaseWallet } from "wagmi/connectors";
 import "@coinbase/onchainkit/styles.css";
 // import { AuthKitProvider } from '@farcaster/auth-client';
 
-// const wagmiConfig = createConfig({
-//   chains: [baseSepolia],
-//   connectors: [
-//     coinbaseWallet({
-//       appName: "OnchainKit Demo",
-//     }),
-//   ],
-//   ssr: true,
-//   transports: {
-//     [baseSepolia.id]: http(),
-//   },
-// });
+export const wagmiConfig = createConfig({
+  chains: [baseSepolia],
+  connectors: [
+    coinbaseWallet({
+      appName: 'SynauLearn',
+      preference: 'smartWalletOnly',
+    }),
+  ],
+  transports: {
+    [baseSepolia.id]: http(),
+  },
+});
 
 // const config = {
 //   rpcUrl: 'https://mainnet.optimism.io',
@@ -48,7 +48,7 @@ export function RootProvider({ children }: { children: ReactNode }) {
       }}
     >
       {/* <AuthKitProvider config={config}>{children}</AuthKitProvider> */}
-      {children}
+      <WagmiProvider config={wagmiConfig}>{children}</WagmiProvider>
     </OnchainKitProvider>
   );
 }

@@ -152,9 +152,13 @@ export default function Profile({ onBack }: ProfileProps) {
         <div className="flex flex-col items-center text-center mb-8">
           <div className="relative mb-4">
             <div className="w-40 h-40 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center overflow-hidden">
-              <div className="text-6xl font-bold text-white">
-                {context?.user?.pfpUrl || user.displayName.charAt(0).toUpperCase()}
-              </div>
+              <img
+                src={context?.user?.pfpUrl}
+                alt="Profile"
+                width={64}
+                height={64}
+                style={{ borderRadius: '50%' }}
+              />
             </div>
             <button className="absolute bottom-0 right-0 w-12 h-12 bg-blue-600 hover:bg-blue-700 rounded-full flex items-center justify-center transition-colors shadow-lg">
               <Edit className="w-5 h-5 text-white" />

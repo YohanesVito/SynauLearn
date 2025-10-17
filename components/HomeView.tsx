@@ -115,7 +115,7 @@ export default function HomeView({ userName = "User" }: HomeProps) {
                 className="relative rounded-2xl overflow-hidden h-32 cursor-pointer group"
               >
                 <div className={`absolute inset-0 bg-gradient-to-br ${gradients[index]}`}></div>
-                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
+                {/* <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div> */}
                 <div className="relative h-full p-4 flex flex-col justify-end">
                   {/* <div className="text-3xl mb-2">{course.emoji}</div> */}
                   <SafeArea>
