@@ -87,7 +87,7 @@ export default function Drawer({ isOpen, onClose, currentView, onNavigate, onMin
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white text-xl font-bold">
-                  {userStats.displayName.charAt(0).toUpperCase()}
+                  {context?.user?.pfpUrl || userStats.displayName.charAt(0).toUpperCase()}
                 </div>
                 <div>
                   <h3 className="text-white font-semibold text-lg">{userStats.displayName}</h3>

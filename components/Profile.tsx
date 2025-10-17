@@ -153,7 +153,7 @@ export default function Profile({ onBack }: ProfileProps) {
           <div className="relative mb-4">
             <div className="w-40 h-40 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center overflow-hidden">
               <div className="text-6xl font-bold text-white">
-                {user.displayName.charAt(0).toUpperCase()}
+                {context?.user?.pfpUrl || user.displayName.charAt(0).toUpperCase()}
               </div>
             </div>
             <button className="absolute bottom-0 right-0 w-12 h-12 bg-blue-600 hover:bg-blue-700 rounded-full flex items-center justify-center transition-colors shadow-lg">

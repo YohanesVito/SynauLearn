@@ -31,8 +31,6 @@ export default function LessonComplete({
       <div className="text-center mb-8">
         <div className="relative inline-block">
           <div className="text-8xl mb-4 animate-bounce">🎉</div>
-          <div className="absolute -top-4 -right-4 text-4xl animate-spin-slow">⭐</div>
-          <div className="absolute -bottom-4 -left-4 text-4xl animate-spin-slow">✨</div>
         </div>
         
         <h1 className="text-4xl font-bold mb-2 text-white">

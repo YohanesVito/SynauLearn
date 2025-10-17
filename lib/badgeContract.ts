@@ -1,7 +1,5 @@
-import { createPublicClient, createWalletClient, custom, http } from 'viem';
+import { createPublicClient, createWalletClient, custom, http, type WalletClient, type Address } from 'viem';
 import { baseSepolia } from 'viem/chains';
-import { getAccount, getWalletClient as getWagmiWalletClient } from '@wagmi/core';
-import { config } from '@/app/providers';
 
 export const BADGE_CONTRACT_ADDRESS = '0x086ac79f0354B4102d6156bdf2BC1D49a2f893aD' as const;
 
@@ -77,16 +75,84 @@ export const publicClient = createPublicClient({
   transport: http()
 });
 
-// Helper function to create wallet client
-export const getWalletClient = () => {
-  if (typeof window === 'undefined' || !window.ethereum) {
-    throw new Error('No wallet found');
+// Helper function to get wallet client - works with OnchainKit
+export const getWalletClient = async (): Promise<{ client: WalletClient; account: Address }> => {
+  if (typeof window === 'undefined') {
+    throw new Error('Window is not defined');
   }
 
-  return createWalletClient({
+  // Check for ethereum provider (injected by wallet)
+  const ethereum = (window as any).ethereum;
+  
+  if (!ethereum) {
+    throw new Error('No wallet found. Please install MetaMask or Coinbase Wallet, or use Coinbase Smart Wallet.');
+  }
+
+  // Request account access
+  let accounts: string[];
+  try {
+    accounts = await ethereum.request({ 
+      method: 'eth_requestAccounts' 
+    });
+  } catch (error: any) {
+    if (error.code === 4001) {
+      throw new Error('Please connect your wallet to continue.');
+    }
+    throw new Error('Failed to connect wallet. Please try again.');
+  }
+
+  if (!accounts || accounts.length === 0) {
+    throw new Error('No accounts found. Please connect your wallet.');
+  }
+
+  const account = accounts[0] as Address;
+
+  // Check network
+  const chainId = await ethereum.request({ method: 'eth_chainId' });
+  const expectedChainId = '0x14a34'; // Base Sepolia (84532 in hex)
+  
+  if (chainId !== expectedChainId) {
+    // Try to switch network
+    try {
+      await ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: expectedChainId }],
+      });
+    } catch (switchError: any) {
+      // This error code indicates that the chain has not been added to the wallet
+      if (switchError.code === 4902) {
+        try {
+          await ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [{
+              chainId: expectedChainId,
+              chainName: 'Base Sepolia',
+              nativeCurrency: {
+                name: 'ETH',
+                symbol: 'ETH',
+                decimals: 18
+              },
+              rpcUrls: ['https://sepolia.base.org'],
+              blockExplorerUrls: ['https://sepolia.basescan.org']
+            }],
+          });
+        } catch (addError) {
+          throw new Error('Please add Base Sepolia network to your wallet.');
+        }
+      } else {
+        throw new Error('Please switch to Base Sepolia network.');
+      }
+    }
+  }
+
+  // Create wallet client
+  const client = createWalletClient({
+    account,
     chain: baseSepolia,
-    transport: custom(window.ethereum)
+    transport: custom(ethereum)
   });
+
+  return { client, account };
 };
 
 // Contract interaction functions
@@ -213,11 +279,16 @@ export const BadgeContract = {
       const tokenURI = `data:application/json;base64,${base64}`;
 
       // Get wallet client
-      const walletClient = getWalletClient();
+      const { client: walletClient, account } = await getWalletClient();
+
+      // Verify the account matches
+      if (account.toLowerCase() !== userAddress.toLowerCase()) {
+        throw new Error('Connected wallet does not match the expected address.');
+      }
 
       // Simulate the transaction first to catch errors
       const { request } = await publicClient.simulateContract({
-        account: userAddress,
+        account: account,
         address: BADGE_CONTRACT_ADDRESS,
         abi: BADGE_CONTRACT_ABI,
         functionName: 'mintBadge',
@@ -228,14 +299,37 @@ export const BadgeContract = {
       const txHash = await walletClient.writeContract(request);
 
       // Wait for transaction confirmation
-      await publicClient.waitForTransactionReceipt({ hash: txHash });
+      const receipt = await publicClient.waitForTransactionReceipt({ 
+        hash: txHash,
+        confirmations: 1
+      });
+
+      if (receipt.status === 'reverted') {
+        throw new Error('Transaction reverted. Please try again.');
+      }
 
       return { success: true, txHash };
     } catch (error: any) {
       console.error('Error minting badge:', error);
+      
+      // Provide more helpful error messages
+      let errorMessage = error?.message || 'Failed to mint badge. Please try again.';
+      
+      if (errorMessage.includes('User rejected') || errorMessage.includes('User denied')) {
+        errorMessage = 'Transaction was rejected. Please try again and approve the transaction.';
+      } else if (errorMessage.includes('insufficient funds')) {
+        errorMessage = 'Insufficient funds for gas. Please add Base Sepolia ETH to your wallet.';
+      } else if (errorMessage.includes('No wallet')) {
+        errorMessage = 'Please connect your wallet first.';
+      } else if (errorMessage.includes('switch') || errorMessage.includes('network')) {
+        errorMessage = 'Please switch to Base Sepolia network.';
+      } else if (errorMessage.includes('already have')) {
+        errorMessage = 'You already have this badge!';
+      }
+      
       return { 
         success: false, 
-        error: error?.message || 'Failed to mint badge. Please try again.' 
+        error: errorMessage
       };
     }
   }

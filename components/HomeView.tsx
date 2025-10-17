@@ -117,9 +117,9 @@ export default function HomeView({ userName = "User" }: HomeProps) {
                 <div className={`absolute inset-0 bg-gradient-to-br ${gradients[index]}`}></div>
                 <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
                 <div className="relative h-full p-4 flex flex-col justify-end">
-                  <div className="text-3xl mb-2">{course.emoji}</div>
+                  {/* <div className="text-3xl mb-2">{course.emoji}</div> */}
                   <SafeArea>
-                    <h3 className="text-white font-semibold text-sm mb-2 line-clamp-2">
+                    <h3 className="text-white font-semibold text-sm line-clamp-2">
                       {course.title}
                     </h3>
                   </SafeArea>
@@ -145,8 +145,8 @@ export default function HomeView({ userName = "User" }: HomeProps) {
       )}
 
       {/* Daily Challenge */}
-      <WalletIsland />
-      <ConnectWallet />
+      {/* <WalletIsland /> */}
+      {/* <ConnectWallet /> */}
       <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-5 border border-slate-700">
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1">
