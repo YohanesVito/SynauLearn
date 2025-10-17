@@ -197,10 +197,18 @@ export const BadgeContract = {
         ]
       };
 
-      // In production, you'd upload metadata to IPFS and get the URI
-      // For now, we'll use a data URI
+      // Browser-compatible base64 encoding that supports Unicode/emojis
       const metadataJson = JSON.stringify(metadata);
-      const tokenURI = `data:application/json;base64,${btoa(metadataJson)}`;
+      
+      // Encode to base64 with Unicode support
+      const base64 = btoa(
+        encodeURIComponent(metadataJson).replace(
+          /%([0-9A-F]{2})/g,
+          (match, p1) => String.fromCharCode(parseInt(p1, 16))
+        )
+      );
+      
+      const tokenURI = `data:application/json;base64,${base64}`;
 
       // Get wallet client
       const walletClient = getWalletClient();
@@ -221,22 +229,12 @@ export const BadgeContract = {
       await publicClient.waitForTransactionReceipt({ hash: txHash });
 
       return { success: true, txHash };
-    } catch (error: unknown) {
+    } catch (error: any) {
       console.error('Error minting badge:', error);
-
-      let errorMessage = 'Failed to mint badge. Please try again.';
-
-      if (error instanceof Error) {
-        errorMessage = error.message;
-      } else if (typeof error === 'string') {
-        errorMessage = error;
-      }
-
-      return {
-        success: false,
-        error: errorMessage,
+      return { 
+        success: false, 
+        error: error?.message || 'Failed to mint badge. Please try again.' 
       };
     }
-
   }
 };
