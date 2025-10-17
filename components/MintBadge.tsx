@@ -4,7 +4,7 @@ import { useAccount } from 'wagmi';
 import { API } from '@/lib/api';
 import { BadgeContract } from '@/lib/badgeContract';
 import { useMiniKit } from '@coinbase/onchainkit/minikit';
-import { WalletIsland } from '@coinbase/onchainkit/wallet';
+import { ConnectWallet, WalletIsland } from '@coinbase/onchainkit/wallet';
 
 interface MintBadgeProps {
   onClose: () => void;
@@ -252,6 +252,7 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
             </div>
           )}
           <WalletIsland />
+          <ConnectWallet/>
           <h3 className="text-lg font-semibold text-white mb-4">
             Select a completed course to mint a badge
           </h3>
