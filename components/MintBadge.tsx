@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { X, Lock, Check, ExternalLink } from 'lucide-react';
 import { useAccount } from 'wagmi';
 import { API } from '@/lib/api';
@@ -27,17 +27,11 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
   const [loading, setLoading] = useState(true);
   const [txHash, setTxHash] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadCourses();
-  }, [context, address]);
-
-  async function loadCourses() {
+  const loadCourses = useCallback(async () => {
     try {
       setLoading(true);
 
-      if (!context?.user?.fid) {
-        return;
-      }
+      if (!context?.user?.fid) return;
 
       // Get user
       const user = await API.getUserOrCreate(
@@ -101,8 +95,15 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
     } finally {
       setLoading(false);
     }
-  }
+  }, [context, address]); // ✅ Stable dependencies
 
+  /**
+   * ✅ Effect that calls loadCourses
+   */
+  useEffect(() => {
+    loadCourses();
+  }, [loadCourses]); // ✅ ESLint clean
+  
   const handleMintBadge = async (course: Course) => {
     if (!course.completed || course.minted || mintingCourseId) return;
 

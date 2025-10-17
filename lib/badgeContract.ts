@@ -118,47 +118,47 @@ export const getWalletClient = async (): Promise<{ client: WalletClient; account
   const chainId = await ethereum.request({ method: 'eth_chainId' });
   const expectedChainId = '0x14a34'; // Base Sepolia (84532 in hex)
 
-  if (chainId !== expectedChainId) {
-    // Try to switch network
-    try {
-      await ethereum.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: expectedChainId }],
-      });
-    } catch (switchError: unknown) {
-      // Check if switchError is an object with a numeric code
-      if (
-        typeof switchError === 'object' &&
-        switchError !== null &&
-        'code' in switchError &&
-        (switchError as { code?: number }).code === 4902
-      ) {
-        try {
-          await window.ethereum.request({
-            method: 'wallet_addEthereumChain',
-            params: [
-              {
-                chainId: expectedChainId,
-                chainName: 'Base Sepolia',
-                nativeCurrency: {
-                  name: 'ETH',
-                  symbol: 'ETH',
-                  decimals: 18,
-                },
-                rpcUrls: ['https://sepolia.base.org'],
-                blockExplorerUrls: ['https://sepolia.basescan.org'],
+if (chainId !== expectedChainId) {
+  try {
+    await ethereum.request({
+      method: 'wallet_switchEthereumChain',
+      params: [{ chainId: expectedChainId }],
+    });
+  } catch (switchError: unknown) {
+    // Check if switchError is an object with a numeric code
+    if (
+      typeof switchError === 'object' &&
+      switchError !== null &&
+      'code' in switchError &&
+      (switchError as { code?: number }).code === 4902
+    ) {
+      try {
+        await window.ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [
+            {
+              chainId: expectedChainId,
+              chainName: 'Base Sepolia',
+              nativeCurrency: {
+                name: 'ETH',
+                symbol: 'ETH',
+                decimals: 18,
               },
-            ],
-          });
-        } catch (error: unknown) {
-          throw new Error('Please add Base Sepolia network to your wallet.');
-        }
-      } else {
-        throw new Error('Please switch to Base Sepolia network.');
+              rpcUrls: ['https://sepolia.base.org'],
+              blockExplorerUrls: ['https://sepolia.basescan.org'],
+            },
+          ],
+        });
+      } catch {
+        // No need to name the variable if unused → ESLint will be happy
+        throw new Error('Please add Base Sepolia network to your wallet.');
       }
+    } else {
+      throw new Error('Please switch to Base Sepolia network.');
     }
-
   }
+}
+
 
   // Create wallet client
   const client = createWalletClient({
