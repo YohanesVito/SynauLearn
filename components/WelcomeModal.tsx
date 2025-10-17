@@ -22,8 +22,12 @@ export default function WelcomeModal({ onComplete }: WelcomeModalProps) {
           {/* Content */}
           <div className="p-8 text-center">
             {/* Logo/Icon */}
-            <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-6">
-              <div className="w-8 h-8 border-4 border-white rounded-full"></div>
+            <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 overflow-hidden bg-blue-500">
+              <img
+                src="/logo.png"  // ✅ public/logo.png
+                alt="SynauLearn Logo"
+                className="w-12 h-12 object-cover"
+              />
             </div>
 
             {/* Title */}

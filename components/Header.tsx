@@ -19,9 +19,11 @@ export default function Header({ onMenuClick }: HeaderProps) {
               <Menu className="w-6 h-6 text-white" />
             </button>
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                <div className="w-4 h-4 border-2 border-white rounded-full"></div>
-              </div>
+              <img
+                src="/logo.png"
+                alt="SynauLearn Logo"
+                className="w-8 h-8 rounded-full object-cover"
+              />
               <span className="text-xl font-bold text-white">SynauLearn</span>
             </div>
           </div>

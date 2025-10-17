@@ -1,21 +1,62 @@
 "use client";
 import { ReactNode } from "react";
-import { baseSepolia } from "wagmi/chains";
 import { WagmiProvider, createConfig, http } from "wagmi";
 import { OnchainKitProvider } from "@coinbase/onchainkit";
 import { coinbaseWallet } from "wagmi/connectors";
+import { base } from "wagmi/chains";
 import "@coinbase/onchainkit/styles.css";
+import { defineChain } from "viem";
 // import { AuthKitProvider } from '@farcaster/auth-client';
 
+export const baseSepolia = defineChain({
+  id: 84532,
+  name: "Base Sepolia",
+  testnet: true,
+  nativeCurrency: {
+    name: "ETH",
+    symbol: "ETH",
+    decimals: 18,
+  },
+  rpcUrls: {
+    default: {
+      http: ["https://sepolia.base.org"],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: "Base Sepolia Explorer",
+      url: "https://base-sepolia.blockscout.com",
+    },
+  },
+  iconUrl: "https://avatars.githubusercontent.com/u/108554348?s=200&v=4",
+});
+
+
+// export const wagmiConfig = createConfig({
+//   chains: [baseSepolia, base],
+//   connectors: [
+//     coinbaseWallet({
+//       appName: 'SynauLearn',
+//       preference: 'smartWalletOnly',
+//     }),
+//   ],
+//   transports: {
+//     [baseSepolia.id]: http(),
+//   },
+// });
+
+
+//dari github
 export const wagmiConfig = createConfig({
-  chains: [baseSepolia],
+  chains: [baseSepolia, base],
   connectors: [
     coinbaseWallet({
-      appName: 'SynauLearn',
-      preference: 'smartWalletOnly',
+      appName: "SynauLearn",
     }),
   ],
+  ssr: true,
   transports: {
+    [base.id]: http(),
     [baseSepolia.id]: http(),
   },
 });
