@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { X, Lock, Check, ExternalLink } from 'lucide-react';
 import { useAccount } from 'wagmi';
 import { API } from '@/lib/api';
-import { BadgeContract } from '@/lib/badgeContract';
 import { useMiniKit } from '@coinbase/onchainkit/minikit';
+import { BadgeContract } from '@/lib/badgeContract';
 
 interface MintBadgeProps {
   onClose: () => void;
@@ -27,19 +27,14 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
   const [loading, setLoading] = useState(true);
   const [txHash, setTxHash] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadCourses();
-  }, [context, address]);
-
-  async function loadCourses() {
+   // ✅ Memoized async function
+  const loadCourses = useCallback(async () => {
     try {
       setLoading(true);
 
-      if (!context?.user?.fid) {
-        return;
-      }
+      if (!context?.user?.fid) return;
 
-      // Get user
+      // Get or create user
       const user = await API.getUserOrCreate(
         context.user.fid,
         context.user.username,
@@ -49,7 +44,7 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
       // Get all courses
       const allCourses = await API.getCourses();
 
-      // Check completion and minted status for each course
+      // Check completion & minted status
       const coursesWithStatus = await Promise.all(
         allCourses.map(async (course) => {
           const progress = await API.getCourseProgressPercentage(user.id, course.id);
@@ -58,7 +53,7 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
           let minted = false;
           let tokenId: string | undefined;
 
-          // Check if minted on-chain
+          // On-chain check
           if (address && completed) {
             try {
               minted = await BadgeContract.hasBadge(address as `0x${string}`, course.id);
@@ -74,7 +69,7 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
             }
           }
 
-          // Also check database for minted status
+          // Database check
           if (!minted && completed) {
             const dbBadge = await API.getMintedBadge(user.id, course.id);
             if (dbBadge) {
@@ -101,7 +96,12 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
     } finally {
       setLoading(false);
     }
-  }
+  }, [context, address]); // ✅ include dependencies used inside the function
+
+  // ✅ useEffect now depends on the memoized callback
+  useEffect(() => {
+    loadCourses();
+  }, [loadCourses]);
 
   const handleMintBadge = async (course: Course) => {
     if (!course.completed || course.minted || mintingCourseId) return;
