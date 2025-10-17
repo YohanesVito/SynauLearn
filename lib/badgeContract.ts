@@ -199,7 +199,7 @@ export const BadgeContract = {
 
       // Browser-compatible base64 encoding that supports Unicode/emojis
       const metadataJson = JSON.stringify(metadata);
-      
+
       // Encode to base64 with Unicode support
       const base64 = btoa(
         encodeURIComponent(metadataJson).replace(
@@ -207,7 +207,7 @@ export const BadgeContract = {
           (match, p1) => String.fromCharCode(parseInt(p1, 16))
         )
       );
-      
+
       const tokenURI = `data:application/json;base64,${base64}`;
 
       // Get wallet client
@@ -229,11 +229,20 @@ export const BadgeContract = {
       await publicClient.waitForTransactionReceipt({ hash: txHash });
 
       return { success: true, txHash };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error minting badge:', error);
-      return { 
-        success: false, 
-        error: error?.message || 'Failed to mint badge. Please try again.' 
+
+      let errorMessage = 'Failed to mint badge. Please try again.';
+
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+
+      return {
+        success: false,
+        error: errorMessage,
       };
     }
   }
