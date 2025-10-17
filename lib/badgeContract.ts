@@ -1,5 +1,8 @@
+import { wagmiConfig } from '@/app/rootProvider';
+import { writeContract, WriteContractReturnType } from '@wagmi/core';
 import { createPublicClient, createWalletClient, custom, http } from 'viem';
 import { baseSepolia } from 'viem/chains';
+import { useAccount } from 'wagmi';
 
 export const BADGE_CONTRACT_ADDRESS = '0x086ac79f0354B4102d6156bdf2BC1D49a2f893aD' as const;
 
@@ -170,6 +173,25 @@ export const BadgeContract = {
         }
     },
 
+    async mintNFT(): Promise<{ success: boolean; txHash?: `0x${string}`; error?: string }> {
+        const tokenURI = `data:application/json;base64`;
+        const { address } = useAccount();
+
+        try {
+            const hash = await writeContract(wagmiConfig, {
+                abi: BADGE_CONTRACT_ABI,
+                address: BADGE_CONTRACT_ADDRESS,
+                functionName: 'mintBadge',
+                args: [`0x${address}`, "1", tokenURI]
+            });
+            console.log('Transaction successful with hash:', hash);
+            return { success: true, txHash: hash };
+        } catch (error) {
+            console.error('Failed to mint:', error);
+            throw new Error('Transaction failed.');
+        }
+    },
+
     // Request badge minting (user signs transaction)
     async requestMint(
         userAddress: `0x${string}`,
@@ -221,6 +243,7 @@ export const BadgeContract = {
                 functionName: 'mintBadge',
                 args: [userAddress, courseId, tokenURI]
             });
+
 
             // Execute the transaction
             const txHash = await walletClient.writeContract(request);

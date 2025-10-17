@@ -130,13 +130,14 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
       }
 
       // Call the smart contract to mint the badge
-      const result = await BadgeContract.requestMint(
-        address as `0x${string}`,
-        course.id,
-        course.title,
-        course.emoji
-      );
-
+      const result = await BadgeContract.mintNFT();
+      // const result = await BadgeContract.requestMint(
+      //   address as `0x${string}`,
+      //   course.id,
+      //   course.title,
+      //   course.emoji
+      // );
+      
       if (result.success && result.txHash) {
         setTxHash(result.txHash);
 
