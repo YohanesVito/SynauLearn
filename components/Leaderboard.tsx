@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { ArrowLeft, Star, Trophy, Medal, Award } from 'lucide-react';
 import { API } from '@/lib/api';
 import { useMiniKit } from '@coinbase/onchainkit/minikit';
@@ -24,11 +24,8 @@ export default function Leaderboard({ onBack }: LeaderboardProps) {
   const [loading, setLoading] = useState(true);
   const [currentUserRank, setCurrentUserRank] = useState<number | null>(null);
 
-  useEffect(() => {
-    loadLeaderboard();
-  }, [activeTab, context]);
-
-  async function loadLeaderboard() {
+  // Use useCallback to memoize the function
+  const loadLeaderboard = useCallback(async () => {
     try {
       setLoading(true);
       
@@ -54,7 +51,11 @@ export default function Leaderboard({ onBack }: LeaderboardProps) {
     } finally {
       setLoading(false);
     }
-  }
+  }, [context?.user?.fid]); // Only depend on fid, not entire context
+
+  useEffect(() => {
+    loadLeaderboard();
+  }, [loadLeaderboard, activeTab]);
 
   const getRankIcon = (rank: number) => {
     switch (rank) {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { ArrowLeft, Edit, Lock, Trophy } from 'lucide-react';
 import { API } from '@/lib/api';
 import { useMiniKit } from '@coinbase/onchainkit/minikit';
@@ -33,17 +33,11 @@ export default function Profile({ onBack }: ProfileProps) {
     fid: number;
   } | null>(null);
 
-  useEffect(() => {
-    loadProfileData();
-  }, [context]);
-
-  async function loadProfileData() {
+  const loadProfileData = useCallback(async () => {
     try {
       setLoading(true);
 
-      if (!context?.user?.fid) {
-        return
-      }
+      if (!context?.user?.fid) return;
 
       // Get user data
       const userData = await API.getUserOrCreate(
@@ -67,7 +61,7 @@ export default function Profile({ onBack }: ProfileProps) {
         streak: 3, // TODO: Calculate real streak
       });
 
-      // Get all courses to create badges
+      // Get all courses and badges
       const courses = await API.getCourses();
       const badgesList: Badge[] = await Promise.all(
         courses.map(async (course) => {
@@ -80,7 +74,7 @@ export default function Profile({ onBack }: ProfileProps) {
             name: course.title,
             icon: course.emoji,
             unlocked: isCompleted,
-            minted: false, // TODO: Check if actually minted on-chain
+            minted: false, // TODO: Check if minted on-chain
           };
         })
       );
@@ -91,7 +85,12 @@ export default function Profile({ onBack }: ProfileProps) {
     } finally {
       setLoading(false);
     }
-  }
+  }, [context]); // ✅ include only what’s used inside
+
+  // ✅ Effect depends on the memoized function
+  useEffect(() => {
+    loadProfileData();
+  }, [loadProfileData]);
 
   if (loading) {
     return (
