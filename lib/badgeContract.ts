@@ -1,5 +1,5 @@
 import { wagmiConfig } from '@/app/rootProvider';
-import { writeContract, WriteContractReturnType } from '@wagmi/core';
+import { writeContract } from '@wagmi/core';
 import { createPublicClient, createWalletClient, custom, http } from 'viem';
 import { baseSepolia } from 'viem/chains';
 import { useAccount } from 'wagmi';
@@ -173,7 +173,7 @@ export const BadgeContract = {
         }
     },
 
-    async mintNFT(): Promise<{ success: boolean; txHash?: `0x${string}`; error?: string }> {
+    async mintNft(): Promise<{ success: boolean; txHash?: `0x${string}`; error?: string }> {
         const tokenURI = `data:application/json;base64`;
         const { address } = useAccount();
 
