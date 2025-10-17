@@ -82,7 +82,7 @@ export const getWalletClient = async (): Promise<{ client: WalletClient; account
   }
 
   // Check for ethereum provider (injected by wallet)
-  const ethereum = (window as any).ethereum;
+  const ethereum = window.ethereum;
 
   if (!ethereum) {
     throw new Error('No wallet found. Please install MetaMask or Coinbase Wallet, or use Coinbase Smart Wallet.');
@@ -134,7 +134,7 @@ export const getWalletClient = async (): Promise<{ client: WalletClient; account
         (switchError as { code?: number }).code === 4902
       ) {
         try {
-          await (window as any).ethereum.request({
+          await window.ethereum.request({
             method: 'wallet_addEthereumChain',
             params: [
               {
@@ -150,7 +150,7 @@ export const getWalletClient = async (): Promise<{ client: WalletClient; account
               },
             ],
           });
-        } catch (addError: unknown) {
+        } catch (error: unknown) {
           throw new Error('Please add Base Sepolia network to your wallet.');
         }
       } else {
