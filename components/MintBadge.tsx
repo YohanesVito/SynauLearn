@@ -4,6 +4,7 @@ import { useAccount } from 'wagmi';
 import { API } from '@/lib/api';
 import { BadgeContract } from '@/lib/badgeContract';
 import { SafeArea, useMiniKit } from '@coinbase/onchainkit/minikit';
+import { MiniAppContext } from '@farcaster/miniapp-core/dist/context';
 
 interface MintBadgeProps {
   onClose: () => void;
@@ -27,19 +28,13 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
   const [loading, setLoading] = useState(true);
   const [txHash, setTxHash] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadCourses();
-  }, [context, address]);
-
-  async function loadCourses() {
+  const loadCourses = useCallback(async () => {
     try {
       setLoading(true);
 
-      if (!context?.user?.fid) {
-        return;
-      }
+      if (!context?.user?.fid) return;
 
-      // Get user
+      // Get or create user
       const user = await API.getUserOrCreate(
         context.user.fid,
         context.user.username,
@@ -49,7 +44,7 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
       // Get all courses
       const allCourses = await API.getCourses();
 
-      // Check completion and minted status for each course
+      // Check completion & minted status
       const coursesWithStatus = await Promise.all(
         allCourses.map(async (course) => {
           const progress = await API.getCourseProgressPercentage(user.id, course.id);
@@ -58,7 +53,7 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
           let minted = false;
           let tokenId: string | undefined;
 
-          // Check if minted on-chain
+          // On-chain check
           if (address && completed) {
             try {
               minted = await BadgeContract.hasBadge(address as `0x${string}`, course.id);
@@ -74,7 +69,7 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
             }
           }
 
-          // Also check database for minted status
+          // Database check
           if (!minted && completed) {
             const dbBadge = await API.getMintedBadge(user.id, course.id);
             if (dbBadge) {
@@ -101,7 +96,13 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
     } finally {
       setLoading(false);
     }
-  }
+  }, [context, address]); // ✅ include dependencies used inside the function
+
+  // ✅ useEffect now depends on the memoized callback
+  useEffect(() => {
+    loadCourses();
+  }, [loadCourses]);
+
 
   const handleMintBadge = async (course: Course) => {
     if (!course.completed || course.minted || mintingCourseId) return;
@@ -252,22 +253,22 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
                   <div
                     key={course.id}
                     className={`relative rounded-2xl border-2 p-5 transition-all ${!course.completed
-                        ? 'border-slate-800 bg-slate-900/30 opacity-60 cursor-not-allowed'
-                        : course.minted
-                          ? 'border-green-500/50 bg-green-500/10'
-                          : isMinting
-                            ? 'border-blue-500 bg-slate-800/70 cursor-wait'
-                            : 'border-slate-700 bg-slate-800/50 hover:border-slate-600 cursor-pointer'
+                      ? 'border-slate-800 bg-slate-900/30 opacity-60 cursor-not-allowed'
+                      : course.minted
+                        ? 'border-green-500/50 bg-green-500/10'
+                        : isMinting
+                          ? 'border-blue-500 bg-slate-800/70 cursor-wait'
+                          : 'border-slate-700 bg-slate-800/50 hover:border-slate-600 cursor-pointer'
                       } ${mintingCourseId && !isMinting ? 'pointer-events-none opacity-50' : ''}`}
                   >
                     <div className="flex gap-4">
                       {/* Badge Icon */}
                       <div
                         className={`w-20 h-20 rounded-2xl flex items-center justify-center text-4xl flex-shrink-0 ${course.minted
-                            ? 'bg-gradient-to-br from-green-400 to-green-600'
-                            : course.completed
-                              ? 'bg-gradient-to-br from-orange-400 to-orange-600'
-                              : 'bg-slate-800 border-2 border-slate-700'
+                          ? 'bg-gradient-to-br from-green-400 to-green-600'
+                          : course.completed
+                            ? 'bg-gradient-to-br from-orange-400 to-orange-600'
+                            : 'bg-slate-800 border-2 border-slate-700'
                           }`}
                       >
                         {isMinting ? (
@@ -343,4 +344,8 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
       </div>
     </SafeArea>
   );
+}
+
+function useCallback(arg0: () => Promise<void>, arg1: (MiniAppContext | `0x${string}` | null | undefined)[]) {
+  throw new Error('Function not implemented.');
 }

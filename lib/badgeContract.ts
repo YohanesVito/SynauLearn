@@ -83,7 +83,7 @@ export const getWalletClient = async (): Promise<{ client: WalletClient; account
 
   // Check for ethereum provider (injected by wallet)
   const ethereum = (window as any).ethereum;
-  
+
   if (!ethereum) {
     throw new Error('No wallet found. Please install MetaMask or Coinbase Wallet, or use Coinbase Smart Wallet.');
   }
@@ -91,15 +91,22 @@ export const getWalletClient = async (): Promise<{ client: WalletClient; account
   // Request account access
   let accounts: string[];
   try {
-    accounts = await ethereum.request({ 
-      method: 'eth_requestAccounts' 
+    accounts = await ethereum.request({
+      method: 'eth_requestAccounts'
     });
-  } catch (error: any) {
-    if (error.code === 4001) {
+  } catch (error: unknown) {
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'code' in error &&
+      (error as { code?: number }).code === 4001
+    ) {
       throw new Error('Please connect your wallet to continue.');
     }
+
     throw new Error('Failed to connect wallet. Please try again.');
   }
+
 
   if (!accounts || accounts.length === 0) {
     throw new Error('No accounts found. Please connect your wallet.');
@@ -110,7 +117,7 @@ export const getWalletClient = async (): Promise<{ client: WalletClient; account
   // Check network
   const chainId = await ethereum.request({ method: 'eth_chainId' });
   const expectedChainId = '0x14a34'; // Base Sepolia (84532 in hex)
-  
+
   if (chainId !== expectedChainId) {
     // Try to switch network
     try {
@@ -118,31 +125,39 @@ export const getWalletClient = async (): Promise<{ client: WalletClient; account
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: expectedChainId }],
       });
-    } catch (switchError: any) {
-      // This error code indicates that the chain has not been added to the wallet
-      if (switchError.code === 4902) {
+    } catch (switchError: unknown) {
+      // Check if switchError is an object with a numeric code
+      if (
+        typeof switchError === 'object' &&
+        switchError !== null &&
+        'code' in switchError &&
+        (switchError as { code?: number }).code === 4902
+      ) {
         try {
-          await ethereum.request({
+          await (window as any).ethereum.request({
             method: 'wallet_addEthereumChain',
-            params: [{
-              chainId: expectedChainId,
-              chainName: 'Base Sepolia',
-              nativeCurrency: {
-                name: 'ETH',
-                symbol: 'ETH',
-                decimals: 18
+            params: [
+              {
+                chainId: expectedChainId,
+                chainName: 'Base Sepolia',
+                nativeCurrency: {
+                  name: 'ETH',
+                  symbol: 'ETH',
+                  decimals: 18,
+                },
+                rpcUrls: ['https://sepolia.base.org'],
+                blockExplorerUrls: ['https://sepolia.basescan.org'],
               },
-              rpcUrls: ['https://sepolia.base.org'],
-              blockExplorerUrls: ['https://sepolia.basescan.org']
-            }],
+            ],
           });
-        } catch (addError) {
+        } catch (addError: unknown) {
           throw new Error('Please add Base Sepolia network to your wallet.');
         }
       } else {
         throw new Error('Please switch to Base Sepolia network.');
       }
     }
+
   }
 
   // Create wallet client
@@ -267,7 +282,7 @@ export const BadgeContract = {
 
       // Browser-compatible base64 encoding that supports Unicode/emojis
       const metadataJson = JSON.stringify(metadata);
-      
+
       // Encode to base64 with Unicode support
       const base64 = btoa(
         encodeURIComponent(metadataJson).replace(
@@ -275,7 +290,7 @@ export const BadgeContract = {
           (match, p1) => String.fromCharCode(parseInt(p1, 16))
         )
       );
-      
+
       const tokenURI = `data:application/json;base64,${base64}`;
 
       // Get wallet client
@@ -299,7 +314,7 @@ export const BadgeContract = {
       const txHash = await walletClient.writeContract(request);
 
       // Wait for transaction confirmation
-      const receipt = await publicClient.waitForTransactionReceipt({ 
+      const receipt = await publicClient.waitForTransactionReceipt({
         hash: txHash,
         confirmations: 1
       });
@@ -309,12 +324,18 @@ export const BadgeContract = {
       }
 
       return { success: true, txHash };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error minting badge:', error);
-      
+
+      let errorMessage = 'Failed to mint badge. Please try again.';
+
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+
       // Provide more helpful error messages
-      let errorMessage = error?.message || 'Failed to mint badge. Please try again.';
-      
       if (errorMessage.includes('User rejected') || errorMessage.includes('User denied')) {
         errorMessage = 'Transaction was rejected. Please try again and approve the transaction.';
       } else if (errorMessage.includes('insufficient funds')) {
@@ -326,11 +347,12 @@ export const BadgeContract = {
       } else if (errorMessage.includes('already have')) {
         errorMessage = 'You already have this badge!';
       }
-      
-      return { 
-        success: false, 
-        error: errorMessage
+
+      return {
+        success: false,
+        error: errorMessage,
       };
     }
+
   }
 };

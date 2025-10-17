@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Target, TrendingUp, Award } from 'lucide-react';
 import { API } from '@/lib/api';
 import { SafeArea, useMiniKit } from '@coinbase/onchainkit/minikit';
-import { ConnectWallet, WalletIsland } from '@coinbase/onchainkit/wallet';
+// import { ConnectWallet, WalletIsland } from '@coinbase/onchainkit/wallet';
 
 interface HomeProps {
   userName?: string;
