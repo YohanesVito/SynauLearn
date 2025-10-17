@@ -178,6 +178,7 @@ export const BadgeContract = {
         try {
 
             const hash = await writeContract(wagmiConfig, {
+                chainId: baseSepolia.id,
                 abi: BADGE_CONTRACT_ABI,
                 address: BADGE_CONTRACT_ADDRESS,
                 functionName: 'mintBadge',
