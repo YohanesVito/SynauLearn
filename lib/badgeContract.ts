@@ -1,5 +1,7 @@
 import { createPublicClient, createWalletClient, custom, http } from 'viem';
 import { baseSepolia } from 'viem/chains';
+import { getAccount, getWalletClient as getWagmiWalletClient } from '@wagmi/core';
+import { config } from '@/app/providers';
 
 export const BADGE_CONTRACT_ADDRESS = '0x086ac79f0354B4102d6156bdf2BC1D49a2f893aD' as const;
 
@@ -199,7 +201,7 @@ export const BadgeContract = {
 
       // Browser-compatible base64 encoding that supports Unicode/emojis
       const metadataJson = JSON.stringify(metadata);
-
+      
       // Encode to base64 with Unicode support
       const base64 = btoa(
         encodeURIComponent(metadataJson).replace(
@@ -207,7 +209,7 @@ export const BadgeContract = {
           (match, p1) => String.fromCharCode(parseInt(p1, 16))
         )
       );
-
+      
       const tokenURI = `data:application/json;base64,${base64}`;
 
       // Get wallet client
@@ -229,20 +231,11 @@ export const BadgeContract = {
       await publicClient.waitForTransactionReceipt({ hash: txHash });
 
       return { success: true, txHash };
-    } catch (error: unknown) {
+    } catch (error: any) {
       console.error('Error minting badge:', error);
-
-      let errorMessage = 'Failed to mint badge. Please try again.';
-
-      if (error instanceof Error) {
-        errorMessage = error.message;
-      } else if (typeof error === 'string') {
-        errorMessage = error;
-      }
-
-      return {
-        success: false,
-        error: errorMessage,
+      return { 
+        success: false, 
+        error: error?.message || 'Failed to mint badge. Please try again.' 
       };
     }
   }
