@@ -128,9 +128,10 @@ export const BadgeContract = {
         address: BADGE_CONTRACT_ADDRESS,
         abi: BADGE_CONTRACT_ABI,
         functionName: 'tokensOfOwner',
-        args: [ownerAddress]
+        args: [ownerAddress],
       });
-      return result;
+
+      return [...result]; // ✅ spread to make a mutable copy
     } catch (error) {
       console.error('Error getting tokens:', error);
       return [];
