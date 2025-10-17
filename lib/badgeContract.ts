@@ -173,22 +173,22 @@ export const BadgeContract = {
         }
     },
 
-    async mintNft(): Promise<{ success: boolean; txHash?: `0x${string}`; error?: string }> {
-        const tokenURI = `data:application/json;base64`;
-        const { address } = useAccount();
+    async mintNft(address: `0x${string}`): Promise<{ success: boolean; txHash?: `0x${string}`; error?: string }> {
+        const tokenURI = `data:application/json;base64,...`; // include your metadata
 
         try {
             const hash = await writeContract(wagmiConfig, {
                 abi: BADGE_CONTRACT_ABI,
                 address: BADGE_CONTRACT_ADDRESS,
                 functionName: 'mintBadge',
-                args: [`0x${address}`, "1", tokenURI]
+                args: [address, "1", tokenURI],
             });
+
             console.log('Transaction successful with hash:', hash);
             return { success: true, txHash: hash };
-        } catch (error) {
+        } catch (error: any) {
             console.error('Failed to mint:', error);
-            throw new Error('Transaction failed.');
+            return { success: false, error: error.message };
         }
     },
 
