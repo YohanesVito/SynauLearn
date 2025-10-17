@@ -1,5 +1,25 @@
 import { supabase, Course, Lesson, Card, UserCardProgress, UserCourseProgress } from './supabase';
 
+export interface MintedBadge {
+  id: string;
+  user_id: string;
+  course_id: string;
+  wallet_address: string;
+  token_id: string;
+  tx_hash: string;
+  minted_at: string;
+}
+
+export interface MintedBadge {
+  id: string;
+  user_id: string;
+  course_id: string;
+  wallet_address: string;
+  token_id: string;
+  tx_hash: string;
+  minted_at: string;
+}
+
 export class API {
   // ============ COURSES ============
   static async getCourses(): Promise<Course[]> {
@@ -103,7 +123,7 @@ export class API {
       .eq('fid', fid)
       .single();
 
-    if (error && error.code !== 'PGRST116') throw error; // PGRST116 = not found
+    if (error && error.code !== 'PGRST116') throw error;
     return data;
   }
 
@@ -113,7 +133,7 @@ export class API {
     cardId: string,
     quizCorrect: boolean
   ): Promise<void> {
-    const xpEarned = quizCorrect ? 15 : 5; // 5 for flashcard + 10 for correct quiz
+    const xpEarned = quizCorrect ? 15 : 5;
 
     const { error } = await supabase
       .from('user_card_progress')
@@ -131,12 +151,10 @@ export class API {
 
     if (error) throw error;
 
-    // Update user total XP
     await this.updateUserXP(userId, xpEarned);
   }
 
   static async updateUserXP(userId: string, xpToAdd: number): Promise<void> {
-    // Get current XP
     const { data: user } = await supabase
       .from('users')
       .select('total_xp')
@@ -156,7 +174,6 @@ export class API {
   }
 
   static async getUserProgress(userId: string, lessonId: string): Promise<UserCardProgress[]> {
-    // First, get all card IDs for this lesson
     const { data: cards } = await supabase
       .from('cards')
       .select('id')
@@ -166,7 +183,6 @@ export class API {
 
     const cardIds = cards.map(card => card.id);
 
-    // Then, get progress for these cards
     const { data, error } = await supabase
       .from('user_card_progress')
       .select('*')
@@ -185,7 +201,7 @@ export class API {
       .eq('course_id', courseId)
       .single();
 
-    if (error && error.code !== 'PGRST116') throw error; // PGRST116 = not found
+    if (error && error.code !== 'PGRST116') throw error;
     return data;
   }
 
@@ -209,6 +225,73 @@ export class API {
       });
 
     if (error) throw error;
+  }
+
+  // ============ BADGE MINTING ============
+  static async saveMintedBadge(
+    userId: string,
+    courseId: string,
+    walletAddress: string,
+    tokenId: string,
+    txHash: string
+  ): Promise<void> {
+    const { error } = await supabase
+      .from('minted_badges')
+      .insert({
+        user_id: userId,
+        course_id: courseId,
+        wallet_address: walletAddress,
+        token_id: tokenId,
+        tx_hash: txHash,
+      });
+
+    if (error) throw error;
+  }
+
+  static async getMintedBadge(userId: string, courseId: string): Promise<MintedBadge | null> {
+    const { data, error } = await supabase
+      .from('minted_badges')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('course_id', courseId)
+      .single();
+
+    if (error && error.code !== 'PGRST116') throw error;
+    return data;
+  }
+
+  static async getMintedBadgesByWallet(walletAddress: string): Promise<MintedBadge[]> {
+    const { data, error } = await supabase
+      .from('minted_badges')
+      .select('*')
+      .eq('wallet_address', walletAddress)
+      .order('minted_at', { ascending: false });
+
+    if (error) throw error;
+    return data || [];
+  }
+
+  static async getUserMintedBadges(userId: string): Promise<MintedBadge[]> {
+    const { data, error } = await supabase
+      .from('minted_badges')
+      .select('*')
+      .eq('user_id', userId)
+      .order('minted_at', { ascending: false });
+
+    if (error) throw error;
+    return data || [];
+  }
+
+  static async hasMintedBadge(userId: string, courseId: string): Promise<boolean> {
+    const { data, error } = await supabase
+      .from('minted_badges')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('course_id', courseId)
+      .single();
+
+    if (error && error.code !== 'PGRST116') return false;
+    return !!data;
   }
 
   // ============ LEADERBOARD ============
@@ -243,6 +326,14 @@ export class API {
 
     const coursesCompleted = courseProgress?.length || 0;
 
+    // Get minted badges count
+    const { data: mintedBadges } = await supabase
+      .from('minted_badges')
+      .select('id')
+      .eq('user_id', userId);
+
+    const badgesMinted = mintedBadges?.length || 0;
+
     // Get total XP
     const { data: user } = await supabase
       .from('users')
@@ -255,6 +346,7 @@ export class API {
       cardsCompleted: totalCardsCompleted,
       correctAnswers,
       coursesCompleted,
+      badgesMinted,
       accuracy: totalCardsCompleted > 0 ? Math.round((correctAnswers / totalCardsCompleted) * 100) : 0,
     };
   }
