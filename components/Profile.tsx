@@ -154,10 +154,9 @@ export default function Profile({ onBack }: ProfileProps) {
             <div className="w-40 h-40 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center overflow-hidden">
               <img
                 src={context?.user?.pfpUrl}
-                alt="Profile"
-                width={64}
-                height={64}
-                style={{ borderRadius: '50%' }}
+                alt={context?.user.username || "User Profile Picture"}
+                className="rounded-full object-cover w-40 h-40" // Tailwind classes for styling
+                style={{ objectFit: "cover", width: "160px", height: "160px" }} // Inline styles for fallback
               />
             </div>
             <button className="absolute bottom-0 right-0 w-12 h-12 bg-blue-600 hover:bg-blue-700 rounded-full flex items-center justify-center transition-colors shadow-lg">

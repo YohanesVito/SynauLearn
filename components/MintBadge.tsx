@@ -4,6 +4,7 @@ import { useAccount } from 'wagmi';
 import { API } from '@/lib/api';
 import { useMiniKit } from '@coinbase/onchainkit/minikit';
 import { BadgeContract } from '@/lib/badgeContract';
+import { WalletComponents } from './WalletComponents';
 
 interface MintBadgeProps {
   onClose: () => void;
@@ -210,6 +211,7 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center">
       <div className="bg-slate-900 w-full sm:max-w-2xl sm:rounded-2xl rounded-t-3xl max-h-[90vh] flex flex-col">
         {/* Header */}
+        <WalletComponents />
         <div className="flex items-center justify-between p-6 border-b border-slate-800">
           <div>
             <h2 className="text-2xl font-bold text-white">Mint Badge</h2>
