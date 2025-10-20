@@ -1,7 +1,7 @@
 import { createPublicClient, http } from 'viem';
 import { baseSepolia } from 'viem/chains';
 import { writeContract, switchChain } from '@wagmi/core';
-import { wagmiConfig } from '@/app/rootProvider';
+import { config } from '@/app/rootProvider';
 
 export const BADGE_CONTRACT_ADDRESS = '0x086ac79f0354B4102d6156bdf2BC1D49a2f893aD' as const;
 
@@ -91,7 +91,7 @@ export const BadgeContract = {
       onStatusUpdate?.('Switching to Base Sepolia network...');
 
       try {
-        await switchChain(wagmiConfig, { chainId: baseSepolia.id });
+        await switchChain(config, { chainId: baseSepolia.id });
         console.log('✅ Network switched to Base Sepolia');
       } catch (switchError) {
         console.error('❌ Network switch failed:', switchError);
@@ -114,7 +114,7 @@ export const BadgeContract = {
       onStatusUpdate?.('Please approve in your wallet...');
 
       // MINIMAL writeContract call
-      const hash = await writeContract(wagmiConfig, {
+      const hash = await writeContract(config, {
         address: BADGE_CONTRACT_ADDRESS,
         abi: BADGE_CONTRACT_ABI,
         functionName: 'mintBadge',

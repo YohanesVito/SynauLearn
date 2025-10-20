@@ -7,6 +7,7 @@ import { base } from "wagmi/chains";
 import "@coinbase/onchainkit/styles.css";
 import { defineChain } from "viem";
 import { getDefaultConfig, RainbowKitProvider } from '@rainbow-me/rainbowkit'
+import { farcasterMiniApp } from "@farcaster/miniapp-wagmi-connector";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import '@rainbow-me/rainbowkit/styles.css';
 // import { AuthKitProvider } from '@farcaster/auth-client';
@@ -58,7 +59,8 @@ export const wagmiConfig = createConfig({
         preference: 'smartWalletOnly',
         version: '4',
       }),
-      metaMask(), // Add additional connectors
+      metaMask(),
+      farcasterMiniApp(),  // Add additional connectors
     ],
   ssr: true,
   transports: {
@@ -67,7 +69,7 @@ export const wagmiConfig = createConfig({
   },
 });
 
-const config = getDefaultConfig({
+export const config = getDefaultConfig({
   appName: "SynauLearn",
   projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "YOUR_PROJECT_ID", // Get from https://cloud.walletconnect.com
   chains: [baseSepolia],
@@ -77,6 +79,7 @@ const config = getDefaultConfig({
     [baseSepolia.id]: http(),
   },
 });
+
 
 // const config = {
 //   rpcUrl: 'https://mainnet.optimism.io',
@@ -108,7 +111,7 @@ export function RootProvider({ children }: { children: ReactNode }) {
       }}
     >
       {/* <AuthKitProvider config={config}>{children}</AuthKitProvider> */}
-      <WagmiProvider config={wagmiConfig}>
+      <WagmiProvider config={config}>
         <QueryClientProvider client={queryClient}>
           <RainbowKitProvider>
             {children}
@@ -118,5 +121,3 @@ export function RootProvider({ children }: { children: ReactNode }) {
     </OnchainKitProvider>
   );
 }
-
-export { config };
