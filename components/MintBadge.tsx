@@ -26,6 +26,7 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
     const [mintingCourseId, setMintingCourseId] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [txHash, setTxHash] = useState<string | null>(null);
+    const [mintingStatus, setMintingStatus] = useState<string>('');
     const { context } = useMiniKit();
 
     const loadCourses = useCallback(async () => {
@@ -108,19 +109,30 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
         try {
             setMintingCourseId(course.id);
             setTxHash(null);
+            setMintingStatus('Preparing to mint...');
 
             console.log('🚀 Starting mint process for:', course.title);
 
-            // Call mint function
+            // Call mint function with status callback
             const result = await BadgeContract.mintBadge(
                 address as `0x${string}`,
                 course.id,
                 course.title,
-                course.emoji
+                course.emoji,
+                (status: string) => {
+                    setMintingStatus(status);
+                    console.log('📊 Status:', status);
+                }
             );
 
-            if (result.success && result.txHash) {
+            // Show transaction hash immediately if available, even on failure
+            if (result.txHash) {
                 setTxHash(result.txHash);
+                setMintingStatus('Transaction sent! Confirming...');
+            }
+
+            if (result.success && result.txHash) {
+                setMintingStatus('Getting badge information...');
 
                 // Get token ID
                 const tokenId = await BadgeContract.getUserBadge(
@@ -130,6 +142,7 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
 
                 // Save to database
                 try {
+                    setMintingStatus('Saving to database...');
                     const user = await API.getUserOrCreate(
                         context?.user?.fid || 12345,
                         context?.user?.username,
@@ -146,6 +159,7 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
                     console.log('✅ Badge saved to database');
                 } catch (dbError) {
                     console.error('❌ Database error:', dbError);
+                    // Continue even if database save fails
                 }
 
                 // Update UI
@@ -155,16 +169,29 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
                     )
                 );
 
+                setMintingStatus('Badge minted successfully!');
                 alert(`✅ Badge minted!\n\nTx: ${result.txHash.slice(0, 10)}...${result.txHash.slice(-8)}\nToken #${tokenId.toString()}`);
 
                 await loadCourses();
             } else {
-                alert(`❌ Mint failed: ${result.error || 'Unknown error'}`);
+                // Handle failure cases
+                const errorMsg = result.error || 'Unknown error';
+                console.error('❌ Mint failed:', errorMsg);
+
+                if (result.txHash) {
+                    // Transaction was sent but failed/timed out
+                    alert(`⚠️ ${errorMsg}\n\nTransaction: ${result.txHash.slice(0, 10)}...${result.txHash.slice(-8)}\n\nCheck BaseScan to see the status.`);
+                } else {
+                    // Transaction was never sent
+                    alert(`❌ Mint failed: ${errorMsg}`);
+                }
+                setMintingStatus('');
             }
         } catch (error: unknown) {
             const errorMsg = error instanceof Error ? error.message : 'Unknown error';
             console.error('❌ Mint error:', errorMsg);
-            alert(`Failed: ${errorMsg}`);
+            alert(`❌ Failed: ${errorMsg}`);
+            setMintingStatus('');
         } finally {
             setMintingCourseId(null);
         }
