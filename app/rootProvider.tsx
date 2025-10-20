@@ -69,6 +69,10 @@ const config = getDefaultConfig({
   projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "YOUR_PROJECT_ID", // Get from https://cloud.walletconnect.com
   chains: [baseSepolia],
   ssr: true,
+  transports: {
+    [base.id]: http(),
+    [baseSepolia.id]: http(),
+  },
 });
 
 // const config = {

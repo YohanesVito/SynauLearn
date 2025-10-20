@@ -1,7 +1,7 @@
 import { createPublicClient, http } from 'viem';
 import { baseSepolia } from 'viem/chains';
 import { writeContract, waitForTransactionReceipt, switchChain } from '@wagmi/core';
-import { config } from '@/app/rootProvider';
+import { config, wagmiConfig } from '@/app/rootProvider';
 
 export const BADGE_CONTRACT_ADDRESS = '0x086ac79f0354B4102d6156bdf2BC1D49a2f893aD' as const;
 
