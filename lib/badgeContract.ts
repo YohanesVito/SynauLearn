@@ -1,6 +1,6 @@
 import { createPublicClient, http } from 'viem';
 import { baseSepolia } from 'viem/chains';
-import { writeContract } from '@wagmi/core';
+import { writeContract, switchChain } from '@wagmi/core';
 import { wagmiConfig } from '@/app/rootProvider';
 
 export const BADGE_CONTRACT_ADDRESS = '0x086ac79f0354B4102d6156bdf2BC1D49a2f893aD' as const;
@@ -87,21 +87,39 @@ export const BadgeContract = {
     onStatusUpdate?: (status: string) => void
   ): Promise<{ success: boolean; txHash?: `0x${string}`; error?: string }> {
     try {
-      console.log('🎯 Minimal mint - Starting...');
+      console.log('🎯 Step 1: Switching to Base Sepolia...');
+      onStatusUpdate?.('Switching to Base Sepolia network...');
+
+      try {
+        await switchChain(wagmiConfig, { chainId: baseSepolia.id });
+        console.log('✅ Network switched to Base Sepolia');
+      } catch (switchError) {
+        console.error('❌ Network switch failed:', switchError);
+        const errMessage = switchError instanceof Error ? switchError.message : String(switchError);
+
+        // Check if user rejected network switch
+        if (errMessage.includes('User rejected') || errMessage.includes('User denied')) {
+          return { success: false, error: 'Network switch cancelled. Please switch to Base Sepolia and try again.' };
+        }
+        return { success: false, error: 'Failed to switch to Base Sepolia network. Please switch manually in your wallet.' };
+      }
+
+      console.log('🎯 Step 2: Preparing transaction...');
       onStatusUpdate?.('Preparing transaction...');
 
       // Simple tokenURI - no complex encoding
       const simpleTokenURI = `ipfs://badge-${courseId}`;
 
-      console.log('🎯 Sending transaction...');
+      console.log('🎯 Step 3: Sending transaction...');
       onStatusUpdate?.('Please approve in your wallet...');
 
-      // MINIMAL writeContract call - no chain switching, no validation
+      // MINIMAL writeContract call
       const hash = await writeContract(wagmiConfig, {
         address: BADGE_CONTRACT_ADDRESS,
         abi: BADGE_CONTRACT_ABI,
         functionName: 'mintBadge',
         args: [userAddress, courseId, simpleTokenURI],
+        chainId: baseSepolia.id,
       });
 
       console.log('✅ Transaction hash received:', hash);
@@ -117,6 +135,16 @@ export const BadgeContract = {
       if (error instanceof Error) {
         errorMessage = error.message;
         console.error('Full error:', error);
+
+        // Handle specific error cases
+        if (errorMessage.includes('User rejected') ||
+            errorMessage.includes('User denied') ||
+            errorMessage.includes('rejected') ||
+            errorMessage.includes('denied transaction')) {
+          errorMessage = 'Transaction rejected. Please approve in your wallet.';
+        } else if (errorMessage.includes('insufficient funds')) {
+          errorMessage = 'Insufficient funds. Get Base Sepolia ETH from faucet.';
+        }
       }
 
       return { success: false, error: errorMessage };
