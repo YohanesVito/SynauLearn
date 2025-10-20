@@ -2,7 +2,7 @@
 import { ReactNode, useState } from "react";
 import { WagmiProvider, createConfig, http } from "wagmi";
 import { OnchainKitProvider } from "@coinbase/onchainkit";
-import { coinbaseWallet } from "wagmi/connectors";
+import { coinbaseWallet, metaMask } from "wagmi/connectors";
 import { base } from "wagmi/chains";
 import "@coinbase/onchainkit/styles.css";
 import { defineChain } from "viem";
@@ -52,11 +52,14 @@ export const baseSepolia = defineChain({
 //dari github
 export const wagmiConfig = createConfig({
   chains: [baseSepolia, base],
-  connectors: [
-    coinbaseWallet({
-      appName: "SynauLearn",
-    }),
-  ],
+    connectors: [
+      coinbaseWallet({
+        appName: 'SynauLearn',
+        preference: 'smartWalletOnly',
+        version: '4',
+      }),
+      metaMask(), // Add additional connectors
+    ],
   ssr: true,
   transports: {
     [base.id]: http(),
