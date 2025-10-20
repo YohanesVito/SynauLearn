@@ -82,7 +82,7 @@ export const getWalletClient = async (): Promise<{ client: WalletClient; account
   }
 
   // Check for ethereum provider (injected by wallet)
-  const ethereum = (window as any).ethereum;
+  const ethereum = window.ethereum;
   
   if (!ethereum) {
     throw new Error('No wallet found. Please install MetaMask or Coinbase Wallet, or use Coinbase Smart Wallet.');
@@ -94,15 +94,17 @@ export const getWalletClient = async (): Promise<{ client: WalletClient; account
     accounts = await ethereum.request({ 
       method: 'eth_requestAccounts' 
     });
-  } catch (error: any) {
-    if (error.code === 4001) {
+  } catch (error: unknown) {
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'code' in error &&
+      (error as { code?: number }).code === 4001
+    ) {
       throw new Error('Please connect your wallet to continue.');
     }
-    throw new Error('Failed to connect wallet. Please try again.');
-  }
 
-  if (!accounts || accounts.length === 0) {
-    throw new Error('No accounts found. Please connect your wallet.');
+    throw new Error('Failed to connect wallet. Please try again.');
   }
 
   const account = accounts[0] as Address;
@@ -118,31 +120,39 @@ export const getWalletClient = async (): Promise<{ client: WalletClient; account
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: expectedChainId }],
       });
-    } catch (switchError: any) {
-      // This error code indicates that the chain has not been added to the wallet
-      if (switchError.code === 4902) {
-        try {
-          await ethereum.request({
-            method: 'wallet_addEthereumChain',
-            params: [{
+    } catch (switchError: unknown) {
+    // Check if switchError is an object with a numeric code
+    if (
+      typeof switchError === 'object' &&
+      switchError !== null &&
+      'code' in switchError &&
+      (switchError as { code?: number }).code === 4902
+    ) {
+      try {
+        await window.ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [
+            {
               chainId: expectedChainId,
               chainName: 'Base Sepolia',
               nativeCurrency: {
                 name: 'ETH',
                 symbol: 'ETH',
-                decimals: 18
+                decimals: 18,
               },
               rpcUrls: ['https://sepolia.base.org'],
-              blockExplorerUrls: ['https://sepolia.basescan.org']
-            }],
-          });
-        } catch (addError) {
-          throw new Error('Please add Base Sepolia network to your wallet.');
-        }
-      } else {
-        throw new Error('Please switch to Base Sepolia network.');
+              blockExplorerUrls: ['https://sepolia.basescan.org'],
+            },
+          ],
+        });
+      } catch {
+        // No need to name the variable if unused → ESLint will be happy
+        throw new Error('Please add Base Sepolia network to your wallet.');
       }
+    } else {
+      throw new Error('Please switch to Base Sepolia network.');
     }
+  }
   }
 
   // Create wallet client
@@ -309,12 +319,18 @@ export const BadgeContract = {
       }
 
       return { success: true, txHash };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error minting badge:', error);
-      
+
+      let errorMessage = 'Failed to mint badge. Please try again.';
+
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+
       // Provide more helpful error messages
-      let errorMessage = error?.message || 'Failed to mint badge. Please try again.';
-      
       if (errorMessage.includes('User rejected') || errorMessage.includes('User denied')) {
         errorMessage = 'Transaction was rejected. Please try again and approve the transaction.';
       } else if (errorMessage.includes('insufficient funds')) {
@@ -326,10 +342,10 @@ export const BadgeContract = {
       } else if (errorMessage.includes('already have')) {
         errorMessage = 'You already have this badge!';
       }
-      
-      return { 
-        success: false, 
-        error: errorMessage
+
+      return {
+        success: false,
+        error: errorMessage,
       };
     }
   }

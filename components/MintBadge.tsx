@@ -170,9 +170,9 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
       } else {
         alert(`❌ Minting failed: ${result.error || 'Unknown error'}`);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Minting error:', error);
-      alert(`Failed to mint badge: ${error?.message || 'Unknown error'}`);
+      alert(`Failed to mint badge: ${error || 'Unknown error'}`);
     } finally {
       setMintingCourseId(null);
     }
