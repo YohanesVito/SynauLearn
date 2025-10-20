@@ -8,6 +8,7 @@ import "@coinbase/onchainkit/styles.css";
 import { defineChain } from "viem";
 import { getDefaultConfig, RainbowKitProvider } from '@rainbow-me/rainbowkit'
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import '@rainbow-me/rainbowkit/styles.css';
 // import { AuthKitProvider } from '@farcaster/auth-client';
 
 export const baseSepolia = defineChain({
