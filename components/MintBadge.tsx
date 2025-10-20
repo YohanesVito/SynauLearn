@@ -53,11 +53,13 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
 
                     if (address && completed) {
                         try {
-                            minted = await BadgeContract.hasBadge(address as `0x${string}`, course.id);
+                            // Convert course.id (string) to number for contract call
+                            const courseIdNum = parseInt(course.id, 10);
+                            minted = await BadgeContract.hasBadge(address as `0x${string}`, courseIdNum);
                             if (minted) {
-                                const tokenIdBigInt = await BadgeContract.getUserBadge(
+                                const tokenIdBigInt = await BadgeContract.getUserBadgeForCourse(
                                     address as `0x${string}`,
-                                    course.id
+                                    courseIdNum
                                 );
                                 tokenId = tokenIdBigInt.toString();
                             }
@@ -113,12 +115,12 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
 
             console.log('🚀 Starting mint process for:', course.title);
 
-            // Call mint function with status callback
+            // Convert course.id (string) to number for contract call
+            const courseIdNum = parseInt(course.id, 10);
+
+            // Call mint function with status callback - NEW ABI takes only courseId
             const result = await BadgeContract.mintBadge(
-                address as `0x${string}`,
-                course.id,
-                course.title,
-                course.emoji,
+                courseIdNum,
                 (status: string) => {
                     setMintingStatus(status);
                     console.log('📊 Status:', status);
@@ -134,10 +136,11 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
             if (result.success && result.txHash) {
                 setMintingStatus('Getting badge information...');
 
-                // Get token ID
-                const tokenId = await BadgeContract.getUserBadge(
+                // Get token ID - Convert course.id to number
+                const courseIdNum = parseInt(course.id, 10);
+                const tokenId = await BadgeContract.getUserBadgeForCourse(
                     address as `0x${string}`,
-                    course.id
+                    courseIdNum
                 );
 
                 // Save to database

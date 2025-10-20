@@ -7,35 +7,361 @@ export const BADGE_CONTRACT_ADDRESS = '0x086ac79f0354B4102d6156bdf2BC1D49a2f893a
 
 export const BADGE_CONTRACT_ABI = [
   {
-    inputs: [
-      { internalType: 'address', name: 'to', type: 'address' },
-      { internalType: 'string', name: 'courseId', type: 'string' },
-      { internalType: 'string', name: 'tokenURI', type: 'string' }
-    ],
-    name: 'mintBadge',
-    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
-    stateMutability: 'nonpayable',
-    type: 'function'
+    inputs: [{ internalType: "string", name: "_baseURI", type: "string" }],
+    stateMutability: "nonpayable",
+    type: "constructor",
   },
   {
     inputs: [
-      { internalType: 'address', name: 'user', type: 'address' },
-      { internalType: 'string', name: 'courseId', type: 'string' }
+      { internalType: "address", name: "sender", type: "address" },
+      { internalType: "uint256", name: "tokenId", type: "uint256" },
+      { internalType: "address", name: "owner", type: "address" },
     ],
-    name: 'hasBadge',
-    outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
-    stateMutability: 'view',
-    type: 'function'
+    name: "ERC721IncorrectOwner",
+    type: "error",
   },
   {
     inputs: [
-      { internalType: 'address', name: 'user', type: 'address' },
-      { internalType: 'string', name: 'courseId', type: 'string' }
+      { internalType: "address", name: "operator", type: "address" },
+      { internalType: "uint256", name: "tokenId", type: "uint256" },
     ],
-    name: 'getUserBadge',
-    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
-    stateMutability: 'view',
-    type: 'function'
+    name: "ERC721InsufficientApproval",
+    type: "error",
+  },
+  {
+    inputs: [{ internalType: "address", name: "approver", type: "address" }],
+    name: "ERC721InvalidApprover",
+    type: "error",
+  },
+  {
+    inputs: [{ internalType: "address", name: "operator", type: "address" }],
+    name: "ERC721InvalidOperator",
+    type: "error",
+  },
+  {
+    inputs: [{ internalType: "address", name: "owner", type: "address" }],
+    name: "ERC721InvalidOwner",
+    type: "error",
+  },
+  {
+    inputs: [{ internalType: "address", name: "receiver", type: "address" }],
+    name: "ERC721InvalidReceiver",
+    type: "error",
+  },
+  {
+    inputs: [{ internalType: "address", name: "sender", type: "address" }],
+    name: "ERC721InvalidSender",
+    type: "error",
+  },
+  {
+    inputs: [{ internalType: "uint256", name: "tokenId", type: "uint256" }],
+    name: "ERC721NonexistentToken",
+    type: "error",
+  },
+  {
+    inputs: [{ internalType: "address", name: "owner", type: "address" }],
+    name: "OwnableInvalidOwner",
+    type: "error",
+  },
+  {
+    inputs: [{ internalType: "address", name: "account", type: "address" }],
+    name: "OwnableUnauthorizedAccount",
+    type: "error",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "owner",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "approved",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+    ],
+    name: "Approval",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "owner",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "operator",
+        type: "address",
+      },
+      { indexed: false, internalType: "bool", name: "approved", type: "bool" },
+    ],
+    name: "ApprovalForAll",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: "address", name: "user", type: "address" },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "courseId",
+        type: "uint256",
+      },
+    ],
+    name: "BadgeMinted",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "previousOwner",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "newOwner",
+        type: "address",
+      },
+    ],
+    name: "OwnershipTransferred",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: "address", name: "from", type: "address" },
+      { indexed: true, internalType: "address", name: "to", type: "address" },
+      {
+        indexed: true,
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+    ],
+    name: "Transfer",
+    type: "event",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "to", type: "address" },
+      { internalType: "uint256", name: "tokenId", type: "uint256" },
+    ],
+    name: "approve",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "address", name: "owner", type: "address" }],
+    name: "balanceOf",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "baseURI",
+    outputs: [{ internalType: "string", name: "", type: "string" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "uint256", name: "tokenId", type: "uint256" }],
+    name: "getApproved",
+    outputs: [{ internalType: "address", name: "", type: "address" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "address", name: "user", type: "address" }],
+    name: "getUserBadges",
+    outputs: [{ internalType: "uint256[]", name: "", type: "uint256[]" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "user", type: "address" },
+      { internalType: "uint256", name: "courseId", type: "uint256" },
+    ],
+    name: "hasBadge",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "owner", type: "address" },
+      { internalType: "address", name: "operator", type: "address" },
+    ],
+    name: "isApprovedForAll",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "uint256", name: "courseId", type: "uint256" }],
+    name: "mintBadge",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "name",
+    outputs: [{ internalType: "string", name: "", type: "string" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "owner",
+    outputs: [{ internalType: "address", name: "", type: "address" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "uint256", name: "tokenId", type: "uint256" }],
+    name: "ownerOf",
+    outputs: [{ internalType: "address", name: "", type: "address" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "renounceOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "from", type: "address" },
+      { internalType: "address", name: "to", type: "address" },
+      { internalType: "uint256", name: "tokenId", type: "uint256" },
+    ],
+    name: "safeTransferFrom",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "from", type: "address" },
+      { internalType: "address", name: "to", type: "address" },
+      { internalType: "uint256", name: "tokenId", type: "uint256" },
+      { internalType: "bytes", name: "data", type: "bytes" },
+    ],
+    name: "safeTransferFrom",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "operator", type: "address" },
+      { internalType: "bool", name: "approved", type: "bool" },
+    ],
+    name: "setApprovalForAll",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "string", name: "newBaseURI", type: "string" }],
+    name: "setBaseURI",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "bytes4", name: "interfaceId", type: "bytes4" }],
+    name: "supportsInterface",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "symbol",
+    outputs: [{ internalType: "string", name: "", type: "string" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    name: "tokenToCourse",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "uint256", name: "tokenId", type: "uint256" }],
+    name: "tokenURI",
+    outputs: [{ internalType: "string", name: "", type: "string" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "totalSupply",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "from", type: "address" },
+      { internalType: "address", name: "to", type: "address" },
+      { internalType: "uint256", name: "tokenId", type: "uint256" },
+    ],
+    name: "transferFrom",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [{ internalType: "address", name: "newOwner", type: "address" }],
+    name: "transferOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "", type: "address" },
+      { internalType: "uint256", name: "", type: "uint256" },
+    ],
+    name: "userCourseBadge",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
   },
 ] as const;
 
@@ -46,44 +372,58 @@ export const publicClient = createPublicClient({
 });
 
 export const BadgeContract = {
-  // Check if user has badge
-  async hasBadge(userAddress: `0x${string}`, courseId: string): Promise<boolean> {
+  // Check if user has badge - Returns tokenId (0 if no badge)
+  async hasBadge(userAddress: `0x${string}`, courseId: number): Promise<boolean> {
     try {
       const result = await publicClient.readContract({
         address: BADGE_CONTRACT_ADDRESS,
         abi: BADGE_CONTRACT_ABI,
         functionName: 'hasBadge',
-        args: [userAddress, courseId]
+        args: [userAddress, BigInt(courseId)]
       });
-      return result;
+      // Returns uint256 tokenId - if 0, user doesn't have badge
+      return result > BigInt(0);
     } catch (error) {
       console.error('Error checking badge:', error);
       return false;
     }
   },
 
-  // Get user's badge token ID
-  async getUserBadge(userAddress: `0x${string}`, courseId: string): Promise<bigint> {
+  // Get user's badge token ID for a specific course
+  async getUserBadgeForCourse(userAddress: `0x${string}`, courseId: number): Promise<bigint> {
     try {
       const result = await publicClient.readContract({
         address: BADGE_CONTRACT_ADDRESS,
         abi: BADGE_CONTRACT_ABI,
-        functionName: 'getUserBadge',
-        args: [userAddress, courseId]
+        functionName: 'hasBadge', // hasBadge returns the tokenId
+        args: [userAddress, BigInt(courseId)]
       });
       return result;
     } catch (error) {
-      console.error('Error getting badge:', error);
+      console.error('Error getting badge token ID:', error);
       return BigInt(0);
     }
   },
 
-  // Mint badge - SIMPLIFIED VERSION for debugging
+  // Get all user's badges
+  async getUserBadges(userAddress: `0x${string}`): Promise<readonly bigint[]> {
+    try {
+      const result = await publicClient.readContract({
+        address: BADGE_CONTRACT_ADDRESS,
+        abi: BADGE_CONTRACT_ABI,
+        functionName: 'getUserBadges',
+        args: [userAddress]
+      });
+      return result;
+    } catch (error) {
+      console.error('Error getting user badges:', error);
+      return [];
+    }
+  },
+
+  // Mint badge - NEW ABI: only takes courseId (uint256)
   async mintBadge(
-    userAddress: `0x${string}`,
-    courseId: string,
-    courseTitle: string,
-    courseEmoji: string,
+    courseId: number,
     onStatusUpdate?: (status: string) => void
   ): Promise<{ success: boolean; txHash?: `0x${string}`; error?: string }> {
     try {
@@ -107,18 +447,15 @@ export const BadgeContract = {
       console.log('🎯 Step 2: Preparing transaction...');
       onStatusUpdate?.('Preparing transaction...');
 
-      // Simple tokenURI - no complex encoding
-      const simpleTokenURI = `ipfs://badge-${courseId}`;
-
       console.log('🎯 Step 3: Sending transaction...');
       onStatusUpdate?.('Please approve in your wallet...');
 
-      // MINIMAL writeContract call
+      // NEW ABI: mintBadge only takes courseId (uint256)
       const hash = await writeContract(config, {
         address: BADGE_CONTRACT_ADDRESS,
         abi: BADGE_CONTRACT_ABI,
         functionName: 'mintBadge',
-        args: [userAddress, courseId, simpleTokenURI],
+        args: [BigInt(courseId)],
         chainId: baseSepolia.id,
       });
 
