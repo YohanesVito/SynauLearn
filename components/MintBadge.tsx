@@ -55,13 +55,17 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
                         try {
                             // Convert course.id (string) to number for contract call
                             const courseIdNum = parseInt(course.id, 10);
-                            minted = await BadgeContract.hasBadge(address as `0x${string}`, courseIdNum);
-                            if (minted) {
-                                const tokenIdBigInt = await BadgeContract.getUserBadgeForCourse(
-                                    address as `0x${string}`,
-                                    courseIdNum
-                                );
-                                tokenId = tokenIdBigInt.toString();
+                            if (!isNaN(courseIdNum)) {
+                                minted = await BadgeContract.hasBadge(address as `0x${string}`, courseIdNum);
+                                if (minted) {
+                                    const tokenIdBigInt = await BadgeContract.getUserBadgeForCourse(
+                                        address as `0x${string}`,
+                                        courseIdNum
+                                    );
+                                    tokenId = tokenIdBigInt.toString();
+                                }
+                            } else {
+                                console.warn('Invalid course ID for badge check:', course.id);
                             }
                         } catch (error) {
                             console.error('Error checking minted status:', error);
@@ -114,9 +118,18 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
             setMintingStatus('Preparing to mint...');
 
             console.log('🚀 Starting mint process for:', course.title);
+            console.log('🔍 Course ID (string):', course.id);
 
             // Convert course.id (string) to number for contract call
             const courseIdNum = parseInt(course.id, 10);
+            console.log('🔢 Course ID (number):', courseIdNum);
+
+            if (isNaN(courseIdNum)) {
+                alert(`❌ Invalid course ID: "${course.id}" cannot be converted to a number`);
+                setMintingStatus('');
+                setMintingCourseId(null);
+                return;
+            }
 
             // Call mint function with status callback - NEW ABI takes only courseId
             const result = await BadgeContract.mintBadge(
@@ -136,8 +149,19 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
             if (result.success && result.txHash) {
                 setMintingStatus('Getting badge information...');
 
+                // Wait a bit for the transaction to be indexed
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
                 // Get token ID - Convert course.id to number
                 const courseIdNum = parseInt(course.id, 10);
+                if (isNaN(courseIdNum)) {
+                    console.error('Invalid course ID after minting:', course.id);
+                    alert(`⚠️ Badge minted but cannot retrieve token ID. Invalid course ID: ${course.id}`);
+                    setMintingStatus('');
+                    setMintingCourseId(null);
+                    return;
+                }
+
                 const tokenId = await BadgeContract.getUserBadgeForCourse(
                     address as `0x${string}`,
                     courseIdNum
