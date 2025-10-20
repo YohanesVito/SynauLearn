@@ -92,7 +92,7 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
         } finally {
             setLoading(false);
         }
-    }, [address]);
+    }, [address, context?.user?.fid, context?.user?.username, context?.user?.displayName]);
 
     useEffect(() => {
         loadCourses();
@@ -353,7 +353,7 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
                                     {isMinting && (
                                         <div className="mt-4 w-full py-3 px-4 bg-blue-500/20 text-blue-400 font-semibold rounded-lg flex items-center justify-center gap-2">
                                             <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
-                                            Minting on Base Sepolia...
+                                            {mintingStatus || 'Minting on Base Sepolia...'}
                                         </div>
                                     )}
 
