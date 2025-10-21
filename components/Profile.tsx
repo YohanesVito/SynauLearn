@@ -1,7 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { ArrowLeft, Edit, Lock, Trophy } from 'lucide-react';
+import { ArrowLeft, Edit, Lock, Trophy, Wallet } from 'lucide-react';
 import { API } from '@/lib/api';
 import { useMiniKit } from '@coinbase/onchainkit/minikit';
+import { useAccount } from 'wagmi';
+import { BadgeContract } from '@/lib/badgeContract';
+import { getCourseNumber } from '@/lib/courseMapping';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 // import { SignInButton } from '@farcaster/auth-kit';
 
 interface ProfileProps {
@@ -19,6 +23,7 @@ interface Badge {
 
 export default function Profile({ onBack }: ProfileProps) {
   const { context } = useMiniKit();
+  const { address, isConnected } = useAccount();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     totalXP: 0,
@@ -68,13 +73,26 @@ export default function Profile({ onBack }: ProfileProps) {
           const progress = await API.getCourseProgressPercentage(userData.id, course.id);
           const isCompleted = progress === 100;
 
+          // Check if badge is minted on-chain
+          let minted = false;
+          if (isCompleted && isConnected && address) {
+            try {
+              const courseIdNum = getCourseNumber(course.id);
+              if (courseIdNum) {
+                minted = await BadgeContract.hasBadge(address as `0x${string}`, courseIdNum);
+              }
+            } catch (error) {
+              console.error('Error checking on-chain badge for', course.title, error);
+            }
+          }
+
           return {
             id: course.id,
             courseId: course.id,
             name: course.title,
             icon: course.emoji,
             unlocked: isCompleted,
-            minted: false, // TODO: Check if minted on-chain
+            minted,
           };
         })
       );
@@ -85,7 +103,7 @@ export default function Profile({ onBack }: ProfileProps) {
     } finally {
       setLoading(false);
     }
-  }, [context]); // ✅ include only what’s used inside
+  }, [context, isConnected, address]); // ✅ include only what's used inside
 
   // ✅ Effect depends on the memoized function
   useEffect(() => {
@@ -169,6 +187,34 @@ export default function Profile({ onBack }: ProfileProps) {
           <p className="text-gray-500 text-sm">FID: {user.fid}</p>
         </div>
 
+        {/* Wallet Connection Status */}
+        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-4 mb-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Wallet className={`w-5 h-5 ${isConnected ? 'text-green-400' : 'text-gray-400'}`} />
+              <div>
+                <p className="text-sm font-medium">
+                  {isConnected ? 'Wallet Connected' : 'Connect Wallet'}
+                </p>
+                {isConnected && address && (
+                  <p className="text-xs text-gray-400">
+                    {address.slice(0, 6)}...{address.slice(-4)}
+                  </p>
+                )}
+                {!isConnected && (
+                  <p className="text-xs text-gray-500">
+                    Connect to view on-chain badges
+                  </p>
+                )}
+              </div>
+            </div>
+            <ConnectButton
+              chainStatus="icon"
+              showBalance={false}
+            />
+          </div>
+        </div>
+
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4 mb-8">
           <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 text-center">
@@ -226,10 +272,14 @@ export default function Profile({ onBack }: ProfileProps) {
               <div className="grid grid-cols-3 gap-4">
                 {unlockedBadges.map((badge) => (
                   <div key={badge.id} className="flex flex-col items-center">
-                    <div className="w-24 h-24 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 border-2 border-orange-500 flex items-center justify-center text-4xl mb-3 relative group cursor-pointer hover:scale-105 transition-transform">
+                    <div className={`w-24 h-24 rounded-full ${
+                      badge.minted
+                        ? 'bg-gradient-to-br from-green-400 to-green-600 border-2 border-green-500'
+                        : 'bg-gradient-to-br from-orange-400 to-orange-600 border-2 border-orange-500'
+                    } flex items-center justify-center text-4xl mb-3 relative group cursor-pointer hover:scale-105 transition-transform`}>
                       {badge.icon}
                       {badge.minted && (
-                        <div className="absolute -top-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center border-2 border-slate-950">
+                        <div className="absolute -top-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center border-2 border-slate-950 shadow-lg">
                           <Trophy className="w-3 h-3 text-white" />
                         </div>
                       )}
@@ -237,7 +287,9 @@ export default function Profile({ onBack }: ProfileProps) {
                     <p className="text-xs text-center leading-tight text-white font-medium">
                       {badge.name}
                     </p>
-                    {!badge.minted && (
+                    {badge.minted ? (
+                      <p className="text-xs text-green-400 mt-1 font-semibold">✓ Minted NFT</p>
+                    ) : (
                       <p className="text-xs text-blue-400 mt-1">Ready to mint</p>
                     )}
                   </div>

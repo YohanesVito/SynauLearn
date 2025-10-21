@@ -32,6 +32,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -39,3 +40,32 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local scripts (not needed in production)
+/scripts/cleanupBadges.ts
+/scripts/setBaseURI.ts
+/scripts/setupIPFS.ts
+
+# documentation (not needed in production)
+IPFS_SETUP_GUIDE.md
+IPFS_IMPLEMENTATION_SUMMARY.md
+ENV_VARIABLES_FIX.md
+
+# IDE/Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+tmp/
+temp/
