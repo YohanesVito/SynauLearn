@@ -4,6 +4,7 @@ import { useAccount } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { API } from '@/lib/api';
 import { BadgeContract } from '@/lib/badgeContract';
+import { getCourseNumber, hasCourseMapping } from '@/lib/courseMapping';
 import { useMiniKit } from '@coinbase/onchainkit/minikit';
 
 interface MintBadgeProps {
@@ -53,17 +54,20 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
 
                     if (address && completed) {
                         try {
-                            // TEMPORARY: Use static courseId = 5 since course IDs are UUIDs
-                            // TODO: Create proper mapping from UUID to numeric courseId
-                            const courseIdNum = 5;
+                            // Get numeric course ID from mapping
+                            const courseIdNum = getCourseNumber(course.id);
 
-                            minted = await BadgeContract.hasBadge(address as `0x${string}`, courseIdNum);
-                            if (minted) {
-                                const tokenIdBigInt = await BadgeContract.getUserBadgeForCourse(
-                                    address as `0x${string}`,
-                                    courseIdNum
-                                );
-                                tokenId = tokenIdBigInt.toString();
+                            if (courseIdNum) {
+                                minted = await BadgeContract.hasBadge(address as `0x${string}`, courseIdNum);
+                                if (minted) {
+                                    const tokenIdBigInt = await BadgeContract.getUserBadgeForCourse(
+                                        address as `0x${string}`,
+                                        courseIdNum
+                                    );
+                                    tokenId = tokenIdBigInt.toString();
+                                }
+                            } else {
+                                console.warn('Course not mapped:', course.id);
                             }
                         } catch (error) {
                             console.error('Error checking minted status:', error);
@@ -118,10 +122,17 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
             console.log('🚀 Starting mint process for:', course.title);
             console.log('🔍 Course ID (UUID):', course.id);
 
-            // TEMPORARY: Use static courseId = 5 since course IDs are UUIDs
-            // TODO: Create proper mapping from UUID to numeric courseId
-            const courseIdNum = 5;
-            console.log('🔢 Using static course ID:', courseIdNum);
+            // Get numeric course ID from mapping
+            const courseIdNum = getCourseNumber(course.id);
+
+            if (!courseIdNum) {
+                alert(`❌ This course is not yet available for minting.\n\nCourse "${course.title}" needs to be added to the mapping first.`);
+                setMintingStatus('');
+                setMintingCourseId(null);
+                return;
+            }
+
+            console.log('🔢 Course numeric ID:', courseIdNum);
 
             // Call mint function with status callback - NEW ABI takes only courseId
             const result = await BadgeContract.mintBadge(
@@ -144,8 +155,15 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
                 // Wait a bit for the transaction to be indexed
                 await new Promise(resolve => setTimeout(resolve, 2000));
 
-                // TEMPORARY: Use static courseId = 5 since course IDs are UUIDs
-                const courseIdNum = 5;
+                // Get numeric course ID from mapping
+                const courseIdNum = getCourseNumber(course.id);
+                if (!courseIdNum) {
+                    console.error('Course mapping lost after minting:', course.id);
+                    alert(`⚠️ Badge minted successfully but cannot retrieve token ID.\n\nTransaction: ${result.txHash}`);
+                    setMintingStatus('');
+                    setMintingCourseId(null);
+                    return;
+                }
 
                 const tokenId = await BadgeContract.getUserBadgeForCourse(
                     address as `0x${string}`,

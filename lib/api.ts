@@ -271,6 +271,25 @@ export class API {
     return data || [];
   }
 
+  static async deleteMintedBadge(userId: string, courseId: string): Promise<void> {
+    const { error } = await supabase
+      .from('minted_badges')
+      .delete()
+      .eq('user_id', userId)
+      .eq('course_id', courseId);
+
+    if (error) throw error;
+  }
+
+  static async deleteAllMintedBadgesForWallet(walletAddress: string): Promise<void> {
+    const { error } = await supabase
+      .from('minted_badges')
+      .delete()
+      .eq('wallet_address', walletAddress);
+
+    if (error) throw error;
+  }
+
   static async getUserMintedBadges(userId: string): Promise<MintedBadge[]> {
     const { data, error } = await supabase
       .from('minted_badges')

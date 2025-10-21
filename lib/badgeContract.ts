@@ -1,7 +1,18 @@
 import { createPublicClient, http } from 'viem';
 import { baseSepolia } from 'viem/chains';
 import { writeContract, switchChain } from '@wagmi/core';
-import { config } from '@/app/rootProvider';
+
+// Conditional import: use Node.js config in scripts, browser config in app
+let config: any;
+if (typeof window === 'undefined') {
+  // Node.js environment (scripts)
+  const { wagmiConfig } = require('./wagmiConfigNode');
+  config = wagmiConfig;
+} else {
+  // Browser environment
+  const { config: browserConfig } = require('@/app/rootProvider');
+  config = browserConfig;
+}
 
 export const BADGE_CONTRACT_ADDRESS = '0x086ac79f0354B4102d6156bdf2BC1D49a2f893aD' as const;
 
@@ -372,6 +383,87 @@ export const publicClient = createPublicClient({
 });
 
 export const BadgeContract = {
+  // Get current baseURI from contract
+  async getBaseURI(): Promise<string> {
+    try {
+      const result = await publicClient.readContract({
+        address: BADGE_CONTRACT_ADDRESS,
+        abi: BADGE_CONTRACT_ABI,
+        functionName: 'baseURI',
+      });
+      return result;
+    } catch (error) {
+      console.error('Error getting baseURI:', error);
+      return '';
+    }
+  },
+
+  // Set baseURI (owner only)
+  async setBaseURI(
+    newBaseURI: string,
+    onStatusUpdate?: (status: string) => void
+  ): Promise<{ success: boolean; txHash?: `0x${string}`; error?: string }> {
+    try {
+      console.log('📝 Setting baseURI to:', newBaseURI);
+      onStatusUpdate?.(`Setting baseURI to: ${newBaseURI}`);
+
+      // Check if running in Node.js (script) vs browser
+      if (typeof window === 'undefined') {
+        // Node.js environment - use private key with viem wallet client
+        const privateKey = process.env.OWNER_PRIVATE_KEY;
+
+        if (!privateKey) {
+          throw new Error('OWNER_PRIVATE_KEY not found in .env file. Add your contract owner private key to use this script.');
+        }
+
+        const { createWalletClient } = require('viem');
+        const { privateKeyToAccount } = require('viem/accounts');
+
+        const account = privateKeyToAccount(privateKey as `0x${string}`);
+        const walletClient = createWalletClient({
+          account,
+          chain: baseSepolia,
+          transport: http()
+        });
+
+        console.log('📤 Sending transaction from:', account.address);
+
+        const hash = await walletClient.writeContract({
+          address: BADGE_CONTRACT_ADDRESS,
+          abi: BADGE_CONTRACT_ABI,
+          functionName: 'setBaseURI',
+          args: [newBaseURI],
+        });
+
+        console.log('✅ BaseURI transaction sent:', hash);
+        onStatusUpdate?.('Transaction submitted! Waiting for confirmation...');
+
+        return { success: true, txHash: hash };
+      } else {
+        // Browser environment - use wagmi writeContract with wallet
+        const hash = await writeContract(config, {
+          address: BADGE_CONTRACT_ADDRESS,
+          abi: BADGE_CONTRACT_ABI,
+          functionName: 'setBaseURI',
+          args: [newBaseURI],
+          chainId: baseSepolia.id,
+        });
+
+        console.log('✅ BaseURI transaction sent:', hash);
+        onStatusUpdate?.('Transaction submitted! Waiting for confirmation...');
+
+        return { success: true, txHash: hash };
+      }
+    } catch (error: unknown) {
+      console.error('❌ Set baseURI failed:', error);
+      let errorMessage = 'Unknown error';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      return { success: false, error: errorMessage };
+    }
+  },
+
   // Check if user has badge - Returns tokenId (0 if no badge)
   async hasBadge(userAddress: `0x${string}`, courseId: number): Promise<boolean> {
     try {
