@@ -11,6 +11,21 @@ export interface BadgeMetadata {
 }
 
 /**
+ * Convert IPFS URL to HTTP gateway URL for better compatibility
+ */
+function ipfsToGateway(ipfsUrl: string): string {
+  // If already a gateway URL, return as-is
+  if (ipfsUrl.startsWith('http://') || ipfsUrl.startsWith('https://')) {
+    return ipfsUrl;
+  }
+
+  // Convert ipfs:// to gateway URL
+  const gateway = process.env.PINATA_GATEWAY || process.env.NEXT_PUBLIC_PINATA_GATEWAY || 'gateway.pinata.cloud';
+  const cid = ipfsUrl.replace('ipfs://', '');
+  return `https://${gateway}/ipfs/${cid}`;
+}
+
+/**
  * Generate NFT metadata for a course badge
  */
 export function generateBadgeMetadata(
@@ -21,7 +36,7 @@ export function generateBadgeMetadata(
   return {
     name: `${course.title} Badge`,
     description: `Completion badge for ${course.title} course on SynauLearn. This NFT certifies that the holder has successfully completed all lessons and assessments in this course.`,
-    image: imageIPFSUrl,
+    image: ipfsToGateway(imageIPFSUrl),
     attributes: [
       {
         trait_type: "Course",
@@ -83,8 +98,8 @@ export function validateMetadata(metadata: BadgeMetadata): {
     errors.push("Description is required");
   }
 
-  if (!metadata.image || !metadata.image.startsWith("ipfs://")) {
-    errors.push("Image must be a valid IPFS URL");
+  if (!metadata.image || (!metadata.image.startsWith("ipfs://") && !metadata.image.startsWith("http"))) {
+    errors.push("Image must be a valid IPFS or HTTP URL");
   }
 
   if (!Array.isArray(metadata.attributes) || metadata.attributes.length === 0) {
