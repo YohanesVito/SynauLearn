@@ -1,8 +1,9 @@
 // Load .env file in Node.js environments (for scripts)
 if (typeof window === 'undefined') {
   try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     require('dotenv').config();
-  } catch (e) {
+  } catch {
     // dotenv not available or already loaded, that's ok
   }
 }

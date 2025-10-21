@@ -1,15 +1,18 @@
 import { createPublicClient, http } from 'viem';
 import { baseSepolia } from 'viem/chains';
 import { writeContract, switchChain } from '@wagmi/core';
+import type { Config } from 'wagmi';
 
 // Conditional import: use Node.js config in scripts, browser config in app
-let config: any;
+let config: Config;
 if (typeof window === 'undefined') {
   // Node.js environment (scripts)
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { wagmiConfig } = require('./wagmiConfigNode');
   config = wagmiConfig;
 } else {
   // Browser environment
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { config: browserConfig } = require('@/app/rootProvider');
   config = browserConfig;
 }
@@ -416,7 +419,9 @@ export const BadgeContract = {
           throw new Error('OWNER_PRIVATE_KEY not found in .env file. Add your contract owner private key to use this script.');
         }
 
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         const { createWalletClient } = require('viem');
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         const { privateKeyToAccount } = require('viem/accounts');
 
         const account = privateKeyToAccount(privateKey as `0x${string}`);

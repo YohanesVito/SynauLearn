@@ -4,7 +4,7 @@ import { useAccount } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { API } from '@/lib/api';
 import { BadgeContract } from '@/lib/badgeContract';
-import { getCourseNumber, hasCourseMapping } from '@/lib/courseMapping';
+import { getCourseNumber } from '@/lib/courseMapping';
 import { useMiniKit } from '@coinbase/onchainkit/minikit';
 
 interface MintBadgeProps {
