@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { X, Lock, Check, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Lock, Check, ExternalLink } from 'lucide-react';
 import { useAccount } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { API } from '@/lib/api';
@@ -8,7 +8,7 @@ import { getCourseNumber } from '@/lib/courseMapping';
 import { useMiniKit } from '@coinbase/onchainkit/minikit';
 
 interface MintBadgeProps {
-    onClose: () => void;
+    onBack: () => void;
 }
 
 interface Course {
@@ -21,7 +21,7 @@ interface Course {
     tokenId?: string;
 }
 
-export default function MintBadge({ onClose }: MintBadgeProps) {
+export default function MintBadge({ onBack }: MintBadgeProps) {
     const { address, isConnected } = useAccount();
     const [courses, setCourses] = useState<Course[]>([]);
     const [mintingCourseId, setMintingCourseId] = useState<string | null>(null);
@@ -229,40 +229,42 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
 
     if (loading) {
         return (
-            <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center">
-                <div className="bg-slate-900 rounded-2xl p-8 text-center">
+            <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
+                <div className="text-center">
                     <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                    <p className="text-white">Loading courses...</p>
+                    <p className="text-gray-400">Loading courses...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center">
-            <div className="bg-slate-900 w-full sm:max-w-2xl sm:rounded-2xl rounded-t-3xl max-h-[90vh] flex flex-col">
-                {/* Header */}
-                <div className="flex items-center justify-between p-6 border-b border-slate-800">
-                    <div>
-                        <h2 className="text-2xl font-bold text-white">Mint Badge</h2>
-                        {isConnected && address && (
-                            <p className="text-xs text-gray-400 mt-1">
-                                {address.slice(0, 6)}...{address.slice(-4)}
-                            </p>
-                        )}
-                        <p className="text-xs text-blue-400 mt-1">Base Sepolia</p>
+        <div className="min-h-screen bg-slate-950 text-white pb-24">
+            {/* Header */}
+            <div className="bg-slate-900 border-b border-slate-800">
+                <div className="px-6 py-4">
+                    <div className="flex items-center gap-4">
+                        <button
+                            onClick={onBack}
+                            className="p-2 hover:bg-slate-800 rounded-lg transition-colors"
+                            disabled={!!mintingCourseId}
+                        >
+                            <ArrowLeft className="w-6 h-6" />
+                        </button>
+                        <div>
+                            <h1 className="text-2xl font-bold">Mint Badge</h1>
+                            {isConnected && address && (
+                                <p className="text-xs text-gray-400 mt-1">
+                                    {address.slice(0, 6)}...{address.slice(-4)}
+                                </p>
+                            )}
+                        </div>
                     </div>
-                    <button
-                        onClick={onClose}
-                        className="p-2 hover:bg-slate-800 rounded-lg transition-colors"
-                        disabled={!!mintingCourseId}
-                    >
-                        <X className="w-6 h-6 text-gray-400" />
-                    </button>
                 </div>
+            </div>
 
-                {/* Content */}
-                <div className="flex-1 overflow-y-auto p-6">
+            {/* Content */}
+            <div className="px-6 py-6">
                     {/* RainbowKit Connect Button */}
                     <div className="mb-6 p-4 bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-500/30 rounded-xl">
                         <div className="flex items-center justify-between">
@@ -397,7 +399,6 @@ export default function MintBadge({ onClose }: MintBadgeProps) {
                         })}
                     </div>
                 </div>
-            </div>
         </div>
     );
 }

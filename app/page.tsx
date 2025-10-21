@@ -18,9 +18,8 @@ export default function Home() {
   const { setMiniAppReady, isMiniAppReady, isFrameReady, setFrameReady } = useMiniKit();
   const [showWelcome, setShowWelcome] = useState(false);
   const [isChecking, setIsChecking] = useState(true);
-  const [currentView, setCurrentView] = useState<"home" | "courses" | "profile" | "leaderboard" | "signin" | "balance">("home");
+  const [currentView, setCurrentView] = useState<"home" | "courses" | "profile" | "leaderboard" | "signin" | "balance" | "mintbadge">("home");
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [showMintBadge, setShowMintBadge] = useState(false);
   const { context } = useMiniKit();
 
   // const isBaseApp = context?.client?.clientFid?.toString() === "309857";
@@ -76,7 +75,7 @@ export default function Home() {
   };
 
   const handleNavigate = (view: string) => {
-    setCurrentView(view as "home" | "courses" | "profile" | "leaderboard" | "signin" | "balance");
+    setCurrentView(view as "home" | "courses" | "profile" | "leaderboard" | "signin" | "balance" | "mintbadge");
   };
 
   const handleBackToHome = () => {
@@ -97,13 +96,22 @@ export default function Home() {
     switch (currentView) {
       case 'leaderboard':
         return <Leaderboard onBack={handleBackToHome} />;
-      
+
       case 'profile':
         return <Profile onBack={handleBackToHome} />;
-      
+
       case 'courses':
         return <CoursesView onBack={handleBackToHome} />;
-      
+
+      case 'mintbadge':
+        return <MintBadge onBack={handleBackToHome} />;
+
+      case 'signin':
+        return <SignIn onBack={handleBackToHome} />;
+
+      case 'balance':
+        return <MyBalance onBack={handleBackToHome} />;
+
       case 'home':
       default:
         return (
@@ -112,10 +120,6 @@ export default function Home() {
             <HomeView userName={context?.user?.displayName || context?.user?.username || "User"} />
           </>
         );
-      case 'signin':
-        return <SignIn onBack={handleBackToHome} />;
-      case 'balance':
-        return <MyBalance onBack={handleBackToHome} />;
     }
   };
 
@@ -124,16 +128,16 @@ export default function Home() {
       {/* Welcome Modal for first-time users */}
       {showWelcome && <WelcomeModal onComplete={handleWelcomeComplete} />}
 
-      {/* Mint Badge Modal */}
-      {showMintBadge && <MintBadge onClose={() => setShowMintBadge(false)} />}
-
       {/* Drawer Navigation */}
       <Drawer
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
         currentView={currentView}
         onNavigate={handleNavigate}
-        onMintBadgeClick={() => setShowMintBadge(true)}
+        onMintBadgeClick={() => {
+          setIsDrawerOpen(false);
+          handleNavigate('mintbadge');
+        }}
       />
 
       {/* Main App */}
