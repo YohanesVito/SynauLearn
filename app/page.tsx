@@ -17,53 +17,52 @@ import MyBalance from "@/components/MyBalance";
 export default function Home() {
   const { setMiniAppReady, isMiniAppReady, isFrameReady, setFrameReady } = useMiniKit();
   const [showWelcome, setShowWelcome] = useState(false);
-  const [isChecking, setIsChecking] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [currentView, setCurrentView] = useState<"home" | "courses" | "profile" | "leaderboard" | "signin" | "balance" | "mintbadge">("home");
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const { context } = useMiniKit();
 
-  // const isBaseApp = context?.client?.clientFid?.toString() === "309857";
-  // const isFarcaster = context?.client?.clientFid?.toString() === "1";
-
+  // Initialize app and handle splash screen
   useEffect(() => {
-    if (!isFrameReady) {
-      setFrameReady();
-    }
-  }, [setFrameReady, isFrameReady]);
+    const initializeApp = async () => {
+      try {
+        // Load Eruda for debugging (optional)
+        import('eruda').then((eruda) => eruda.default.init());
 
-  // Initialize MiniKit
-  useEffect(() => {
-    if (!isMiniAppReady) {
-      setMiniAppReady();
-    }
-    // if (typeof window !== 'undefined' &&
-    //   process.env.NODE_ENV === 'development' &&
-    //   !window.location.hostname.includes('localhost')) {
-    //   import('eruda').then((eruda) => eruda.default.init());
-    // }
-    import('eruda').then((eruda) => eruda.default.init());
-  }, [setMiniAppReady, isMiniAppReady]);
+        // Simulate app initialization (load critical resources)
+        // In a real app, you might load user data, check auth, etc.
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Minimum splash time
 
-  // Check if user is first-time visitor (works for both browser and Farcaster)
-  useEffect(() => {
-    const checkFirstTimeUser = () => {
-      // Create a unique storage key
-      // If user has FID (Farcaster), use that. Otherwise use a generic key for browser testing
-      const userId = context?.user?.fid || 'browser_user';
-      const storageKey = `synaulearn_welcome_${userId}`;
-      const hasSeenWelcome = localStorage.getItem(storageKey);
+        // Check if user is first-time visitor
+        const userId = context?.user?.fid || 'browser_user';
+        const storageKey = `synaulearn_welcome_${userId}`;
+        const hasSeenWelcome = localStorage.getItem(storageKey);
 
-      if (!hasSeenWelcome) {
-        setShowWelcome(true);
+        if (!hasSeenWelcome) {
+          setShowWelcome(true);
+        }
+
+        // Mark app as ready - this hides the Farcaster splash screen
+        setIsLoading(false);
+
+        // Tell Farcaster frame is ready
+        if (!isFrameReady) {
+          setFrameReady();
+        }
+
+        // Tell MiniKit the app is ready
+        if (!isMiniAppReady) {
+          setMiniAppReady();
+        }
+      } catch (error) {
+        console.error('Error initializing app:', error);
+        setIsLoading(false);
       }
-
-      setIsChecking(false);
     };
 
-    // Small delay to ensure smooth loading
-    const timer = setTimeout(checkFirstTimeUser, 300);
-    return () => clearTimeout(timer);
-  }, [context]);
+    initializeApp();
+  }, [context, isFrameReady, setFrameReady, isMiniAppReady, setMiniAppReady]);
+
 
   const handleWelcomeComplete = () => {
     // Save that user has seen the welcome
@@ -82,11 +81,15 @@ export default function Home() {
     setCurrentView("home");
   };
 
-  // Loading state while checking first-time user
-  if (isChecking) {
+  // Show loading state while app initializes
+  // Note: Farcaster will show the splash screen during this time
+  if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-900">
-        <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+      <div className="min-h-screen flex items-center justify-center bg-slate-950">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading SynauLearn...</p>
+        </div>
       </div>
     );
   }
