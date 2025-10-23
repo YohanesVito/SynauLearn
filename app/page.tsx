@@ -9,17 +9,27 @@ import Leaderboard from "@/components/Leaderboard";
 import Profile from "@/components/Profile";
 import MintBadge from "@/components/MintBadge";
 import SignIn from "@/components/SignIn";
-import CoursesView from "@/components/CoursesView";
 import HomeView from "@/components/HomeView";
 import MyBalance from "@/components/MyBalance";
+import CoursesPage from "@/features/Courses";
 // import AuthButton from "@/components/ui/AuthButton";
 
 export default function Home() {
-  const { setMiniAppReady, isMiniAppReady, isFrameReady, setFrameReady } = useMiniKit();
+  const { setMiniAppReady, isMiniAppReady, isFrameReady, setFrameReady } =
+    useMiniKit();
   const [showWelcome, setShowWelcome] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [currentView, setCurrentView] = useState<"home" | "courses" | "profile" | "leaderboard" | "signin" | "balance" | "mintbadge">("home");
+  const [currentView, setCurrentView] = useState<
+    | "home"
+    | "courses"
+    | "profile"
+    | "leaderboard"
+    | "signin"
+    | "balance"
+    | "mintbadge"
+  >("home");
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [_isLessonStart, setIsLessonStart] = useState(false);
   const { context } = useMiniKit();
 
   // Initialize app and handle splash screen
@@ -27,14 +37,14 @@ export default function Home() {
     const initializeApp = async () => {
       try {
         // Load Eruda for debugging (optional)
-        import('eruda').then((eruda) => eruda.default.init());
+        // import("eruda").then((eruda) => eruda.default.init());
 
         // Simulate app initialization (load critical resources)
         // In a real app, you might load user data, check auth, etc.
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Minimum splash time
+        await new Promise((resolve) => setTimeout(resolve, 1000)); // Minimum splash time
 
         // Check if user is first-time visitor
-        const userId = context?.user?.fid || 'browser_user';
+        const userId = context?.user?.fid || "browser_user";
         const storageKey = `synaulearn_welcome_${userId}`;
         const hasSeenWelcome = localStorage.getItem(storageKey);
 
@@ -55,7 +65,7 @@ export default function Home() {
           setMiniAppReady();
         }
       } catch (error) {
-        console.error('Error initializing app:', error);
+        console.error("Error initializing app:", error);
         setIsLoading(false);
       }
     };
@@ -63,18 +73,26 @@ export default function Home() {
     initializeApp();
   }, [context, isFrameReady, setFrameReady, isMiniAppReady, setMiniAppReady]);
 
-
   const handleWelcomeComplete = () => {
     // Save that user has seen the welcome
-    const userId = context?.user?.fid || 'browser_user';
+    const userId = context?.user?.fid || "browser_user";
     const storageKey = `synaulearn_welcome_${userId}`;
-    localStorage.setItem(storageKey, 'true');
+    localStorage.setItem(storageKey, "true");
 
     setShowWelcome(false);
   };
 
   const handleNavigate = (view: string) => {
-    setCurrentView(view as "home" | "courses" | "profile" | "leaderboard" | "signin" | "balance" | "mintbadge");
+    setCurrentView(
+      view as
+        | "home"
+        | "courses"
+        | "profile"
+        | "leaderboard"
+        | "signin"
+        | "balance"
+        | "mintbadge"
+    );
   };
 
   const handleBackToHome = () => {
@@ -97,30 +115,35 @@ export default function Home() {
   // Render different views based on currentView
   const renderView = () => {
     switch (currentView) {
-      case 'leaderboard':
+      case "leaderboard":
         return <Leaderboard onBack={handleBackToHome} />;
 
-      case 'profile':
+      case "profile":
         return <Profile onBack={handleBackToHome} />;
 
-      case 'courses':
-        return <CoursesView onBack={handleBackToHome} />;
+      case "courses":
+        // return <CoursesView onBack={handleBackToHome} />;
+        return <CoursesPage setIsLessonStart={setIsLessonStart} />;
 
-      case 'mintbadge':
+      case "mintbadge":
         return <MintBadge onBack={handleBackToHome} />;
 
-      case 'signin':
+      case "signin":
         return <SignIn onBack={handleBackToHome} />;
 
-      case 'balance':
+      case "balance":
         return <MyBalance onBack={handleBackToHome} />;
 
-      case 'home':
+      case "home":
       default:
         return (
           <>
             <Header onMenuClick={() => setIsDrawerOpen(true)} />
-            <HomeView userName={context?.user?.displayName || context?.user?.username || "User"} />
+            <HomeView
+              userName={
+                context?.user?.displayName || context?.user?.username || "User"
+              }
+            />
           </>
         );
     }
@@ -139,7 +162,7 @@ export default function Home() {
         onNavigate={handleNavigate}
         onMintBadgeClick={() => {
           setIsDrawerOpen(false);
-          handleNavigate('mintbadge');
+          handleNavigate("mintbadge");
         }}
       />
 

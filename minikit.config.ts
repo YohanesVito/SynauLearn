@@ -20,7 +20,7 @@ export const minikitConfig = {
   miniapp: {
     version: "1",
     name: "SynauLearn",
-    subtitle: "Learn Anything, Anytime, Anywhere",
+    subtitle: "SynauLearn",
     description: "Learn Web3, blockchain, and crypto through interactive micro-learning. Complete courses, earn XP, and mint your achievements as NFT badges on Base.",
     screenshotUrls: [
       `${ROOT_URL}/screenshot1.jpg`,
@@ -33,11 +33,11 @@ export const minikitConfig = {
     homeUrl: ROOT_URL,
     webhookUrl: `${ROOT_URL}/api/webhook`,
     primaryCategory: "social",
-    tags: ["education", "learning", "nft", "web3", "blockchain", "base"],
+    tags: ["education", "learning", "nft", "web3", "blockchain"],
     heroImageUrl: `${ROOT_URL}/hero.png`,
     tagline: "Learn First, Earn Later",
-    ogTitle: "SynauLearn - Learn Web3 & Earn NFT Badges",
-    ogDescription: "Interactive micro-learning platform for Web3. Complete courses, earn XP, and mint your achievements as NFT badges on Base blockchain.",
+    ogTitle: "Learn Web3 and Earn NFT Badges",
+    ogDescription: "Interactive micro-learning for Web3. Complete courses and mint achievements as NFT badges.",
     ogImageUrl: `${ROOT_URL}/hero.png`,
   },
 } as const;
