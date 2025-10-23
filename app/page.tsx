@@ -30,7 +30,7 @@ export default function Home() {
     | "mintbadge"
   >("home");
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  // const [isLessonStart, setIsLessonStart] = useState(false);
+  const [setIsLessonStart] = useState(false);
   const { context } = useMiniKit();
 
   // Initialize app and handle splash screen
