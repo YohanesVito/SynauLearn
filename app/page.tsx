@@ -9,7 +9,7 @@ import Leaderboard from "@/components/Leaderboard";
 import Profile from "@/components/Profile";
 import MintBadge from "@/components/MintBadge";
 import SignIn from "@/components/SignIn";
-import CoursesView from "@/components/CoursesView";
+// import CoursesView from "@/components/CoursesView";
 import HomeView from "@/components/HomeView";
 import MyBalance from "@/components/MyBalance";
 import CoursesPage from "@/features/Courses";
@@ -30,7 +30,7 @@ export default function Home() {
     | "mintbadge"
   >("home");
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [isLessonStart, setIsLessonStart] = useState(false);
+  // const [isLessonStart, setIsLessonStart] = useState(false);
   const { context } = useMiniKit();
 
   // Initialize app and handle splash screen
