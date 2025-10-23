@@ -9,7 +9,6 @@ import Leaderboard from "@/components/Leaderboard";
 import Profile from "@/components/Profile";
 import MintBadge from "@/components/MintBadge";
 import SignIn from "@/components/SignIn";
-// import CoursesView from "@/components/CoursesView";
 import HomeView from "@/components/HomeView";
 import MyBalance from "@/components/MyBalance";
 import CoursesPage from "@/features/Courses";
@@ -30,7 +29,7 @@ export default function Home() {
     | "mintbadge"
   >("home");
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [setIsLessonStart] = useState(false);
+  const [_isLessonStart, setIsLessonStart] = useState(false);
   const { context } = useMiniKit();
 
   // Initialize app and handle splash screen
@@ -38,7 +37,7 @@ export default function Home() {
     const initializeApp = async () => {
       try {
         // Load Eruda for debugging (optional)
-        import("eruda").then((eruda) => eruda.default.init());
+        // import("eruda").then((eruda) => eruda.default.init());
 
         // Simulate app initialization (load critical resources)
         // In a real app, you might load user data, check auth, etc.
