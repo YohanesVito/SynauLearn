@@ -367,7 +367,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 ## 👥 Team
 
-**SynauLearn** is built with ❤️ by [@killerbie](https://github.com/YohanesVito)
+**SynauLearn** is built with ❤️ by [@killerbie](https://github.com/YohanesVito), 
 
 ---
 
@@ -384,15 +384,14 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 ## 📞 Contact & Support
 
 - **GitHub Issues**: [Report bugs or request features](https://github.com/YohanesVito/SynauLearn/issues)
-- **Twitter/X**: [@synaulearn](https://twitter.com/synaulearn) *(placeholder)*
 - **Farcaster**: [@killerbie](https://warpcast.com/killerbie)
 
 ---
 
 ## 🌐 Live Demo
 
-**Farcaster MiniApp**: Coming soon to Farcaster  
-**Web Demo**: [synaulearn.vercel.app](https://synaulearn.vercel.app) *(placeholder)*
+**Farcaster MiniApp**: [SynauLearn](https://farcaster.xyz/miniapps/rmyjRyYzTZ8a/synaulearn)
+**Web Demo**: [synau-learn-base.vercel.app](https://synau-learn-base.vercel.app) *(placeholder)*
 
 ---
 
