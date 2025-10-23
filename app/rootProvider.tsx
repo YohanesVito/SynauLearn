@@ -6,10 +6,10 @@ import { coinbaseWallet, metaMask } from "wagmi/connectors";
 import { base } from "wagmi/chains";
 import "@coinbase/onchainkit/styles.css";
 import { defineChain } from "viem";
-import { getDefaultConfig, RainbowKitProvider } from '@rainbow-me/rainbowkit'
+import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { farcasterMiniApp } from "@farcaster/miniapp-wagmi-connector";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import '@rainbow-me/rainbowkit/styles.css';
+import "@rainbow-me/rainbowkit/styles.css";
 // import { AuthKitProvider } from '@farcaster/auth-client';
 
 export const baseSepolia = defineChain({
@@ -35,7 +35,6 @@ export const baseSepolia = defineChain({
   iconUrl: "https://avatars.githubusercontent.com/u/108554348?s=200&v=4",
 });
 
-
 // export const wagmiConfig = createConfig({
 //   chains: [baseSepolia, base],
 //   connectors: [
@@ -49,19 +48,18 @@ export const baseSepolia = defineChain({
 //   },
 // });
 
-
 //dari github
 export const wagmiConfig = createConfig({
   chains: [baseSepolia, base],
-    connectors: [
-      coinbaseWallet({
-        appName: 'SynauLearn',
-        preference: 'smartWalletOnly',
-        version: '4',
-      }),
-      metaMask(),
-      farcasterMiniApp(),  // Add additional connectors
-    ],
+  connectors: [
+    coinbaseWallet({
+      appName: "SynauLearn",
+      preference: "smartWalletOnly",
+      version: "4",
+    }),
+    metaMask(),
+    farcasterMiniApp(), // Add additional connectors
+  ],
   ssr: true,
   transports: {
     [base.id]: http(),
@@ -71,7 +69,8 @@ export const wagmiConfig = createConfig({
 
 export const config = getDefaultConfig({
   appName: "SynauLearn",
-  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "YOUR_PROJECT_ID", // Get from https://cloud.walletconnect.com
+  projectId:
+    process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "YOUR_PROJECT_ID", // Get from https://cloud.walletconnect.com
   chains: [baseSepolia],
   ssr: true,
   transports: {
@@ -80,7 +79,6 @@ export const config = getDefaultConfig({
   },
 });
 
-
 // const config = {
 //   rpcUrl: 'https://mainnet.optimism.io',
 //   domain:  process.env.DOMAIN || 'localhost:3000',
@@ -88,36 +86,34 @@ export const config = getDefaultConfig({
 // };
 
 export function RootProvider({ children }: { children: ReactNode }) {
-  const [queryClient] = useState(() => new QueryClient())
+  const [queryClient] = useState(() => new QueryClient());
 
   return (
-    <OnchainKitProvider
-      apiKey={process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY}
-      chain={baseSepolia}
-      config={{
-        appearance: {
-          mode: "light",
-          theme: "cyberpunk",
-        },
-        wallet: {
-          display: "modal",
-          preference: "all",
-        },
-      }}
-      miniKit={{
-        enabled: true,
-        autoConnect: true,
-        notificationProxyUrl: undefined,
-      }}
-    >
-      {/* <AuthKitProvider config={config}>{children}</AuthKitProvider> */}
-      <WagmiProvider config={config}>
-        <QueryClientProvider client={queryClient}>
-          <RainbowKitProvider>
-            {children}
-          </RainbowKitProvider>
-        </QueryClientProvider>
-      </WagmiProvider>
-    </OnchainKitProvider>
+    <QueryClientProvider client={queryClient}>
+      <OnchainKitProvider
+        apiKey={process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY}
+        chain={baseSepolia}
+        config={{
+          appearance: {
+            mode: "light",
+            theme: "cyberpunk",
+          },
+          wallet: {
+            display: "modal",
+            preference: "all",
+          },
+        }}
+        miniKit={{
+          enabled: true,
+          autoConnect: true,
+          notificationProxyUrl: undefined,
+        }}
+      >
+        {/* <AuthKitProvider config={config}>{children}</AuthKitProvider> */}
+        <WagmiProvider config={config}>
+          <RainbowKitProvider>{children}</RainbowKitProvider>
+        </WagmiProvider>
+      </OnchainKitProvider>
+    </QueryClientProvider>
   );
 }
