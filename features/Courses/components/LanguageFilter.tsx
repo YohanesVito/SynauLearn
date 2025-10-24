@@ -12,7 +12,7 @@ const LanguageFilter: React.FC<LanguageFilterProps> = ({ selected, onChange }) =
   const filters = [
     { id: 'all', label: t('language.all'), emoji: '🌍' },
     { id: 'id', label: t('language.indonesian'), emoji: '🇮🇩' },
-    { id: 'en', label: t('language.english'), emoji: '🇪🇳' },
+    { id: 'en', label: t('language.english'), emoji: '🇺🇸' },
   ] as const;
 
   return (

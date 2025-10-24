@@ -192,7 +192,7 @@ export default function Drawer({ isOpen, onClose, currentView, onNavigate, onMin
                       : 'bg-slate-800 text-gray-300 hover:bg-slate-700'
                     }`}
                 >
-                  🇪🇳 English
+                  🇺🇸 English
                 </button>
                 <button
                   onClick={() => setLocale('id')}
