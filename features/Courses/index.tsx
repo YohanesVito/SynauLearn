@@ -1,9 +1,14 @@
 import { useEffect, useState } from "react";
 import { useMiniKit } from "@coinbase/onchainkit/minikit";
-import { API, Course } from "@/lib/api";
+import { API, Course, Category } from "@/lib/api";
+import { DifficultyLevel } from "@/lib/supabase";
 import Categories from "./components/Categories";
 import CourseCard from "./components/CourseCard";
 import LessonPage from "./components/LessonPage";
+import LanguageFilter from "./components/LanguageFilter";
+import CategoryAccordion from "./components/CategoryAccordion";
+import { useLocale } from '@/lib/LocaleContext';
+import { List, Grid3x3 } from 'lucide-react';
 
 interface CourseWithProgress extends Course {
   progress: number;
@@ -14,8 +19,10 @@ interface CoursesPageProps {
 }
 
 const CoursesPage: React.FC<CoursesPageProps> = ({ setIsLessonStart }) => {
+  const { t } = useLocale();
   const { context } = useMiniKit();
   const [courses, setCourses] = useState<CourseWithProgress[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
   const [selectedCourse, setSelectedCourse] = useState<{
@@ -23,6 +30,21 @@ const CoursesPage: React.FC<CoursesPageProps> = ({ setIsLessonStart }) => {
     lessonId: string;
     courseTitle: string;
   } | null>(null);
+
+  // Auto-detect browser language on first load
+  const [languageFilter, setLanguageFilter] = useState<'en' | 'id' | 'all'>(() => {
+    if (typeof window !== 'undefined') {
+      const browserLang = navigator.language.toLowerCase();
+      return browserLang.startsWith('id') ? 'id' : 'en';
+    }
+    return 'en';
+  });
+
+  // Category/Difficulty filter
+  const [categoryFilter, setCategoryFilter] = useState<DifficultyLevel>('Basic');
+
+  // View mode: 'list' or 'category'
+  const [viewMode, setViewMode] = useState<'list' | 'category'>('category');
 
   // Load courses and progress from Supabase
   useEffect(() => {
@@ -42,8 +64,12 @@ const CoursesPage: React.FC<CoursesPageProps> = ({ setIsLessonStart }) => {
           setUserId(user.id);
         }
 
-        // Fetch courses
-        const fetchedCourses = await API.getCourses();
+        // Fetch categories
+        const fetchedCategories = await API.getCategories();
+        setCategories(fetchedCategories);
+
+        // Fetch courses with category data
+        const fetchedCourses = await API.getCoursesWithCategories();
 
         // Get progress for each course
         const coursesWithProgress = await Promise.all(
@@ -89,11 +115,11 @@ const CoursesPage: React.FC<CoursesPageProps> = ({ setIsLessonStart }) => {
         });
         setIsLessonStart(true);
       } else {
-        alert("No lessons available for this course yet.");
+        alert(t('courses.noLessonsAvailable'));
       }
     } catch (error) {
       console.error("Error loading lessons:", error);
-      alert("Failed to load lesson. Please try again.");
+      alert(t('courses.failedToLoad'));
     }
   };
 
@@ -104,7 +130,7 @@ const CoursesPage: React.FC<CoursesPageProps> = ({ setIsLessonStart }) => {
     // Reload courses to update progress
     if (userId) {
       try {
-        const fetchedCourses = await API.getCourses();
+        const fetchedCourses = await API.getCoursesWithCategories();
 
         const coursesWithProgress = await Promise.all(
           fetchedCourses.map(async (course) => {
@@ -151,30 +177,99 @@ const CoursesPage: React.FC<CoursesPageProps> = ({ setIsLessonStart }) => {
     return (
       <div className="text-center py-12">
         <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-        <p className="text-gray-400">Loading courses...</p>
+        <p className="text-gray-400">{t('courses.loading')}</p>
       </div>
     );
   }
 
+  // Filter courses based on selected language AND difficulty
+  const filteredCourses = courses.filter(course => {
+    // Filter by language
+    const matchesLanguage = languageFilter === 'all' || course.language === languageFilter;
+
+    // Filter by difficulty
+    const matchesDifficulty = course.difficulty === categoryFilter;
+
+    return matchesLanguage && matchesDifficulty;
+  });
+
   return (
     <div className="flex flex-col p-4 gap-6">
-      <h1 className="text-3xl font-bold text-white">Courses</h1>
-      <Categories />
+      <h1 className="text-3xl font-bold text-white">{t('courses.title')}</h1>
+
+      {/* Language Filter */}
+      <LanguageFilter
+        selected={languageFilter}
+        onChange={setLanguageFilter}
+      />
+
+      {/* Difficulty Category Filter (only in list view) */}
+      {viewMode === 'list' && (
+        <Categories
+          selected={categoryFilter}
+          onSelect={setCategoryFilter}
+        />
+      )}
+
+      {/* View Mode Toggle */}
+      <div className="flex justify-center gap-2">
+        <button
+          onClick={() => setViewMode('category')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+            viewMode === 'category'
+              ? 'bg-blue-600 text-white'
+              : 'bg-slate-800 text-gray-400 hover:bg-slate-700'
+          }`}
+        >
+          <Grid3x3 className="w-4 h-4" />
+          {t('courses.viewByCategory')}
+        </button>
+        <button
+          onClick={() => setViewMode('list')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+            viewMode === 'list'
+              ? 'bg-blue-600 text-white'
+              : 'bg-slate-800 text-gray-400 hover:bg-slate-700'
+          }`}
+        >
+          <List className="w-4 h-4" />
+          {t('courses.viewAsList')}
+        </button>
+      </div>
 
       <div className="space-y-4">
-        {courses.map((course, index) => {
-          return (
-            <CourseCard
-              key={course.id}
-              id={index + 1}
-              title={course.title}
-              description={course.description}
-              progress={course.progress}
-              image={course.emoji}
-              onClick={() => handleCourseClick(course.id)}
-            />
-          );
-        })}
+        {filteredCourses.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-gray-400">
+              {languageFilter === 'id'
+                ? t('courses.noCoursesIndonesian')
+                : t('courses.noCoursesEnglish')}
+            </p>
+          </div>
+        ) : viewMode === 'category' ? (
+          <CategoryAccordion
+            categories={categories}
+            courses={filteredCourses.map(c => ({
+              ...c,
+              progressPercentage: c.progress
+            }))}
+            onCourseClick={handleCourseClick}
+          />
+        ) : (
+          filteredCourses.map((course, index) => {
+            return (
+              <CourseCard
+                key={course.id}
+                id={index + 1}
+                title={course.title}
+                description={course.description}
+                progress={course.progress}
+                image={course.emoji}
+                onClick={() => handleCourseClick(course.id)}
+              />
+            );
+          })
+        )}
       </div>
     </div>
   );

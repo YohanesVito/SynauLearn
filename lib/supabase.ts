@@ -21,13 +21,33 @@ if (!supabaseUrl || !supabaseAnonKey) {
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Types
+export type DifficultyLevel = 'Basic' | 'Advanced' | 'Professional';
+
+export interface Category {
+  id: string;
+  name: string; // English name
+  name_id: string; // Indonesian name
+  description: string | null; // English description
+  description_id: string | null; // Indonesian description
+  emoji: string | null;
+  slug: string;
+  order_index: number;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Course {
   id: string;
   title: string;
   description: string;
   emoji: string;
+  language: 'en' | 'id'; // Language code: en = English, id = Indonesian
+  difficulty: DifficultyLevel; // Course difficulty level
+  category_id: string | null; // Reference to category
   total_lessons: number;
   created_at: string;
+  // Optional joined data
+  category?: Category;
 }
 
 export interface Lesson {

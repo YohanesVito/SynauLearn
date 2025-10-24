@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useMiniKit } from "@coinbase/onchainkit/minikit";
+import { LocaleProvider } from "@/lib/LocaleContext";
 import Header from "@/components/Header";
 import BottomNav from "@/components/BottomNav";
 import WelcomeModal from "@/components/WelcomeModal";
@@ -150,7 +151,7 @@ export default function Home() {
   };
 
   return (
-    <>
+    <LocaleProvider>
       {/* Welcome Modal for first-time users */}
       {showWelcome && <WelcomeModal onComplete={handleWelcomeComplete} />}
 
@@ -171,6 +172,6 @@ export default function Home() {
         {renderView()}
         <BottomNav currentView={currentView} onNavigate={handleNavigate} />
       </main>
-    </>
+    </LocaleProvider>
   );
 }

@@ -9,7 +9,9 @@
     "lint": "next lint",
     "setup-ipfs": "npx tsx scripts/setupIPFS.ts",
     "set-baseuri": "npx tsx scripts/setBaseURI.ts",
-    "cleanup-badges": "npx tsx scripts/cleanupBadges.ts"
+    "cleanup-badges": "npx tsx scripts/cleanupBadges.ts",
+    "insert-indonesian-course": "npx tsx scripts/insert-indonesian-course.ts",
+    "insert-all-indonesian-courses": "npx tsx scripts/insert-all-indonesian-courses.ts"
   },
   "dependencies": {
     "@coinbase/onchainkit": "latest",
@@ -30,6 +32,7 @@
     "lucide-react": "^0.546.0",
     "motion": "^12.23.24",
     "next": "15.3.4",
+    "next-intl": "^4.4.0",
     "pinata": "^2.5.1",
     "postcss": "^8.5.6",
     "react": "^19.0.0",
