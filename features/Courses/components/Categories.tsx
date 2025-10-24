@@ -1,25 +1,35 @@
-import { useState } from "react";
 import { SafeArea } from "@coinbase/onchainkit/minikit";
+import { DifficultyLevel } from "@/lib/supabase";
+import { useLocale } from '@/lib/LocaleContext';
 
-const Categories = () => {
-  const categories = ["Basic", "Advanced", "Professional"];
+interface CategoriesProps {
+  selected: DifficultyLevel;
+  onSelect: (category: DifficultyLevel) => void;
+}
 
-  const [selected, setSelected] = useState("Basic");
+const Categories = ({ selected, onSelect }: CategoriesProps) => {
+  const { t } = useLocale();
+
+  const categories: { value: DifficultyLevel; label: string }[] = [
+    { value: 'Basic', label: t('difficulty.basic') },
+    { value: 'Advanced', label: t('difficulty.advanced') },
+    { value: 'Professional', label: t('difficulty.professional') },
+  ];
 
   return (
     <SafeArea>
       <div className="flex justify-center gap-2">
         {categories.map((category) => (
           <button
-            key={category}
-            onClick={() => setSelected(category)}
+            key={category.value}
+            onClick={() => onSelect(category.value)}
             className={`px-6 py-2 rounded-full text-small transition-all ${
-              selected === category
+              selected === category.value
                 ? "bg-blue-600 text-white"
                 : "bg-[#2a2d42] text-gray-400 hover:bg-[#333649]"
             }`}
           >
-            {category}
+            {category.label}
           </button>
         ))}
       </div>

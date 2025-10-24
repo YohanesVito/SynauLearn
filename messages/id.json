@@ -1,4 +1,21 @@
 {
+  "welcome": {
+    "title": "Selamat Datang di SynauLearn! 👋",
+    "subtitle": "Kuasai Web3 melalui pelajaran interaktif, raih lencana, dan tunjukkan keahlian blockchain Anda.",
+    "interactiveLessons": "Pelajaran Interaktif",
+    "interactiveLessonsDesc": "Pelajari blockchain, DeFi, NFT melalui pelajaran singkat",
+    "testKnowledge": "Uji Pengetahuan Anda",
+    "testKnowledgeDesc": "Tantang diri Anda dengan kuis dan latihan praktis",
+    "earnBadges": "Raih Lencana",
+    "earnBadgesDesc": "Kumpulkan lencana unik dan tunjukkan pencapaian Anda",
+    "startLearning": "Mulai Belajar"
+  },
+  "navigation": {
+    "home": "Beranda",
+    "courses": "Kursus",
+    "profile": "Profil",
+    "leaderboard": "Papan Peringkat"
+  },
   "drawer": {
     "viewProfile": "Lihat Profil",
     "totalXP": "Total XP",
@@ -11,5 +28,32 @@
     "nightMode": "Mode Malam",
     "settings": "Pengaturan",
     "helpSupport": "Bantuan & Dukungan"
+  },
+  "courses": {
+    "title": "Kursus",
+    "loading": "Memuat kursus...",
+    "noCoursesIndonesian": "Belum ada kursus dalam Bahasa Indonesia. Silakan pilih \"Semua\" atau \"English\".",
+    "noCoursesEnglish": "Tidak ada kursus dalam bahasa ini. Silakan pilih \"Semua\" atau bahasa lain.",
+    "failedToLoad": "Gagal memuat pelajaran. Silakan coba lagi.",
+    "noLessonsAvailable": "Belum ada pelajaran untuk kursus ini."
+  },
+  "language": {
+    "all": "Semua",
+    "indonesian": "Bahasa Indonesia",
+    "english": "English"
+  },
+  "difficulty": {
+    "basic": "Dasar",
+    "advanced": "Lanjutan",
+    "professional": "Profesional"
+  },
+  "common": {
+    "loading": "Memuat...",
+    "error": "Kesalahan",
+    "success": "Berhasil",
+    "cancel": "Batal",
+    "confirm": "Konfirmasi",
+    "save": "Simpan",
+    "close": "Tutup"
   }
 }

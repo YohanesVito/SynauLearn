@@ -1,4 +1,21 @@
 {
+  "welcome": {
+    "title": "Welcome to SynauLearn! 👋",
+    "subtitle": "Master Web3 through interactive lessons, earn badges, and showcase your blockchain expertise.",
+    "interactiveLessons": "Interactive Lessons",
+    "interactiveLessonsDesc": "Learn blockchain, DeFi, NFTs through bite-sized lessons",
+    "testKnowledge": "Test Your Knowledge",
+    "testKnowledgeDesc": "Challenge yourself with quizzes and practical exercises",
+    "earnBadges": "Earn Badges",
+    "earnBadgesDesc": "Collect unique badges and showcase your achievements",
+    "startLearning": "Start Learning"
+  },
+  "navigation": {
+    "home": "Home",
+    "courses": "Courses",
+    "profile": "Profile",
+    "leaderboard": "Leaderboard"
+  },
   "drawer": {
     "viewProfile": "View Profile",
     "totalXP": "Total XP",
@@ -11,5 +28,32 @@
     "nightMode": "Night Mode",
     "settings": "Settings",
     "helpSupport": "Help & Support"
+  },
+  "courses": {
+    "title": "Courses",
+    "loading": "Loading courses...",
+    "noCoursesIndonesian": "No courses available in Bahasa Indonesia yet. Please select \"All\" or \"English\".",
+    "noCoursesEnglish": "No courses available in this language. Please select \"All\" or another language.",
+    "failedToLoad": "Failed to load lesson. Please try again.",
+    "noLessonsAvailable": "No lessons available for this course yet."
+  },
+  "language": {
+    "all": "All",
+    "indonesian": "Bahasa Indonesia",
+    "english": "English"
+  },
+  "difficulty": {
+    "basic": "Basic",
+    "advanced": "Advanced",
+    "professional": "Professional"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "close": "Close"
   }
 }

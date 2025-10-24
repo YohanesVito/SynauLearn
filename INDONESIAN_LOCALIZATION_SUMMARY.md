@@ -22,7 +22,7 @@ export interface Course {
 
 ### 2. Language Filter UI Component
 - ✅ Created beautiful language filter with 3 options
-- ✅ Shows: 🌍 Semua/All | 🇮🇩 Bahasa Indonesia | 🇬🇧 English
+- ✅ Shows: 🌍 Semua/All | 🇮🇩 Bahasa Indonesia | 🇪🇳 English
 
 **File:** [features/Courses/components/LanguageFilter.tsx](./features/Courses/components/LanguageFilter.tsx)
 
@@ -88,7 +88,7 @@ Use the SQL queries in the implementation guide
 ┌─────────────────────────────────────┐
 │ Auto-detects Indonesian             │
 │                                     │
-│ 🌍  [🇮🇩 Bahasa] 🇬🇧              │ ← Filter active
+│ 🌍  [🇮🇩 Bahasa] 🇪🇳              │ ← Filter active
 │                                     │
 │ ┌───────────────────────────────┐  │
 │ │ 📚 Pengenalan Blockchain      │  │
@@ -108,7 +108,7 @@ Use the SQL queries in the implementation guide
 ┌─────────────────────────────────────┐
 │ Auto-detects English                │
 │                                     │
-│ 🌍  🇮🇩  [🇬🇧 English]            │ ← Filter active
+│ 🌍  🇮🇩  [🇪🇳 English]            │ ← Filter active
 │                                     │
 │ ┌───────────────────────────────┐  │
 │ │ 📚 Introduction to Blockchain │  │
@@ -146,7 +146,7 @@ After completing Step 1 and Step 2 above, test the following:
 - [ ] Open app in browser
 - [ ] See language filter buttons appear
 - [ ] Click "🇮🇩 Bahasa Indonesia" - shows Indonesian courses
-- [ ] Click "🇬🇧 English" - shows English courses
+- [ ] Click "🇪🇳 English" - shows English courses
 - [ ] Click "🌍 Semua/All" - shows all courses
 - [ ] Change browser language to Indonesian - auto-selects Indonesian filter
 - [ ] Change browser language to English - auto-selects English filter

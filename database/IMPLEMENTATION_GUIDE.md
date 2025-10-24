@@ -9,7 +9,7 @@ The code has been fully implemented with the following changes:
 
 2. **Created LanguageFilter Component**
    - New component: [features/Courses/components/LanguageFilter.tsx](../features/Courses/components/LanguageFilter.tsx)
-   - Displays language filter buttons: 🌍 Semua/All | 🇮🇩 Bahasa Indonesia | 🇬🇧 English
+   - Displays language filter buttons: 🌍 Semua/All | 🇮🇩 Bahasa Indonesia | 🇪🇳 English
 
 3. **Updated CoursesPage**
    - Added auto-detection of browser language
@@ -174,7 +174,7 @@ I can create a Node.js script for you that will automatically insert the Indones
 ```
 1. Opens app
 2. Auto-detects: English language
-3. Sees: 🇬🇧 English filter active by default
+3. Sees: 🇪🇳 English filter active by default
 4. Views: Only English courses
 5. Can switch to: Bahasa Indonesia or All courses anytime
 ```

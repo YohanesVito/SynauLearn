@@ -21,12 +21,15 @@ if (!supabaseUrl || !supabaseAnonKey) {
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Types
+export type DifficultyLevel = 'Basic' | 'Advanced' | 'Professional';
+
 export interface Course {
   id: string;
   title: string;
   description: string;
   emoji: string;
   language: 'en' | 'id'; // Language code: en = English, id = Indonesian
+  difficulty: DifficultyLevel; // Course difficulty level
   total_lessons: number;
   created_at: string;
 }

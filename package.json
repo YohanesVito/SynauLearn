@@ -10,7 +10,8 @@
     "setup-ipfs": "npx tsx scripts/setupIPFS.ts",
     "set-baseuri": "npx tsx scripts/setBaseURI.ts",
     "cleanup-badges": "npx tsx scripts/cleanupBadges.ts",
-    "insert-indonesian-course": "npx tsx scripts/insert-indonesian-course.ts"
+    "insert-indonesian-course": "npx tsx scripts/insert-indonesian-course.ts",
+    "insert-all-indonesian-courses": "npx tsx scripts/insert-all-indonesian-courses.ts"
   },
   "dependencies": {
     "@coinbase/onchainkit": "latest",

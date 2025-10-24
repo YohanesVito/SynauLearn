@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useMiniKit } from "@coinbase/onchainkit/minikit";
 import { API, Course } from "@/lib/api";
+import { DifficultyLevel } from "@/lib/supabase";
 import Categories from "./components/Categories";
 import CourseCard from "./components/CourseCard";
 import LessonPage from "./components/LessonPage";
 import LanguageFilter from "./components/LanguageFilter";
+import { useLocale } from '@/lib/LocaleContext';
 
 interface CourseWithProgress extends Course {
   progress: number;
@@ -15,6 +17,7 @@ interface CoursesPageProps {
 }
 
 const CoursesPage: React.FC<CoursesPageProps> = ({ setIsLessonStart }) => {
+  const { t } = useLocale();
   const { context } = useMiniKit();
   const [courses, setCourses] = useState<CourseWithProgress[]>([]);
   const [loading, setLoading] = useState(true);
@@ -33,6 +36,9 @@ const CoursesPage: React.FC<CoursesPageProps> = ({ setIsLessonStart }) => {
     }
     return 'en';
   });
+
+  // Category/Difficulty filter
+  const [categoryFilter, setCategoryFilter] = useState<DifficultyLevel>('Basic');
 
   // Load courses and progress from Supabase
   useEffect(() => {
@@ -99,11 +105,11 @@ const CoursesPage: React.FC<CoursesPageProps> = ({ setIsLessonStart }) => {
         });
         setIsLessonStart(true);
       } else {
-        alert("No lessons available for this course yet.");
+        alert(t('courses.noLessonsAvailable'));
       }
     } catch (error) {
       console.error("Error loading lessons:", error);
-      alert("Failed to load lesson. Please try again.");
+      alert(t('courses.failedToLoad'));
     }
   };
 
@@ -161,20 +167,25 @@ const CoursesPage: React.FC<CoursesPageProps> = ({ setIsLessonStart }) => {
     return (
       <div className="text-center py-12">
         <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-        <p className="text-gray-400">Loading courses...</p>
+        <p className="text-gray-400">{t('courses.loading')}</p>
       </div>
     );
   }
 
-  // Filter courses based on selected language
+  // Filter courses based on selected language AND difficulty
   const filteredCourses = courses.filter(course => {
-    if (languageFilter === 'all') return true;
-    return course.language === languageFilter;
+    // Filter by language
+    const matchesLanguage = languageFilter === 'all' || course.language === languageFilter;
+
+    // Filter by difficulty
+    const matchesDifficulty = course.difficulty === categoryFilter;
+
+    return matchesLanguage && matchesDifficulty;
   });
 
   return (
     <div className="flex flex-col p-4 gap-6">
-      <h1 className="text-3xl font-bold text-white">Courses</h1>
+      <h1 className="text-3xl font-bold text-white">{t('courses.title')}</h1>
 
       {/* Language Filter */}
       <LanguageFilter
@@ -182,15 +193,19 @@ const CoursesPage: React.FC<CoursesPageProps> = ({ setIsLessonStart }) => {
         onChange={setLanguageFilter}
       />
 
-      <Categories />
+      {/* Difficulty Category Filter */}
+      <Categories
+        selected={categoryFilter}
+        onSelect={setCategoryFilter}
+      />
 
       <div className="space-y-4">
         {filteredCourses.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-gray-400">
               {languageFilter === 'id'
-                ? 'Belum ada kursus dalam Bahasa Indonesia. Silakan pilih "Semua" atau "English".'
-                : 'No courses available in this language. Please select "All" or another language.'}
+                ? t('courses.noCoursesIndonesian')
+                : t('courses.noCoursesEnglish')}
             </p>
           </div>
         ) : (

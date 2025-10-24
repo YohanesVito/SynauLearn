@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLocale } from '@/lib/LocaleContext';
 
 interface LanguageFilterProps {
   selected: 'en' | 'id' | 'all';
@@ -6,10 +7,12 @@ interface LanguageFilterProps {
 }
 
 const LanguageFilter: React.FC<LanguageFilterProps> = ({ selected, onChange }) => {
+  const { t } = useLocale();
+
   const filters = [
-    { id: 'all', label: 'Semua / All', emoji: '🌍' },
-    { id: 'id', label: 'Bahasa Indonesia', emoji: '🇮🇩' },
-    { id: 'en', label: 'English', emoji: '🇬🇧' },
+    { id: 'all', label: t('language.all'), emoji: '🌍' },
+    { id: 'id', label: t('language.indonesian'), emoji: '🇮🇩' },
+    { id: 'en', label: t('language.english'), emoji: '🇪🇳' },
   ] as const;
 
   return (
