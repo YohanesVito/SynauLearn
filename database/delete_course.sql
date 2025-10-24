@@ -1,7 +1,7 @@
 -- ============================================
 -- Delete Course and All Related Data
 -- ============================================
--- Course ID: e7020156-f1ec-4fa2-afd3-2660da6b6719
+-- Course ID: eb21ad07-7183-470d-8888-7f41796de1c7
 --
 -- ⚠️ WARNING: This will permanently delete:
 -- - The course
@@ -24,19 +24,19 @@ SELECT
   total_lessons,
   created_at
 FROM courses
-WHERE id = 'e7020156-f1ec-4fa2-afd3-2660da6b6719';
+WHERE id = 'eb21ad07-7183-470d-8888-7f41796de1c7';
 
 -- Step 2: Get lessons count (for verification)
 SELECT COUNT(*) as lesson_count
 FROM lessons
-WHERE course_id = 'e7020156-f1ec-4fa2-afd3-2660da6b6719';
+WHERE course_id = 'eb21ad07-7183-470d-8888-7f41796de1c7';
 
 -- Step 3: Get cards count (for verification)
 SELECT COUNT(*) as card_count
 FROM cards
 WHERE lesson_id IN (
   SELECT id FROM lessons
-  WHERE course_id = 'e7020156-f1ec-4fa2-afd3-2660da6b6719'
+  WHERE course_id = 'eb21ad07-7183-470d-8888-7f41796de1c7'
 );
 
 -- ============================================
@@ -50,31 +50,31 @@ WHERE card_id IN (
   SELECT c.id
   FROM cards c
   JOIN lessons l ON c.lesson_id = l.id
-  WHERE l.course_id = 'e7020156-f1ec-4fa2-afd3-2660da6b6719'
+  WHERE l.course_id = 'eb21ad07-7183-470d-8888-7f41796de1c7'
 );
 
 -- Step 5: Delete user course progress
 DELETE FROM user_course_progress
-WHERE course_id = 'e7020156-f1ec-4fa2-afd3-2660da6b6719';
+WHERE course_id = 'eb21ad07-7183-470d-8888-7f41796de1c7';
 
 -- Step 6: Delete minted badges for this course
 DELETE FROM minted_badges
-WHERE course_id = 'e7020156-f1ec-4fa2-afd3-2660da6b6719';
+WHERE course_id = 'eb21ad07-7183-470d-8888-7f41796de1c7';
 
 -- Step 7: Delete all cards in lessons of this course
 DELETE FROM cards
 WHERE lesson_id IN (
   SELECT id FROM lessons
-  WHERE course_id = 'e7020156-f1ec-4fa2-afd3-2660da6b6719'
+  WHERE course_id = 'eb21ad07-7183-470d-8888-7f41796de1c7'
 );
 
 -- Step 8: Delete all lessons in this course
 DELETE FROM lessons
-WHERE course_id = 'e7020156-f1ec-4fa2-afd3-2660da6b6719';
+WHERE course_id = 'eb21ad07-7183-470d-8888-7f41796de1c7';
 
 -- Step 9: Delete the course itself
 DELETE FROM courses
-WHERE id = 'e7020156-f1ec-4fa2-afd3-2660da6b6719';
+WHERE id = 'eb21ad07-7183-470d-8888-7f41796de1c7';
 
 -- ============================================
 -- VERIFICATION
@@ -83,13 +83,13 @@ WHERE id = 'e7020156-f1ec-4fa2-afd3-2660da6b6719';
 -- Verify course is deleted
 SELECT COUNT(*) as remaining_courses_with_this_id
 FROM courses
-WHERE id = 'e7020156-f1ec-4fa2-afd3-2660da6b6719';
+WHERE id = 'eb21ad07-7183-470d-8888-7f41796de1c7';
 -- Expected: 0
 
 -- Verify lessons are deleted
 SELECT COUNT(*) as remaining_lessons_for_this_course
 FROM lessons
-WHERE course_id = 'e7020156-f1ec-4fa2-afd3-2660da6b6719';
+WHERE course_id = 'eb21ad07-7183-470d-8888-7f41796de1c7';
 -- Expected: 0
 
 -- Verify cards are deleted
@@ -97,7 +97,7 @@ SELECT COUNT(*) as remaining_cards_for_this_course
 FROM cards
 WHERE lesson_id IN (
   SELECT id FROM lessons
-  WHERE course_id = 'e7020156-f1ec-4fa2-afd3-2660da6b6719'
+  WHERE course_id = 'eb21ad07-7183-470d-8888-7f41796de1c7'
 );
 -- Expected: 0
 

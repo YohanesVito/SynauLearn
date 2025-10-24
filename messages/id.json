@@ -57,5 +57,27 @@
     "confirm": "Konfirmasi",
     "save": "Simpan",
     "close": "Tutup"
+  },
+  "home": {
+    "welcomeBack": "Selamat datang kembali",
+    "continueLearning": "Lanjutkan Belajar",
+    "noCoursesInProgress": "Belum ada kursus yang sedang berjalan",
+    "startCoursePrompt": "Mulai kursus untuk melihat progres Anda di sini!",
+    "dailyChallenge": "Tantangan Harian",
+    "dailyChallengeDesc": "Kuasai 10 Istilah Web3 Baru",
+    "dailyChallengeSubtext": "Selesaikan untuk mendapatkan bonus XP",
+    "start": "Mulai",
+    "progressSnapshot": "Ringkasan Progress",
+    "cardsMastered": "Kartu Dikuasai",
+    "coursesDone": "Kursus Selesai",
+    "dayStreak": "Streak Harian",
+    "recommendedForYou": "Rekomendasi untuk Anda",
+    "lessons": "pelajaran",
+    "intermediate": "Menengah",
+    "beginner": "Pemula",
+    "advancedSmartContracts": "Smart Contracts Lanjutan",
+    "advancedSmartContractsDesc": "Menulis smart contracts kompleks dengan Solidity",
+    "defiExplained": "Penjelasan DeFi",
+    "defiExplainedDesc": "Memahami protokol keuangan terdesentralisasi"
   }
 }

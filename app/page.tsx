@@ -104,10 +104,10 @@ export default function Home() {
   // Note: Farcaster will show the splash screen during this time
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-950">
+      <div className="min-h-screen flex items-center justify-center bg-slate-950 dark:bg-slate-950">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-400">Loading SynauLearn...</p>
+          <p className="text-gray-400 dark:text-gray-500">Loading SynauLearn...</p>
         </div>
       </div>
     );
@@ -168,7 +168,7 @@ export default function Home() {
       />
 
       {/* Main App */}
-      <main className="min-h-screen pb-24 bg-slate-950">
+      <main className="min-h-screen pb-24 bg-slate-950 dark:bg-slate-950">
         {renderView()}
         <BottomNav currentView={currentView} onNavigate={handleNavigate} />
       </main>

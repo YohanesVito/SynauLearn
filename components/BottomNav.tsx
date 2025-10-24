@@ -42,7 +42,7 @@ export default function BottomNav({ currentView, onNavigate }: BottomNavProps) {
     },
   ];
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-[#1a1d2e] border-t border-[#2a2d42] px-6 py-4 z-50">
+    <nav className="fixed bottom-0 left-0 right-0 bg-[#1a1d2e] dark:bg-slate-900 border-t border-[#2a2d42] dark:border-slate-700 px-6 py-4 z-50">
       <div className="flex items-center justify-around max-w-md mx-auto">
         {navItems.map(({ id, label, icon }) => (
           <button
@@ -50,11 +50,11 @@ export default function BottomNav({ currentView, onNavigate }: BottomNavProps) {
             onClick={() => onNavigate(id)}
             className="flex flex-col items-center gap-1 transition-colors"
           >
-            <div className={currentView === id ? "text-blue-500" : "text-gray-500"}>
+            <div className={currentView === id ? "text-blue-500 dark:text-blue-400" : "text-gray-500 dark:text-gray-400"}>
               {icon}
             </div>
             <span
-              className={`text-xs ${currentView === id ? "text-blue-500 font-medium" : "text-gray-500"
+              className={`text-xs ${currentView === id ? "text-blue-500 dark:text-blue-400 font-medium" : "text-gray-500 dark:text-gray-400"
                 }`}
             >
               {label}
