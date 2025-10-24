@@ -12,6 +12,7 @@ export const courseIdToNumber: Record<string, number> = {
   '9bea6cc1-8a0f-4aad-9d10-2984bf70368f': 1,
   'be09f25c-3d2f-4485-a4e5-175c26c95c93': 2,
   'edcc44f4-02b6-476c-8768-51f165ca37c6': 3,
+  'e7020156-f1ec-4fa2-afd3-2660da6b6719': 4,
   // Add more courses here as you create them
   // 'course-uuid-2': 2,
   // 'course-uuid-3': 3,
