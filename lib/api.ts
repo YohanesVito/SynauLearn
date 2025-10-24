@@ -22,11 +22,17 @@ export interface MintedBadge {
 
 export class API {
   // ============ COURSES ============
-  static async getCourses(): Promise<Course[]> {
-    const { data, error } = await supabase
+  static async getCourses(language?: 'en' | 'id'): Promise<Course[]> {
+    let query = supabase
       .from('courses')
-      .select('*')
-      .order('created_at');
+      .select('*');
+
+    // Filter by language if specified
+    if (language) {
+      query = query.eq('language', language);
+    }
+
+    const { data, error } = await query.order('created_at');
 
     if (error) throw error;
     return data || [];

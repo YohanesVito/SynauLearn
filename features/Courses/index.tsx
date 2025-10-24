@@ -4,6 +4,7 @@ import { API, Course } from "@/lib/api";
 import Categories from "./components/Categories";
 import CourseCard from "./components/CourseCard";
 import LessonPage from "./components/LessonPage";
+import LanguageFilter from "./components/LanguageFilter";
 
 interface CourseWithProgress extends Course {
   progress: number;
@@ -23,6 +24,15 @@ const CoursesPage: React.FC<CoursesPageProps> = ({ setIsLessonStart }) => {
     lessonId: string;
     courseTitle: string;
   } | null>(null);
+
+  // Auto-detect browser language on first load
+  const [languageFilter, setLanguageFilter] = useState<'en' | 'id' | 'all'>(() => {
+    if (typeof window !== 'undefined') {
+      const browserLang = navigator.language.toLowerCase();
+      return browserLang.startsWith('id') ? 'id' : 'en';
+    }
+    return 'en';
+  });
 
   // Load courses and progress from Supabase
   useEffect(() => {
@@ -156,25 +166,48 @@ const CoursesPage: React.FC<CoursesPageProps> = ({ setIsLessonStart }) => {
     );
   }
 
+  // Filter courses based on selected language
+  const filteredCourses = courses.filter(course => {
+    if (languageFilter === 'all') return true;
+    return course.language === languageFilter;
+  });
+
   return (
     <div className="flex flex-col p-4 gap-6">
       <h1 className="text-3xl font-bold text-white">Courses</h1>
+
+      {/* Language Filter */}
+      <LanguageFilter
+        selected={languageFilter}
+        onChange={setLanguageFilter}
+      />
+
       <Categories />
 
       <div className="space-y-4">
-        {courses.map((course, index) => {
-          return (
-            <CourseCard
-              key={course.id}
-              id={index + 1}
-              title={course.title}
-              description={course.description}
-              progress={course.progress}
-              image={course.emoji}
-              onClick={() => handleCourseClick(course.id)}
-            />
-          );
-        })}
+        {filteredCourses.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-gray-400">
+              {languageFilter === 'id'
+                ? 'Belum ada kursus dalam Bahasa Indonesia. Silakan pilih "Semua" atau "English".'
+                : 'No courses available in this language. Please select "All" or another language.'}
+            </p>
+          </div>
+        ) : (
+          filteredCourses.map((course, index) => {
+            return (
+              <CourseCard
+                key={course.id}
+                id={index + 1}
+                title={course.title}
+                description={course.description}
+                progress={course.progress}
+                image={course.emoji}
+                onClick={() => handleCourseClick(course.id)}
+              />
+            );
+          })
+        )}
       </div>
     </div>
   );

@@ -1,0 +1,15 @@
+{
+  "drawer": {
+    "viewProfile": "Lihat Profil",
+    "totalXP": "Total XP",
+    "badges": "Lencana",
+    "home": "Beranda",
+    "courses": "Kursus",
+    "profile": "Profil",
+    "leaderboard": "Papan Peringkat",
+    "mintBadge": "Cetak Lencana",
+    "nightMode": "Mode Malam",
+    "settings": "Pengaturan",
+    "helpSupport": "Bantuan & Dukungan"
+  }
+}

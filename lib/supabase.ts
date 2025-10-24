@@ -26,6 +26,7 @@ export interface Course {
   title: string;
   description: string;
   emoji: string;
+  language: 'en' | 'id'; // Language code: en = English, id = Indonesian
   total_lessons: number;
   created_at: string;
 }

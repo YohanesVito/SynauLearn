@@ -1,0 +1,15 @@
+{
+  "drawer": {
+    "viewProfile": "View Profile",
+    "totalXP": "Total XP",
+    "badges": "Badges",
+    "home": "Home",
+    "courses": "Courses",
+    "profile": "Profile",
+    "leaderboard": "Leaderboard",
+    "mintBadge": "Mint Badge",
+    "nightMode": "Night Mode",
+    "settings": "Settings",
+    "helpSupport": "Help & Support"
+  }
+}
