@@ -1,4 +1,4 @@
-import { supabase, Course, Lesson, Card, UserCardProgress, UserCourseProgress } from './supabase';
+import { supabase, Course, Lesson, Card, UserCardProgress, UserCourseProgress, Category } from './supabase';
 
 export interface MintedBadge {
   id: string;
@@ -47,6 +47,35 @@ export class API {
 
     if (error) throw error;
     return data;
+  }
+
+  static async getCoursesWithCategories(language?: 'en' | 'id'): Promise<Course[]> {
+    let query = supabase
+      .from('courses')
+      .select(`
+        *,
+        category:categories(*)
+      `);
+
+    if (language) {
+      query = query.eq('language', language);
+    }
+
+    const { data, error } = await query.order('created_at');
+
+    if (error) throw error;
+    return data || [];
+  }
+
+  // ============ CATEGORIES ============
+  static async getCategories(): Promise<Category[]> {
+    const { data, error } = await supabase
+      .from('categories')
+      .select('*')
+      .order('order_index');
+
+    if (error) throw error;
+    return data || [];
   }
 
   // ============ LESSONS ============
@@ -413,4 +442,4 @@ export class API {
 }
 
 // Re-export types for convenience
-export type { Course, Lesson, Card, UserCardProgress, UserCourseProgress };
+export type { Course, Lesson, Card, UserCardProgress, UserCourseProgress, Category };

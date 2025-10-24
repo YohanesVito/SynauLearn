@@ -35,7 +35,9 @@
     "noCoursesIndonesian": "Belum ada kursus dalam Bahasa Indonesia. Silakan pilih \"Semua\" atau \"English\".",
     "noCoursesEnglish": "Tidak ada kursus dalam bahasa ini. Silakan pilih \"Semua\" atau bahasa lain.",
     "failedToLoad": "Gagal memuat pelajaran. Silakan coba lagi.",
-    "noLessonsAvailable": "Belum ada pelajaran untuk kursus ini."
+    "noLessonsAvailable": "Belum ada pelajaran untuk kursus ini.",
+    "viewByCategory": "Per Kategori",
+    "viewAsList": "Tampilan Daftar"
   },
   "language": {
     "all": "Semua",

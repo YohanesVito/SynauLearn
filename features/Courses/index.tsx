@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { useMiniKit } from "@coinbase/onchainkit/minikit";
-import { API, Course } from "@/lib/api";
+import { API, Course, Category } from "@/lib/api";
 import { DifficultyLevel } from "@/lib/supabase";
 import Categories from "./components/Categories";
 import CourseCard from "./components/CourseCard";
 import LessonPage from "./components/LessonPage";
 import LanguageFilter from "./components/LanguageFilter";
+import CategoryAccordion from "./components/CategoryAccordion";
 import { useLocale } from '@/lib/LocaleContext';
+import { List, Grid3x3 } from 'lucide-react';
 
 interface CourseWithProgress extends Course {
   progress: number;
@@ -20,6 +22,7 @@ const CoursesPage: React.FC<CoursesPageProps> = ({ setIsLessonStart }) => {
   const { t } = useLocale();
   const { context } = useMiniKit();
   const [courses, setCourses] = useState<CourseWithProgress[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
   const [selectedCourse, setSelectedCourse] = useState<{
@@ -40,6 +43,9 @@ const CoursesPage: React.FC<CoursesPageProps> = ({ setIsLessonStart }) => {
   // Category/Difficulty filter
   const [categoryFilter, setCategoryFilter] = useState<DifficultyLevel>('Basic');
 
+  // View mode: 'list' or 'category'
+  const [viewMode, setViewMode] = useState<'list' | 'category'>('category');
+
   // Load courses and progress from Supabase
   useEffect(() => {
     async function loadCoursesWithProgress() {
@@ -58,8 +64,12 @@ const CoursesPage: React.FC<CoursesPageProps> = ({ setIsLessonStart }) => {
           setUserId(user.id);
         }
 
-        // Fetch courses
-        const fetchedCourses = await API.getCourses();
+        // Fetch categories
+        const fetchedCategories = await API.getCategories();
+        setCategories(fetchedCategories);
+
+        // Fetch courses with category data
+        const fetchedCourses = await API.getCoursesWithCategories();
 
         // Get progress for each course
         const coursesWithProgress = await Promise.all(
@@ -120,7 +130,7 @@ const CoursesPage: React.FC<CoursesPageProps> = ({ setIsLessonStart }) => {
     // Reload courses to update progress
     if (userId) {
       try {
-        const fetchedCourses = await API.getCourses();
+        const fetchedCourses = await API.getCoursesWithCategories();
 
         const coursesWithProgress = await Promise.all(
           fetchedCourses.map(async (course) => {
@@ -193,11 +203,39 @@ const CoursesPage: React.FC<CoursesPageProps> = ({ setIsLessonStart }) => {
         onChange={setLanguageFilter}
       />
 
-      {/* Difficulty Category Filter */}
-      <Categories
-        selected={categoryFilter}
-        onSelect={setCategoryFilter}
-      />
+      {/* Difficulty Category Filter (only in list view) */}
+      {viewMode === 'list' && (
+        <Categories
+          selected={categoryFilter}
+          onSelect={setCategoryFilter}
+        />
+      )}
+
+      {/* View Mode Toggle */}
+      <div className="flex justify-center gap-2">
+        <button
+          onClick={() => setViewMode('category')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+            viewMode === 'category'
+              ? 'bg-blue-600 text-white'
+              : 'bg-slate-800 text-gray-400 hover:bg-slate-700'
+          }`}
+        >
+          <Grid3x3 className="w-4 h-4" />
+          {t('courses.viewByCategory')}
+        </button>
+        <button
+          onClick={() => setViewMode('list')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+            viewMode === 'list'
+              ? 'bg-blue-600 text-white'
+              : 'bg-slate-800 text-gray-400 hover:bg-slate-700'
+          }`}
+        >
+          <List className="w-4 h-4" />
+          {t('courses.viewAsList')}
+        </button>
+      </div>
 
       <div className="space-y-4">
         {filteredCourses.length === 0 ? (
@@ -208,6 +246,15 @@ const CoursesPage: React.FC<CoursesPageProps> = ({ setIsLessonStart }) => {
                 : t('courses.noCoursesEnglish')}
             </p>
           </div>
+        ) : viewMode === 'category' ? (
+          <CategoryAccordion
+            categories={categories}
+            courses={filteredCourses.map(c => ({
+              ...c,
+              progressPercentage: c.progress
+            }))}
+            onCourseClick={handleCourseClick}
+          />
         ) : (
           filteredCourses.map((course, index) => {
             return (

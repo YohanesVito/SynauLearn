@@ -35,7 +35,9 @@
     "noCoursesIndonesian": "No courses available in Bahasa Indonesia yet. Please select \"All\" or \"English\".",
     "noCoursesEnglish": "No courses available in this language. Please select \"All\" or another language.",
     "failedToLoad": "Failed to load lesson. Please try again.",
-    "noLessonsAvailable": "No lessons available for this course yet."
+    "noLessonsAvailable": "No lessons available for this course yet.",
+    "viewByCategory": "By Category",
+    "viewAsList": "List View"
   },
   "language": {
     "all": "All",

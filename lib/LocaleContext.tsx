@@ -12,9 +12,11 @@ interface LocaleContextType {
 
 const LocaleContext = createContext<LocaleContextType | undefined>(undefined);
 
+type Messages = Record<string, unknown>;
+
 export function LocaleProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>('en');
-  const [messages, setMessages] = useState<Record<string, any>>({});
+  const [messages, setMessages] = useState<Messages>({});
 
   // Initialize locale from localStorage or browser
   useEffect(() => {
@@ -50,11 +52,11 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
   // Translation function with nested key support
   const t = (key: string): string => {
     const keys = key.split('.');
-    let value: any = messages;
+    let value: unknown = messages;
 
     for (const k of keys) {
-      if (value && typeof value === 'object') {
-        value = value[k];
+      if (value && typeof value === 'object' && k in value) {
+        value = (value as Record<string, unknown>)[k];
       } else {
         return key; // Return key if translation not found
       }
