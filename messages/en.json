@@ -32,6 +32,7 @@
   "courses": {
     "title": "Courses",
     "loading": "Loading courses...",
+    "searchPlaceholder": "Search courses...",
     "noCoursesIndonesian": "No courses available in Bahasa Indonesia yet. Please select \"All\" or \"English\".",
     "noCoursesEnglish": "No courses available in this language. Please select \"All\" or another language.",
     "failedToLoad": "Failed to load lesson. Please try again.",

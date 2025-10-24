@@ -32,6 +32,7 @@
   "courses": {
     "title": "Kursus",
     "loading": "Memuat kursus...",
+    "searchPlaceholder": "Cari kursus...",
     "noCoursesIndonesian": "Belum ada kursus dalam Bahasa Indonesia. Silakan pilih \"Semua\" atau \"English\".",
     "noCoursesEnglish": "Tidak ada kursus dalam bahasa ini. Silakan pilih \"Semua\" atau bahasa lain.",
     "failedToLoad": "Gagal memuat pelajaran. Silakan coba lagi.",
