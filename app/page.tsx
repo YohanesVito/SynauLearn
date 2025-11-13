@@ -1,19 +1,20 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 import { useMiniKit } from "@coinbase/onchainkit/minikit";
 import { LocaleProvider } from "@/lib/LocaleContext";
 import Header from "@/components/Header";
 import BottomNav from "@/components/BottomNav";
-import WelcomeModal from "@/components/WelcomeModal";
-import Drawer from "@/components/Drawer";
-import Leaderboard from "@/components/Leaderboard";
-import Profile from "@/components/Profile";
-import MintBadge from "@/components/MintBadge";
-import SignIn from "@/components/SignIn";
 import HomeView from "@/components/HomeView";
-import MyBalance from "@/components/MyBalance";
-import CoursesPage from "@/features/Courses";
-// import AuthButton from "@/components/ui/AuthButton";
+
+// Lazy load non-critical components
+const WelcomeModal = lazy(() => import("@/components/WelcomeModal"));
+const Drawer = lazy(() => import("@/components/Drawer"));
+const Leaderboard = lazy(() => import("@/components/Leaderboard"));
+const Profile = lazy(() => import("@/components/Profile"));
+const MintBadge = lazy(() => import("@/components/MintBadge"));
+const SignIn = lazy(() => import("@/components/SignIn"));
+const MyBalance = lazy(() => import("@/components/MyBalance"));
+const CoursesPage = lazy(() => import("@/features/Courses"));
 
 export default function Home() {
   const { setMiniAppReady, isMiniAppReady, isFrameReady, setFrameReady } =
@@ -37,13 +38,6 @@ export default function Home() {
   useEffect(() => {
     const initializeApp = async () => {
       try {
-        // Load Eruda for debugging (optional)
-        // import("eruda").then((eruda) => eruda.default.init());
-
-        // Simulate app initialization (load critical resources)
-        // In a real app, you might load user data, check auth, etc.
-        await new Promise((resolve) => setTimeout(resolve, 1000)); // Minimum splash time
-
         // Check if user is first-time visitor
         const userId = context?.user?.fid || "browser_user";
         const storageKey = `synaulearn_welcome_${userId}`;
@@ -153,23 +147,35 @@ export default function Home() {
   return (
     <LocaleProvider>
       {/* Welcome Modal for first-time users */}
-      {showWelcome && <WelcomeModal onComplete={handleWelcomeComplete} />}
+      {showWelcome && (
+        <Suspense fallback={null}>
+          <WelcomeModal onComplete={handleWelcomeComplete} />
+        </Suspense>
+      )}
 
       {/* Drawer Navigation */}
-      <Drawer
-        isOpen={isDrawerOpen}
-        onClose={() => setIsDrawerOpen(false)}
-        currentView={currentView}
-        onNavigate={handleNavigate}
-        onMintBadgeClick={() => {
-          setIsDrawerOpen(false);
-          handleNavigate("mintbadge");
-        }}
-      />
+      <Suspense fallback={null}>
+        <Drawer
+          isOpen={isDrawerOpen}
+          onClose={() => setIsDrawerOpen(false)}
+          currentView={currentView}
+          onNavigate={handleNavigate}
+          onMintBadgeClick={() => {
+            setIsDrawerOpen(false);
+            handleNavigate("mintbadge");
+          }}
+        />
+      </Suspense>
 
       {/* Main App */}
       <main className="min-h-screen pb-24 bg-slate-950 dark:bg-slate-950">
-        {renderView()}
+        <Suspense fallback={
+          <div className="min-h-screen flex items-center justify-center">
+            <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        }>
+          {renderView()}
+        </Suspense>
         <BottomNav currentView={currentView} onNavigate={handleNavigate} />
       </main>
     </LocaleProvider>
