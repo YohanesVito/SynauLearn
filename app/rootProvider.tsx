@@ -10,6 +10,7 @@ import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { farcasterMiniApp } from "@farcaster/miniapp-wagmi-connector";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "@rainbow-me/rainbowkit/styles.css";
+import { ThemeProvider } from "./theme";
 // import { AuthKitProvider } from '@farcaster/auth-client';
 
 export const baseSepolia = defineChain({
@@ -89,31 +90,38 @@ export function RootProvider({ children }: { children: ReactNode }) {
   const [queryClient] = useState(() => new QueryClient());
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <OnchainKitProvider
-        apiKey={process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY}
-        chain={baseSepolia}
-        config={{
-          appearance: {
-            mode: "light",
-            theme: "cyberpunk",
-          },
-          wallet: {
-            display: "modal",
-            preference: "all",
-          },
-        }}
-        miniKit={{
-          enabled: true,
-          autoConnect: true,
-          notificationProxyUrl: undefined,
-        }}
-      >
-        {/* <AuthKitProvider config={config}>{children}</AuthKitProvider> */}
-        <WagmiProvider config={config}>
-          <RainbowKitProvider>{children}</RainbowKitProvider>
-        </WagmiProvider>
-      </OnchainKitProvider>
-    </QueryClientProvider>
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="dark"
+      enableSystem
+      disableTransitionOnChange
+    >
+      <QueryClientProvider client={queryClient}>
+        <OnchainKitProvider
+          apiKey={process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY}
+          chain={baseSepolia}
+          config={{
+            appearance: {
+              mode: "auto",
+              theme: "cyberpunk",
+            },
+            wallet: {
+              display: "modal",
+              preference: "all",
+            },
+          }}
+          miniKit={{
+            enabled: true,
+            autoConnect: true,
+            notificationProxyUrl: undefined,
+          }}
+        >
+          {/* <AuthKitProvider config={config}>{children}</AuthKitProvider> */}
+          <WagmiProvider config={config}>
+            <RainbowKitProvider>{children}</RainbowKitProvider>
+          </WagmiProvider>
+        </OnchainKitProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }

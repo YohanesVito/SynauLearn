@@ -32,6 +32,7 @@
   "courses": {
     "title": "Courses",
     "loading": "Loading courses...",
+    "searchPlaceholder": "Search courses...",
     "noCoursesIndonesian": "No courses available in Bahasa Indonesia yet. Please select \"All\" or \"English\".",
     "noCoursesEnglish": "No courses available in this language. Please select \"All\" or another language.",
     "failedToLoad": "Failed to load lesson. Please try again.",
@@ -57,5 +58,27 @@
     "confirm": "Confirm",
     "save": "Save",
     "close": "Close"
+  },
+  "home": {
+    "welcomeBack": "Welcome back",
+    "continueLearning": "Continue Learning",
+    "noCoursesInProgress": "No courses in progress yet",
+    "startCoursePrompt": "Start a course to see your progress here!",
+    "dailyChallenge": "Daily Challenge",
+    "dailyChallengeDesc": "Master 10 New Web3 Terms",
+    "dailyChallengeSubtext": "Complete to earn bonus XP",
+    "start": "Start",
+    "progressSnapshot": "Progress Snapshot",
+    "cardsMastered": "Cards Mastered",
+    "coursesDone": "Courses Done",
+    "dayStreak": "Day Streak",
+    "recommendedForYou": "Recommended for You",
+    "lessons": "lessons",
+    "intermediate": "Intermediate",
+    "beginner": "Beginner",
+    "advancedSmartContracts": "Advanced Smart Contracts",
+    "advancedSmartContractsDesc": "Write complex smart contracts with Solidity",
+    "defiExplained": "DeFi Explained",
+    "defiExplainedDesc": "Understanding decentralized finance protocols"
   }
 }

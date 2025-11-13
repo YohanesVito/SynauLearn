@@ -8,7 +8,7 @@ import LessonPage from "./components/LessonPage";
 import LanguageFilter from "./components/LanguageFilter";
 import CategoryAccordion from "./components/CategoryAccordion";
 import { useLocale } from '@/lib/LocaleContext';
-import { List, Grid3x3 } from 'lucide-react';
+import { List, Grid3x3, Search, X } from 'lucide-react';
 
 interface CourseWithProgress extends Course {
   progress: number;
@@ -45,6 +45,9 @@ const CoursesPage: React.FC<CoursesPageProps> = ({ setIsLessonStart }) => {
 
   // View mode: 'list' or 'category'
   const [viewMode, setViewMode] = useState<'list' | 'category'>('category');
+
+  // Search query
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   // Load courses and progress from Supabase
   useEffect(() => {
@@ -182,7 +185,7 @@ const CoursesPage: React.FC<CoursesPageProps> = ({ setIsLessonStart }) => {
     );
   }
 
-  // Filter courses based on selected language AND difficulty
+  // Filter courses based on selected language, difficulty, and search query
   const filteredCourses = courses.filter(course => {
     // Filter by language
     const matchesLanguage = languageFilter === 'all' || course.language === languageFilter;
@@ -190,12 +193,39 @@ const CoursesPage: React.FC<CoursesPageProps> = ({ setIsLessonStart }) => {
     // Filter by difficulty
     const matchesDifficulty = course.difficulty === categoryFilter;
 
-    return matchesLanguage && matchesDifficulty;
+    // Filter by search query (searches in title and description)
+    const matchesSearch = searchQuery.trim() === '' ||
+      course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      course.description.toLowerCase().includes(searchQuery.toLowerCase());
+
+    return matchesLanguage && matchesDifficulty && matchesSearch;
   });
 
   return (
     <div className="flex flex-col p-4 gap-6">
-      <h1 className="text-3xl font-bold text-white">{t('courses.title')}</h1>
+      <h1 className="text-3xl font-bold text-white dark:text-gray-100">{t('courses.title')}</h1>
+
+      {/* Search Bar */}
+      <div className="relative">
+        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <Search className="w-5 h-5 text-gray-400" />
+        </div>
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder={t('courses.searchPlaceholder')}
+          className="w-full pl-10 pr-10 py-3 bg-slate-800 dark:bg-slate-800 border border-slate-700 dark:border-slate-600 rounded-xl text-white dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+        />
+        {searchQuery && (
+          <button
+            onClick={() => setSearchQuery('')}
+            className="absolute inset-y-0 right-0 pr-3 flex items-center"
+          >
+            <X className="w-5 h-5 text-gray-400 hover:text-gray-300 transition-colors" />
+          </button>
+        )}
+      </div>
 
       {/* Language Filter */}
       <LanguageFilter

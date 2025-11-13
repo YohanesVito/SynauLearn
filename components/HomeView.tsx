@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Target, TrendingUp, Award } from 'lucide-react';
 import { API } from '@/lib/api';
 import { SafeArea, useMiniKit } from '@coinbase/onchainkit/minikit';
+import { useLocale } from '@/lib/LocaleContext';
 // import { WalletComponents } from './WalletComponents';
 // import { ConnectWallet, WalletIsland } from '@coinbase/onchainkit/wallet';
 
@@ -18,6 +19,7 @@ interface CourseProgress {
 
 export default function HomeView({ userName = "User" }: HomeProps) {
   const { context } = useMiniKit();
+  const { t } = useLocale();
   const [inProgressCourses, setInProgressCourses] = useState<CourseProgress[]>([]);
   const [stats, setStats] = useState({
     totalXP: 0,
@@ -85,7 +87,7 @@ export default function HomeView({ userName = "User" }: HomeProps) {
       <div className="px-6 py-6 space-y-6">
         <div className="text-center py-12">
           <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-400">Loading...</p>
+          <p className="text-gray-400 dark:text-gray-500">{t('common.loading')}</p>
         </div>
       </div>
     );
@@ -95,10 +97,10 @@ export default function HomeView({ userName = "User" }: HomeProps) {
     <div className="px-6 py-6 space-y-6">
       {/* Welcome Header */}
       <div>
-        <h1 className="text-2xl font-bold text-white mb-1">
-          Welcome back, {userName}!
+        <h1 className="text-2xl font-bold text-white dark:text-gray-100 mb-1">
+          {t('home.welcomeBack')}, {userName}!
         </h1>
-        <p className="text-gray-400 text-sm">Continue Learning</p>
+        <p className="text-gray-400 dark:text-gray-500 text-sm">{t('home.continueLearning')}</p>
       </div>
 
       {/* Continue Learning Cards */}
@@ -139,9 +141,9 @@ export default function HomeView({ userName = "User" }: HomeProps) {
           })}
         </div>
       ) : (
-        <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-6 text-center">
-          <p className="text-gray-400 mb-3">No courses in progress yet</p>
-          <p className="text-gray-500 text-sm">Start a course to see your progress here!</p>
+        <div className="bg-slate-800/50 dark:bg-slate-800/70 border border-slate-700 dark:border-slate-600 rounded-2xl p-6 text-center">
+          <p className="text-gray-400 dark:text-gray-400 mb-3">{t('home.noCoursesInProgress')}</p>
+          <p className="text-gray-500 dark:text-gray-500 text-sm">{t('home.startCoursePrompt')}</p>
         </div>
       )}
 
@@ -149,20 +151,20 @@ export default function HomeView({ userName = "User" }: HomeProps) {
       {/* <WalletIsland /> */}
       {/* <ConnectWallet /> */}
       {/* <WalletComponents /> */}
-      <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-5 border border-slate-700">
+      <div className="bg-gradient-to-br from-slate-800 to-slate-900 dark:from-slate-800 dark:to-slate-900 rounded-2xl p-5 border border-slate-700 dark:border-slate-600">
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1">
-            <h3 className="text-white font-bold text-lg mb-2">Daily Challenge</h3>
-            <p className="text-gray-400 text-sm mb-1">Master 10 New Web3 Terms</p>
-            <p className="text-gray-500 text-xs">Complete to earn bonus XP</p>
+            <h3 className="text-white dark:text-gray-100 font-bold text-lg mb-2">{t('home.dailyChallenge')}</h3>
+            <p className="text-gray-400 dark:text-gray-400 text-sm mb-1">{t('home.dailyChallengeDesc')}</p>
+            <p className="text-gray-500 dark:text-gray-500 text-xs">{t('home.dailyChallengeSubtext')}</p>
           </div>
           <button className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white text-sm font-semibold rounded-lg transition-all">
-            Start →
+            {t('home.start')} →
           </button>
         </div>
 
         {/* Challenge Image/Illustration */}
-        <div className="relative h-32 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 rounded-xl flex items-center justify-center border border-cyan-500/20">
+        <div className="relative h-32 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 rounded-xl flex items-center justify-center border border-cyan-500/20 dark:border-cyan-500/30">
           <div className="w-20 h-20 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center">
             <Target className="w-10 h-10 text-white" />
           </div>
@@ -171,77 +173,77 @@ export default function HomeView({ userName = "User" }: HomeProps) {
 
       {/* Progress Snapshot */}
       <div>
-        <h3 className="text-white font-bold text-lg mb-4">Progress Snapshot</h3>
+        <h3 className="text-white dark:text-gray-100 font-bold text-lg mb-4">{t('home.progressSnapshot')}</h3>
         <div className="grid grid-cols-3 gap-3">
-          <div className="bg-slate-900 rounded-xl p-4 text-center border border-slate-800">
-            <div className="w-12 h-12 mx-auto mb-2 bg-blue-500/20 rounded-lg flex items-center justify-center">
+          <div className="bg-slate-900 dark:bg-slate-800 rounded-xl p-4 text-center border border-slate-800 dark:border-slate-700">
+            <div className="w-12 h-12 mx-auto mb-2 bg-blue-500/20 dark:bg-blue-500/30 rounded-lg flex items-center justify-center">
               <Award className="w-6 h-6 text-blue-400" />
             </div>
-            <div className="text-2xl font-bold text-white mb-1">{stats.cardsCompleted}</div>
-            <div className="text-xs text-gray-400">Cards Mastered</div>
+            <div className="text-2xl font-bold text-white dark:text-gray-100 mb-1">{stats.cardsCompleted}</div>
+            <div className="text-xs text-gray-400 dark:text-gray-400">{t('home.cardsMastered')}</div>
           </div>
 
-          <div className="bg-slate-900 rounded-xl p-4 text-center border border-slate-800">
-            <div className="w-12 h-12 mx-auto mb-2 bg-purple-500/20 rounded-lg flex items-center justify-center">
+          <div className="bg-slate-900 dark:bg-slate-800 rounded-xl p-4 text-center border border-slate-800 dark:border-slate-700">
+            <div className="w-12 h-12 mx-auto mb-2 bg-purple-500/20 dark:bg-purple-500/30 rounded-lg flex items-center justify-center">
               <TrendingUp className="w-6 h-6 text-purple-400" />
             </div>
-            <div className="text-2xl font-bold text-white mb-1">{stats.coursesCompleted}</div>
-            <div className="text-xs text-gray-400">Courses Done</div>
+            <div className="text-2xl font-bold text-white dark:text-gray-100 mb-1">{stats.coursesCompleted}</div>
+            <div className="text-xs text-gray-400 dark:text-gray-400">{t('home.coursesDone')}</div>
           </div>
 
-          <div className="bg-slate-900 rounded-xl p-4 text-center border border-slate-800">
-            <div className="w-12 h-12 mx-auto mb-2 bg-green-500/20 rounded-lg flex items-center justify-center">
+          <div className="bg-slate-900 dark:bg-slate-800 rounded-xl p-4 text-center border border-slate-800 dark:border-slate-700">
+            <div className="w-12 h-12 mx-auto mb-2 bg-green-500/20 dark:bg-green-500/30 rounded-lg flex items-center justify-center">
               <Award className="w-6 h-6 text-green-400" />
             </div>
-            <div className="text-2xl font-bold text-white mb-1">{stats.streak}</div>
-            <div className="text-xs text-gray-400">Day Streak</div>
+            <div className="text-2xl font-bold text-white dark:text-gray-100 mb-1">{stats.streak}</div>
+            <div className="text-xs text-gray-400 dark:text-gray-400">{t('home.dayStreak')}</div>
           </div>
         </div>
       </div>
 
       {/* Recommended for You */}
       <div>
-        <h3 className="text-white font-bold text-lg mb-4">Recommended for You</h3>
+        <h3 className="text-white dark:text-gray-100 font-bold text-lg mb-4">{t('home.recommendedForYou')}</h3>
         <div className="space-y-3">
           {/* Course Card 1 */}
-          <div className="bg-slate-900 rounded-xl p-4 border border-slate-800 flex items-center gap-4">
+          <div className="bg-slate-900 dark:bg-slate-800 rounded-xl p-4 border border-slate-800 dark:border-slate-700 flex items-center gap-4">
             <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center flex-shrink-0">
               <span className="text-2xl">📄</span>
             </div>
             <div className="flex-1 min-w-0">
-              <h4 className="text-white font-semibold text-sm mb-1">Advanced Smart Contracts</h4>
-              <p className="text-gray-400 text-xs mb-2">
-                Write complex smart contracts with Solidity
+              <h4 className="text-white dark:text-gray-100 font-semibold text-sm mb-1">{t('home.advancedSmartContracts')}</h4>
+              <p className="text-gray-400 dark:text-gray-400 text-xs mb-2">
+                {t('home.advancedSmartContractsDesc')}
               </p>
               <div className="flex items-center gap-2 text-xs">
-                <span className="text-blue-400">12 lessons</span>
-                <span className="text-gray-600">•</span>
-                <span className="text-gray-400">Intermediate</span>
+                <span className="text-blue-400 dark:text-blue-400">12 {t('home.lessons')}</span>
+                <span className="text-gray-600 dark:text-gray-500">•</span>
+                <span className="text-gray-400 dark:text-gray-400">{t('home.intermediate')}</span>
               </div>
             </div>
-            <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors flex-shrink-0">
-              Start
+            <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors flex-shrink-0">
+              {t('home.start')}
             </button>
           </div>
 
           {/* Course Card 2 */}
-          <div className="bg-slate-900 rounded-xl p-4 border border-slate-800 flex items-center gap-4">
+          <div className="bg-slate-900 dark:bg-slate-800 rounded-xl p-4 border border-slate-800 dark:border-slate-700 flex items-center gap-4">
             <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center flex-shrink-0">
               <span className="text-2xl">💰</span>
             </div>
             <div className="flex-1 min-w-0">
-              <h4 className="text-white font-semibold text-sm mb-1">DeFi Explained</h4>
-              <p className="text-gray-400 text-xs mb-2">
-                Understanding decentralized finance protocols
+              <h4 className="text-white dark:text-gray-100 font-semibold text-sm mb-1">{t('home.defiExplained')}</h4>
+              <p className="text-gray-400 dark:text-gray-400 text-xs mb-2">
+                {t('home.defiExplainedDesc')}
               </p>
               <div className="flex items-center gap-2 text-xs">
-                <span className="text-blue-400">8 lessons</span>
-                <span className="text-gray-600">•</span>
-                <span className="text-gray-400">Beginner</span>
+                <span className="text-blue-400 dark:text-blue-400">8 {t('home.lessons')}</span>
+                <span className="text-gray-600 dark:text-gray-500">•</span>
+                <span className="text-gray-400 dark:text-gray-400">{t('home.beginner')}</span>
               </div>
             </div>
-            <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors flex-shrink-0">
-              Start
+            <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors flex-shrink-0">
+              {t('home.start')}
             </button>
           </div>
         </div>

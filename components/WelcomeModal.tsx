@@ -12,18 +12,18 @@ export default function WelcomeModal({ onComplete }: WelcomeModalProps) {
 
   return (
     <SafeArea>
-      <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div className="bg-gradient-to-b from-slate-900 to-slate-800 rounded-2xl max-w-md w-full shadow-2xl border border-slate-700 relative">
+      <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 pb-28">
+        <div className="bg-gradient-to-b from-slate-900 to-slate-800 rounded-2xl max-w-md w-full shadow-2xl border border-slate-700 relative max-h-[calc(100vh-8rem)] overflow-y-auto">
           {/* Close button */}
           <button
             onClick={onComplete}
-            className="absolute top-4 right-4 p-2 hover:bg-slate-700 rounded-lg transition-colors"
+            className="absolute top-4 right-4 p-2 hover:bg-slate-700 rounded-lg transition-colors z-10"
           >
             <X className="w-5 h-5 text-gray-400" />
           </button>
 
           {/* Content */}
-          <div className="p-8 text-center">
+          <div className="p-8 text-center pb-6">
             {/* Logo/Icon */}
             <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 overflow-hidden bg-blue-500">
               <img

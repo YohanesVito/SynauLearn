@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Home, GraduationCap, User, BarChart3, Award, Moon, Settings, HelpCircle, X } from 'lucide-react';
+import { Home, GraduationCap, User, BarChart3, Award, Moon, Sun, Settings, HelpCircle, X } from 'lucide-react';
 import { API } from '@/lib/api';
 import { useMiniKit } from '@coinbase/onchainkit/minikit';
 import { useLocale } from '@/lib/LocaleContext';
+import { useTheme } from 'next-themes';
 
 interface DrawerProps {
   isOpen: boolean;
@@ -15,7 +16,7 @@ interface DrawerProps {
 export default function Drawer({ isOpen, onClose, currentView, onNavigate, onMintBadgeClick }: DrawerProps) {
   const { t, locale, setLocale } = useLocale();
   const { context } = useMiniKit();
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const { theme, setTheme } = useTheme();
   const [userStats, setUserStats] = useState({
     displayName: 'User',
     username: 'user',
@@ -79,12 +80,12 @@ export default function Drawer({ isOpen, onClose, currentView, onNavigate, onMin
 
       {/* Drawer */}
       <div
-        className={`fixed top-0 left-0 h-full w-80 bg-slate-900 z-50 transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'
+        className={`fixed top-0 left-0 h-full w-80 bg-slate-900 dark:bg-slate-900 z-50 transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
       >
         <div className="flex flex-col h-full">
           {/* Header */}
-          <div className="p-6 border-b border-slate-800">
+          <div className="p-6 border-b border-slate-800 dark:border-slate-700">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white text-xl font-bold">
@@ -111,21 +112,21 @@ export default function Drawer({ isOpen, onClose, currentView, onNavigate, onMin
               </div>
               <button
                 onClick={onClose}
-                className="p-2 hover:bg-slate-800 rounded-lg transition-colors lg:hidden"
+                className="p-2 hover:bg-slate-800 dark:hover:bg-slate-700 rounded-lg transition-colors lg:hidden"
               >
-                <X className="w-5 h-5 text-gray-400" />
+                <X className="w-5 h-5 text-gray-400 dark:text-gray-300" />
               </button>
             </div>
 
             {/* User Stats */}
             <div className="flex gap-3">
-              <div className="flex-1 bg-slate-800/50 rounded-lg p-3 text-center">
-                <div className="text-lg font-bold text-blue-400">{userStats.totalXP}</div>
-                <div className="text-xs text-gray-400">{t('drawer.totalXP')}</div>
+              <div className="flex-1 bg-slate-800/50 dark:bg-slate-800/70 rounded-lg p-3 text-center">
+                <div className="text-lg font-bold text-blue-400 dark:text-blue-400">{userStats.totalXP}</div>
+                <div className="text-xs text-gray-400 dark:text-gray-400">{t('drawer.totalXP')}</div>
               </div>
-              <div className="flex-1 bg-slate-800/50 rounded-lg p-3 text-center">
-                <div className="text-lg font-bold text-purple-400">{userStats.badgeCount}</div>
-                <div className="text-xs text-gray-400">{t('drawer.badges')}</div>
+              <div className="flex-1 bg-slate-800/50 dark:bg-slate-800/70 rounded-lg p-3 text-center">
+                <div className="text-lg font-bold text-purple-400 dark:text-purple-400">{userStats.badgeCount}</div>
+                <div className="text-xs text-gray-400 dark:text-gray-400">{t('drawer.badges')}</div>
               </div>
             </div>
           </div>
@@ -141,8 +142,8 @@ export default function Drawer({ isOpen, onClose, currentView, onNavigate, onMin
                   key={item.id}
                   onClick={() => handleNavigate(item.id)}
                   className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl transition-all ${isActive
-                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
-                    : 'text-gray-300 hover:bg-slate-800'
+                    ? 'bg-blue-600 dark:bg-blue-600 text-white shadow-lg shadow-blue-600/30'
+                    : 'text-gray-300 dark:text-gray-200 hover:bg-slate-800 dark:hover:bg-slate-700'
                     }`}
                 >
                   <Icon className="w-6 h-6" />
@@ -154,7 +155,7 @@ export default function Drawer({ isOpen, onClose, currentView, onNavigate, onMin
             {/* Mint Badge Button */}
             <button
               onClick={handleMintBadge}
-              className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-gray-300 hover:bg-slate-800 transition-all"
+              className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-gray-300 dark:text-gray-200 hover:bg-slate-800 dark:hover:bg-slate-700 transition-all"
             >
               <Award className="w-6 h-6" />
               <span className="text-lg font-medium">{t('drawer.mintBadge')}</span>
@@ -162,34 +163,38 @@ export default function Drawer({ isOpen, onClose, currentView, onNavigate, onMin
           </nav>
 
           {/* Bottom Section */}
-          <div className="p-4 space-y-2 border-t border-slate-800">
-            {/* Night Mode Toggle */}
-            <div className="flex items-center justify-between px-6 py-4 rounded-2xl hover:bg-slate-800 transition-colors">
+          <div className="p-4 space-y-2 border-t border-slate-800 dark:border-slate-700">
+            {/* Theme Toggle */}
+            <div className="flex items-center justify-between px-6 py-4 rounded-2xl hover:bg-slate-800 dark:hover:bg-slate-700 transition-colors">
               <div className="flex items-center gap-4">
-                <Moon className="w-6 h-6 text-gray-300" />
-                <span className="text-lg font-medium text-gray-300">{t('drawer.nightMode')}</span>
+                {theme === 'dark' ? (
+                  <Moon className="w-6 h-6 text-gray-300" />
+                ) : (
+                  <Sun className="w-6 h-6 text-gray-700 dark:text-gray-300" />
+                )}
+                <span className="text-lg font-medium text-gray-300 dark:text-gray-200">{t('drawer.nightMode')}</span>
               </div>
               <button
-                onClick={() => setIsDarkMode(!isDarkMode)}
-                className={`relative w-12 h-7 rounded-full transition-colors ${isDarkMode ? 'bg-blue-600' : 'bg-gray-600'
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                className={`relative w-12 h-7 rounded-full transition-colors ${theme === 'dark' ? 'bg-blue-600' : 'bg-gray-400'
                   }`}
               >
                 <div
-                  className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform ${isDarkMode ? 'translate-x-5' : 'translate-x-0'
+                  className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform ${theme === 'dark' ? 'translate-x-5' : 'translate-x-0'
                     }`}
                 />
               </button>
             </div>
 
             {/* Language Switcher */}
-            <div className="px-4 py-2 border-b border-slate-800">
-              <div className="text-xs text-gray-400 mb-2 px-2">Language / Bahasa</div>
+            <div className="px-4 py-2 border-b border-slate-800 dark:border-slate-700">
+              <div className="text-xs text-gray-400 dark:text-gray-400 mb-2 px-2">Language / Bahasa</div>
               <div className="flex gap-2">
                 <button
                   onClick={() => setLocale('en')}
                   className={`flex-1 px-4 py-2 rounded-lg text-sm transition-all ${locale === 'en'
                       ? 'bg-blue-600 text-white'
-                      : 'bg-slate-800 text-gray-300 hover:bg-slate-700'
+                      : 'bg-slate-800 dark:bg-slate-800 text-gray-300 dark:text-gray-200 hover:bg-slate-700 dark:hover:bg-slate-600'
                     }`}
                 >
                   🇺🇸 English
@@ -198,7 +203,7 @@ export default function Drawer({ isOpen, onClose, currentView, onNavigate, onMin
                   onClick={() => setLocale('id')}
                   className={`flex-1 px-4 py-2 rounded-lg text-sm transition-all ${locale === 'id'
                       ? 'bg-blue-600 text-white'
-                      : 'bg-slate-800 text-gray-300 hover:bg-slate-700'
+                      : 'bg-slate-800 dark:bg-slate-800 text-gray-300 dark:text-gray-200 hover:bg-slate-700 dark:hover:bg-slate-600'
                     }`}
                 >
                   🇮🇩 Bahasa
@@ -207,13 +212,13 @@ export default function Drawer({ isOpen, onClose, currentView, onNavigate, onMin
             </div>
 
             {/* Settings */}
-            <button className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-gray-300 hover:bg-slate-800 transition-colors">
+            <button className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-gray-300 dark:text-gray-200 hover:bg-slate-800 dark:hover:bg-slate-700 transition-colors">
               <Settings className="w-6 h-6" />
               <span className="text-lg font-medium">{t('drawer.settings')}</span>
             </button>
 
             {/* Help & Support */}
-            <button className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-gray-300 hover:bg-slate-800 transition-colors">
+            <button className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-gray-300 dark:text-gray-200 hover:bg-slate-800 dark:hover:bg-slate-700 transition-colors">
               <HelpCircle className="w-6 h-6" />
               <span className="text-lg font-medium">{t('drawer.helpSupport')}</span>
             </button>
